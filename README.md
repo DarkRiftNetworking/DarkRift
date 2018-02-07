@@ -8,6 +8,9 @@ The [issues board](https://github.com/DarkRiftNetworking/DarkRift-Networking/iss
 
 Please try to follow the template provided and to make sure you add the correct labels to your issues/suggestions. Any example code or projects that showcase how to reproduce your bug or how you think your suggestion should be implemented would be very  appreciated!
 
+## Projects Boards
+The [project boards](https://github.com/DarkRiftNetworking/DarkRift-Networking/projects) are publicly viewable Kanban boards of the work that we're doing and have planned for DarkRift. Feel free to discuss and make suggestions or feature requests about on the work items you see!
+
 ## Wiki
 The [wiki](https://github.com/DarkRiftNetworking/DarkRift-Networking/wiki) is publicly editable and is a place for anyone to add content, code snippets, tutorials and anything that would be useful to other members of the DarkRift Networking community.
 
