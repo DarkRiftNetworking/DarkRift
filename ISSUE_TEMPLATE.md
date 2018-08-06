@@ -1,7 +1,5 @@
 Thanks for creating an issue/feature request! Please use the template below to ensure you have all the necessary information.
 
-Firstly though, please selected the correct labels from the sidebar.
-
 ### Quick Description
 Give us a quick 1/2 line description of the issue/feature request so we have a general idea what it's about.
 
