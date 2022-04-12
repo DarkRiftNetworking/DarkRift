@@ -1,0 +1,51 @@
+﻿# HELP client_connected_event_failures The number of failures executing the ClientConnected event.
+# TYPE client_connected_event_failures counter
+darkrift_client_manager_client_connected_event_failures 0
+
+# HELP client_disconnected_event_failures The number of failures executing the ClientDisconnected event.
+# TYPE client_disconnected_event_failures counter
+darkrift_client_manager_client_disconnected_event_failures 0
+
+# HELP connection_attempt_timeouts The number of connection attempts made to this listener that timed out.
+# TYPE connection_attempt_timeouts counter
+darkrift_default_network_listener_connection_attempt_timeouts 0
+
+# HELP clients_connected The number of clients connected to the server.
+# TYPE clients_connected gauge
+darkrift_client_manager_clients_connected 0
+
+# HELP client_connected_event_time The time taken to execute the ClientConnected event.
+# TYPE client_connected_event_time histogram
+darkrift_client_manager_client_connected_event_time_bucket{le="0.005"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="0.01"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="0.02"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="0.04"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="0.08"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="0.16"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="0.5"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="1"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="2"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="5"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="10"} 0
+darkrift_client_manager_client_connected_event_time_bucket{le="+Inf"} 0
+darkrift_client_manager_client_connected_event_time_sum 0
+darkrift_client_manager_client_connected_event_time_count 0
+
+# HELP client_disconnected_event_time The time taken to execute the ClientDisconnected event.
+# TYPE client_disconnected_event_time histogram
+darkrift_client_manager_client_disconnected_event_time_bucket{le="0.005"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="0.01"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="0.02"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="0.04"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="0.08"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="0.16"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="0.5"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="1"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="2"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="5"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="10"} 0
+darkrift_client_manager_client_disconnected_event_time_bucket{le="+Inf"} 0
+darkrift_client_manager_client_disconnected_event_time_sum 0
+darkrift_client_manager_client_disconnected_event_time_count 0
+
+

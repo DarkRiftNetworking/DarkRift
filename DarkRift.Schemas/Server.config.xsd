@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="configuration">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="server" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="pluginSearch" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="data" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="logging" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="plugins" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="databases" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="cache" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="listeners" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="metrics" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="serverRegistry" minOccurs="0" maxOccurs="1"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="cache">
+    <xs:complexType>
+      <xs:attribute name="maxCachedWriters" type="xs:unsignedInt" use="optional" />
+      <xs:attribute name="maxCachedReaders" type="xs:unsignedInt" use="optional" />
+      <xs:attribute name="maxCachedMessages" type="xs:unsignedInt" use="optional" />
+      <xs:attribute name="maxCachedSocketAsyncEventArgs" type="xs:unsignedInt" use="optional" />
+      <xs:attribute name="maxActionDispatcherTasks" type="xs:unsignedInt" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="databases">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="database" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="database">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional" />
+      <xs:attribute name="connectionString" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="plugins">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="plugin" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="loadByDefault" type="xs:boolean" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="plugin">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="settings"  minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="type" type="xs:string" use="required" />
+      <xs:attribute name="load" type="xs:boolean" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="logging">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="logWriters" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="logWriters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="logWriter" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="logWriter">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="settings"  minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="type" type="xs:string" use="required" />
+      <xs:attribute name="levels" type="levels" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="data">
+    <xs:complexType>
+      <xs:attribute name="directory" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="server">
+    <xs:complexType>
+      <xs:attribute name="address" type="serverAddress" use="optional" />
+      <xs:attribute name="port" type="xs:unsignedInt" use="optional" />
+      <xs:attribute name="ipVersion" type="ipVersion" use="optional" />
+      <xs:attribute name="maxStrikes" type="xs:unsignedInt" use="required" />
+      <xs:attribute name="noDelay" type="xs:boolean" use="optional" />
+      <xs:attribute name="useFallback" type="xs:boolean" use="optional" />
+      <xs:attribute name="serverGroup" type="xs:string" use="optional" />
+      <xs:attribute name="reconnectAttempts" type="xs:unsignedInt" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pluginSearch">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="pluginSearchPath" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pluginSearchPath">
+    <xs:complexType>
+      <xs:attribute name="src" type="xs:string" use="required" />
+      <xs:attribute name="createDir" type="xs:boolean" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="listeners">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="listener" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="listener">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="settings"  minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="type" type="xs:string" use="required" />
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="address" type="serverAddress" use="required" />
+      <xs:attribute name="port" type="xs:unsignedInt" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="metrics">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="metricsWriter" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="metricsWriter">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="settings"  minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="type" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="serverRegistry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="serverRegistryConnector" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="advertisedHost" type="xs:string" use="required" />
+      <xs:attribute name="advertisedPort" type="xs:unsignedInt" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="serverRegistryConnector">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="settings"  minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="type" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="settings">
+    <xs:complexType>
+      <xs:anyAttribute />
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="serverAddress">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="levels">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(trace, *)?(info, *)?(warning, *)?(error, *)?(fatal)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ipVersion">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="IPv4"/>
+      <xs:enumeration value="IPv6"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

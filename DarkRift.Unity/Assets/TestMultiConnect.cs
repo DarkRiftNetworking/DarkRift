@@ -1,6 +1,5 @@
-MIT License
-
-Copyright (c) 2020 DarkRift Networking
+﻿/*
+Copyright (c) 2022 Unordinal AB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +18,31 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+*/
+
+using UnityEngine;
+using System.Collections;
+using DarkRift.Client.Unity;
+using System.Net;
+using DarkRift;
+
+[RequireComponent(typeof(UnityClient))]
+public class TestMultiConnect : MonoBehaviour
+{
+    UnityClient client;
+
+    void Awake()
+    {
+        client = GetComponent<UnityClient>();
+    }
+
+    void Update()
+    {
+        Debug.Log(client.ConnectionState);
+
+        if (Input.GetKeyDown("space"))
+            client.Connect(IPAddress.Loopback, 4296, true);
+        else if (Input.GetKeyDown("z"))
+            client.Disconnect();
+    }
+}

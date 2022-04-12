@@ -1,0 +1,4 @@
+[submodule "DarkRift.Documentation"]
+	path = DarkRift.Documentation
+	url = git@github.com:DarkRiftNetworking/DarkRift.Documentation.git
+	branch = master
