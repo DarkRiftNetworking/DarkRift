@@ -1,0 +1,33 @@
+name: Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.104
+      # TODO install all targeted .NET versions then test against all of them
+    - name: Build
+      # MSBuildCommunityTasks doesn't play well with .NET 6 so skip all that
+      run: dotnet build --configuration Pro -p:DRBuildMode=coreonly -p:SkipCopyToBuild=true
+    - name: Test
+      run: dotnet test
+
+  windows-build:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.104
+    - name: Build
+      # MSBuildCommunityTasks doesn't play well with .NET 6 so skip all that
+      run: dotnet build --configuration Pro -p:DRBuildMode=coreonly -p:SkipCopyToBuild=true
+    - name: Test
+      run: dotnet test
