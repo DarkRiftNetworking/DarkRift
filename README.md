@@ -3,6 +3,9 @@ Welcome to the DarkRift 2 open source project!
 
 DarkRift 1 and 2 were originally written by Jamie Read. DarkRift 2 has since been open sourced under the care of Unordinal AB and the DarkRift community.
 
+## Building
+This project requires Microsoft Visual Studio 2022 (the free Community edition is fine) or at least one Visual C# project will fail to build in VS2019 and below. See detailed exposition in [BUILDING.md](BUILDING.md)
+
 ## Source Code License
 Most source files are licensed under MPL 2.0, with some exceptions where MIT applies. See [LICENSE.md](LICENSE.md)
 
