@@ -20,12 +20,12 @@
   <Import Project="$(MSBuildCommunityTasksPath)/MSBuild.Community.Tasks.Targets" />
 
   <!-- Mash everything together into the DR folder structure and necessary zips -->
-  <Target Name="MainAfterBuild" AfterTargets="Build" DependsOnTargets="CopyToBuild; Organize; ZipBuild; ZipSource; InstallInCLITool" Condition=" '$(TargetDir)' != ''">
+  <Target Name="MainAfterBuild" AfterTargets="Build" DependsOnTargets="CopyToBuild; Organize; ZipBuild; ZipSource; InstallInCLITool" Condition=" '$(TargetDir)' != '' ">
     
   </Target>
 
   <!-- Clean target to remove build dir -->
-  <Target Name="MainAfterClean" AfterTargets="Clean" Condition=" '$(TargetDir)' != ''">
+  <Target Name="MainAfterClean" AfterTargets="Clean" Condition=" '$(TargetDir)' != '' ">
     <RemoveDir Directories="$(BuildDir)" />
   </Target>
 
@@ -64,7 +64,6 @@
   </Target>
 
   <!-- Compress server heirachy into zip folder -->
-  <!-- Ignore in coreonly as MSBuildTasks doesn't support core -->
   <Target Name="ZipBuild">
     <ItemGroup>
       <ZipBuildFiles Include="$(BuildDir)**/*.*" Exclude="$(BuildDir)**/*.zip" />
@@ -74,7 +73,6 @@
   </Target>
 
   <!-- Zip source together -->
-  <!-- Ignore in coreonly as MSBuildTasks doesn't support core -->
   <Target Name="ZipSource">
     <ItemGroup>
       <ZipSourceFiles Include="$(SolutionDir)*.*" Exclude="$(SolutionDir)release.py"/>
