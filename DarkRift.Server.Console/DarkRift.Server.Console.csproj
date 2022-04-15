@@ -40,6 +40,10 @@
     <ProjectReference Include="..\DarkRift\DarkRift.csproj" />
   </ItemGroup>
 
+  <Target Name="Debug" AfterTargets="Build">
+    <Message Importance="High" Text="Not loading organisation scripts as SkipCopyToBuild is set to $(SkipCopyToBuild)" Condition="'$(SkipCopyToBuild)' == 'true'" />
+    <Message Importance="High" Text="Loading organisation scripts as SkipCopyToBuild is set to $(SkipCopyToBuild)" Condition="'$(SkipCopyToBuild)' != 'true'" />
+  </Target>
   <Import Project="$(SolutionDir).targets" Condition="'$(SkipCopyToBuild)' != 'true'" />
   
 </Project>
