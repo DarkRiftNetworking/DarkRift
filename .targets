@@ -6,31 +6,31 @@
   </PropertyGroup>
   
   <!-- Get build task extensions -->
-  <ItemGroup Condition="'$(SkipCopyToBuild)' != 'true'" >
+  <ItemGroup>
     <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(USERPROFILE)' != '' AND '$(SkipCopyToBuild)' != 'true' ">
+  <PropertyGroup Condition="'$(USERPROFILE)' != ''">
     <MSBuildCommunityTasksPath>$(USERPROFILE)/.nuget/packages/msbuildtasks/1.5.0.235/tools</MSBuildCommunityTasksPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(HOME)' != '' AND '$(SkipCopyToBuild)' != 'true' ">
+  <PropertyGroup Condition="'$(HOME)' != ''">
     <MSBuildCommunityTasksPath>$(HOME)/.nuget/packages/msbuildtasks/1.5.0.235/tools</MSBuildCommunityTasksPath>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildCommunityTasksPath)/MSBuild.Community.Tasks.Targets" Condition="'$(SkipCopyToBuild)' != 'true'" />
+  <Import Project="$(MSBuildCommunityTasksPath)/MSBuild.Community.Tasks.Targets" />
 
   <!-- Mash everything together into the DR folder structure and necessary zips -->
-  <Target Name="MainAfterBuild" AfterTargets="Build" DependsOnTargets="CopyToBuild; Organize; ZipBuild; ZipSource; InstallInCLITool" Condition=" '$(TargetDir)' != '' AND '$(SkipCopyToBuild)' != 'true' ">
+  <Target Name="MainAfterBuild" AfterTargets="Build" DependsOnTargets="CopyToBuild; Organize; ZipBuild; ZipSource; InstallInCLITool" Condition=" '$(TargetDir)' != ''">
     
   </Target>
 
   <!-- Clean target to remove build dir -->
-  <Target Name="MainAfterClean" AfterTargets="Clean" Condition=" '$(TargetDir)' != '' AND '$(SkipCopyToBuild)' != 'true' ">
+  <Target Name="MainAfterClean" AfterTargets="Clean" Condition=" '$(TargetDir)' != ''">
     <RemoveDir Directories="$(BuildDir)" />
   </Target>
 
   <!-- Copy necessary files -->
-  <Target Name="CopyToBuild" Condition="'$(SkipCopyToBuild)' != 'true'">
+  <Target Name="CopyToBuild">
     <ItemGroup>
       <CopyFiles Include="$(TargetDir)*.*" />
     </ItemGroup>
@@ -39,7 +39,7 @@
   </Target>
   
   <!-- Organize things into Lib folder -->
-  <Target Name="Organize" Condition="'$(SkipCopyToBuild)' != 'true'">
+  <Target Name="Organize">
     <!-- Lib folder contents for .NET Framework app -->
     <ItemGroup Condition=" '$(TargetFramework)' == 'net4.0' ">
       <LibFiles Include="$(BuildDir)*.dll" />
@@ -65,7 +65,7 @@
 
   <!-- Compress server heirachy into zip folder -->
   <!-- Ignore in coreonly as MSBuildTasks doesn't support core -->
-  <Target Name="ZipBuild" Condition="'$(SkipCopyToBuild)' != 'true'">
+  <Target Name="ZipBuild">
     <ItemGroup>
       <ZipBuildFiles Include="$(BuildDir)**/*.*" Exclude="$(BuildDir)**/*.zip" />
     </ItemGroup>
@@ -75,7 +75,7 @@
 
   <!-- Zip source together -->
   <!-- Ignore in coreonly as MSBuildTasks doesn't support core -->
-  <Target Name="ZipSource" Condition="'$(SkipCopyToBuild)' != 'true'">
+  <Target Name="ZipSource">
     <ItemGroup>
       <ZipSourceFiles Include="$(SolutionDir)*.*" Exclude="$(SolutionDir)release.py"/>
       <ZipSourceFiles Include="$(SolutionDir)DarkRift/**/*.*" Exclude="$(SolutionDir)DarkRift/bin/**/*.*;$(SolutionDir)DarkRift/obj/**/*.*" />
@@ -92,7 +92,7 @@
   </Target>
 
   <!-- Install in DarkRift CLI tool as 'dev' -->
-  <Target Name="InstallInCLITool" Condition="'$(SkipCopyToBuild)' != 'true'">
+  <Target Name="InstallInCLITool">
     <ItemGroup>
       <InstallFiles Include="$(BuildDir)/**/*.*" Exclude="$(BuildDir)/**/*.zip" />
     </ItemGroup>
