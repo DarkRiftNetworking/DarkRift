@@ -7,6 +7,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
@@ -38,8 +39,10 @@ namespace DarkRift.SystemTesting
         [When("I query the Prometheus endpoint")]
         public void WhenIQueryThePrometheusEndpoint()
         {
-            using WebClient webClient = new WebClient();
-            prometheusString = webClient.DownloadString("http://localhost:9796/metrics");
+            using HttpClient httpClient = new HttpClient();
+            HttpResponseMessage response = httpClient.GetAsync("http://localhost:9796/metrics").Result;
+            Assert.IsTrue(response.IsSuccessStatusCode);
+            prometheusString = response.Content.ReadAsStringAsync().Result;
         }
 
         [Then("the server returns the metrics in (.*)")]

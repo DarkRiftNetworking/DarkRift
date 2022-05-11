@@ -40,7 +40,6 @@
     <ProjectReference Include="..\DarkRift\DarkRift.csproj" />
   </ItemGroup>
 
-  <!-- Import the organizational scripts -->
-  <Import Project="$(SolutionDir).targets" />
+  <Import Project="$(SolutionDir).targets" Condition="'$(SkipCopyToBuild)' != 'true'" />
   
 </Project>

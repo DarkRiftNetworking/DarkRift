@@ -1,0 +1,21 @@
+name: Pack
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  windows-build:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.104
+    - name: Build
+      run: dotnet build --configuration Pro -p:DRBuildMode=coreonly -p:SkipCopyToBuild=true
+    - name: Test
+      run: dotnet test -p:DRBuildMode=coreonly -p:SkipCopyToBuild=true
+    # TODO create GitHub release, this might require moving away from MSBuildTasks due to no .NET Core support
+    # TODO pack unitypackage using somehting like https://github.com/FatihBAKIR/UnityPacker

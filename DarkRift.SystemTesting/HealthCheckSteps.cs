@@ -6,6 +6,7 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
@@ -37,8 +38,10 @@ namespace DarkRift.SystemTesting
         [When("I query the health check port")]
         public void WhenIQueryTheHealthCheckPort()
         {
-            using WebClient webClient = new WebClient();
-            jsonString = webClient.DownloadString("http://localhost:10666/health");
+            using HttpClient httpClient = new HttpClient();
+            HttpResponseMessage response = httpClient.GetAsync("http://localhost:10666/health").Result;
+            Assert.IsTrue(response.IsSuccessStatusCode);
+            jsonString = response.Content.ReadAsStringAsync().Result;
         }
 
         [Then("the server returns the expected fields")]
