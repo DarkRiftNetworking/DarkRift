@@ -345,7 +345,7 @@ namespace DarkRift
             if (Position + 4 + length > Length)
                 throw new EndOfStreamException($"Failed to read data from reader as the reader does not have enough data remaining. Expected {length} bytes but reader only has {Length - Position - 4} bytes remaining.");
 
-            Buffer.BlockCopy(buffer.Buffer, buffer.Offset + Position + 4, destination, 0, length);
+            Buffer.BlockCopy(buffer.Buffer, buffer.Offset + Position + 4, destination, offset, length);
 
             Position += 4 + length;
         }
