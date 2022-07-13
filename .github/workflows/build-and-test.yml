@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   windows-build:
     runs-on: windows-2019
+    timeout-minutes: 60
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
