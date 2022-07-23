@@ -308,9 +308,17 @@ namespace DarkRift.Client
                 {
                     UpdateBufferPointers(args);
 
-                    bool headerContinueCompletingAsync = tcpSocket.ReceiveAsync(args);
-                    if (headerContinueCompletingAsync)
+                    try
+                    {
+                        bool headerContinueCompletingAsync = tcpSocket.ReceiveAsync(args);
+                        if (headerContinueCompletingAsync)
+                            return;
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        HandleDisconnectionDuringHeaderReceive(null);
                         return;
+                    }
 
                     continue;
                 }
@@ -320,9 +328,17 @@ namespace DarkRift.Client
                 SetupReceiveBody(args, bodyLength);
                 while (true)
                 {
-                    bool bodyCompletingAsync = tcpSocket.ReceiveAsync(args);
-                    if (bodyCompletingAsync)
+                    try
+                    {
+                        bool bodyCompletingAsync = tcpSocket.ReceiveAsync(args);
+                        if (bodyCompletingAsync)
+                            return;
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        HandleDisconnectionDuringBodyReceive(null);
                         return;
+                    }
 
                     if (!WasBodyReceiveSucessful(args))
                     {
@@ -340,7 +356,16 @@ namespace DarkRift.Client
 
                 // Start next receive before invoking events
                 SetupReceiveHeader(args);
-                bool headerCompletingAsync = tcpSocket.ReceiveAsync(args);
+                bool headerCompletingAsync;
+                try
+                {
+                    headerCompletingAsync = tcpSocket.ReceiveAsync(args);
+                }
+                catch (ObjectDisposedException)
+                {
+                    HandleDisconnectionDuringHeaderReceive(null);
+                    return;
+                }
 
                 ProcessMessage(bodyBuffer);
 
@@ -380,16 +405,33 @@ namespace DarkRift.Client
 
                 UpdateBufferPointers(args);
 
-                bool bodyContinueCompletingAsync = tcpSocket.ReceiveAsync(args);
-                if (bodyContinueCompletingAsync)
+                try
+                {
+                    bool bodyContinueCompletingAsync = tcpSocket.ReceiveAsync(args);
+                    if (bodyContinueCompletingAsync)
+                        return;
+                }
+                catch (ObjectDisposedException)
+                {
+                    HandleDisconnectionDuringBodyReceive(null);
                     return;
+                }
             }
 
             MessageBuffer bodyBuffer = ProcessBody(args);
 
             // Start next receive before invoking events
             SetupReceiveHeader(args);
-            bool headerCompletingAsync = tcpSocket.ReceiveAsync(args);
+            bool headerCompletingAsync;
+            try
+            {
+                headerCompletingAsync = tcpSocket.ReceiveAsync(args);
+            }
+            catch (ObjectDisposedException)
+            {
+                HandleDisconnectionDuringHeaderReceive(null);
+                return;
+            }
 
             ProcessMessage(bodyBuffer);
 
