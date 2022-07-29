@@ -316,7 +316,7 @@ namespace DarkRift.Client
                     }
                     catch (ObjectDisposedException)
                     {
-                        HandleDisconnectionDuringHeaderReceive(null);
+                        HandleDisconnectionDuringHeaderReceive(args);
                         return;
                     }
 
@@ -336,7 +336,7 @@ namespace DarkRift.Client
                     }
                     catch (ObjectDisposedException)
                     {
-                        HandleDisconnectionDuringBodyReceive(null);
+                        HandleDisconnectionDuringBodyReceive(args);
                         return;
                     }
 
@@ -363,7 +363,7 @@ namespace DarkRift.Client
                 }
                 catch (ObjectDisposedException)
                 {
-                    HandleDisconnectionDuringHeaderReceive(null);
+                    HandleDisconnectionDuringHeaderReceive(args);
                     return;
                 }
 
@@ -413,7 +413,7 @@ namespace DarkRift.Client
                 }
                 catch (ObjectDisposedException)
                 {
-                    HandleDisconnectionDuringBodyReceive(null);
+                    HandleDisconnectionDuringBodyReceive(args);
                     return;
                 }
             }
@@ -429,7 +429,7 @@ namespace DarkRift.Client
             }
             catch (ObjectDisposedException)
             {
-                HandleDisconnectionDuringHeaderReceive(null);
+                HandleDisconnectionDuringHeaderReceive(args);
                 return;
             }
 

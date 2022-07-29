@@ -236,7 +236,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                     }
                     catch (ObjectDisposedException)
                     {
-                        HandleDisconnectionDuringHeaderReceive(null);
+                        HandleDisconnectionDuringHeaderReceive(args);
                         return;
                     }
 
@@ -261,7 +261,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                     }
                     catch (ObjectDisposedException)
                     {
-                        HandleDisconnectionDuringBodyReceive(null);
+                        HandleDisconnectionDuringBodyReceive(args);
                         return;
                     }
 
@@ -288,7 +288,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 }
                 catch (ObjectDisposedException)
                 {
-                    HandleDisconnectionDuringHeaderReceive(null);
+                    HandleDisconnectionDuringHeaderReceive(args);
                     return;
                 }
 
@@ -338,7 +338,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 }
                 catch (ObjectDisposedException)
                 {
-                    HandleDisconnectionDuringBodyReceive(null);
+                    HandleDisconnectionDuringBodyReceive(args);
                     return;
                 }
             }
@@ -354,7 +354,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             }
             catch (ObjectDisposedException)
             {
-                HandleDisconnectionDuringHeaderReceive(null);
+                HandleDisconnectionDuringHeaderReceive(args);
                 return;
             }
 
