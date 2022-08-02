@@ -57,6 +57,9 @@
     <None Update="Configurations\Server\ServerWithPrometheusEndpoint.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Configurations\Server\SpammedServer.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ExpectedPrometheusMetrics.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
