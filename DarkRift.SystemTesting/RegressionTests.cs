@@ -22,13 +22,17 @@ namespace DarkRift.SystemTesting
             const int NumConnections = 1111;
             var ip = IPAddress.Parse("127.0.0.1");
 
+            DateTime start = DateTime.Now;
+
             int actualClientsConnected = 0;
             void ClientManager_ClientConnected(object sender, ClientConnectedEventArgs e)
             {
+                start = DateTime.Now;
                 Interlocked.Increment(ref actualClientsConnected);
             }
 
             DarkRiftServer server = new DarkRiftServer(ServerSpawnData.CreateFromXml("Configurations/Server/SpammedServer.config", new NameValueCollection()));
+            server.ThreadHelper.EventsFromDispatcher = true;
             server.ClientManager.ClientConnected += ClientManager_ClientConnected;
             server.StartServer();
             int port = server.NetworkListenerManager.GetNetworkListeners().First().Port;
@@ -40,6 +44,7 @@ namespace DarkRift.SystemTesting
             {
                 ConnectInBackground(ip, port, exception =>
                 {
+                    start = DateTime.Now;
                     Interlocked.Increment(ref actualConnectionsCompleted);
 
                     if (exception == null)
@@ -53,11 +58,15 @@ namespace DarkRift.SystemTesting
                 });
             }
 
-            DateTime start = DateTime.Now;
-            while (actualConnectionsCompleted < NumConnections || server.Dispatcher.Count > 0)
+            while (actualConnectionsCompleted < NumConnections
+                || actualClientsConnected < NumConnections
+                || server.Dispatcher.Count > 0)
             {
-                if (DateTime.Now - start > TimeSpan.FromSeconds(15))
-                    Assert.Fail("Timed out");
+                if (DateTime.Now - start > TimeSpan.FromSeconds(10))
+                    Assert.Fail($"Timed out {actualConnectionsCompleted}/{actualClientsConnected}/{actualConnectionsSuccessful}");
+
+                if (server.ThreadHelper.EventsFromDispatcher)
+                    server.ExecuteDispatcherTasks();
 
                 Thread.Sleep(1);
             }
