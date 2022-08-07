@@ -66,7 +66,7 @@ Task("Build")
         }
 
         // Create zip of server build
-        // Zip(buildDir, $"{buildDir}/DarkRift Server.zip");
+        Zip(buildDir, $"{buildDir}/DarkRift Server.zip");
     }
 });
 
