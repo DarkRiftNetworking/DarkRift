@@ -600,6 +600,19 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Writes the contents of the writer to an array.
+        /// </summary>
+        /// <param name="offset">The offset to start copying from in the writer.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <returns>An array containg the writer's contents.</returns>
+        public byte[] ToArray(int offset, int count)
+        {
+            byte[] array = new byte[count];
+            CopyTo(array, offset, 0, count);
+            return array;
+        }
+
+        /// <summary>
         ///     Copies the contents of this writer to the given array.
         /// </summary>
         /// <param name="destination">The array to copy the contents into.</param>
@@ -607,6 +620,29 @@ namespace DarkRift
         public void CopyTo(byte[] destination, int offset)
         {
             Buffer.BlockCopy(buffer.Buffer, buffer.Offset, destination, offset, Length);
+        }
+
+        /// <summary>
+        ///     Copies the contents of this writer to the given array.
+        /// </summary>
+        /// <param name="destination">The array to copy the contents into.</param>
+        /// <param name="offset">The offset to start writing contents at in the array.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        public void CopyTo(byte[] destination, int offset, int count)
+        {
+            Buffer.BlockCopy(buffer.Buffer, buffer.Offset, destination, offset, count);
+        }
+
+        /// <summary>
+        ///     Copies the contents of this writer to the given array.
+        /// </summary>
+        /// <param name="destination">The array to copy the contents into.</param>
+        /// <param name="sourceOffset">The offset to start copying from in the writer.</param>
+        /// <param name="destinationOffset">The offset to start writing contents at in the array.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        public void CopyTo(byte[] destination, int sourceOffset, int destinationOffset, int count)
+        {
+            Buffer.BlockCopy(buffer.Buffer, sourceOffset + buffer.Offset, destination, destinationOffset, count);
         }
 
         /// <summary>
