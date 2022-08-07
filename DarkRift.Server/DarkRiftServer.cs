@@ -21,26 +21,13 @@ namespace DarkRift.Server
         /// <summary>
         ///     The manager for logs.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
-#if PRO
-        public
-#else
-        internal
-#endif
-            ILogManager LogManager => logManager;
+        public ILogManager LogManager => logManager;
 
-#if PRO
         /// <summary>
         ///     The manager for metrics.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         public IMetricsManager MetricsManager => metricsManager;
 
-#endif
         /// <summary>
         ///     The client manager handling all clients on this server.
         /// </summary>
@@ -87,13 +74,9 @@ namespace DarkRift.Server
         /// </summary>
         public DarkRiftInfo ServerInfo { get; } = new DarkRiftInfo(DateTime.Now);
 
-#if PRO
         /// <summary>
         ///     Helper plugin for filtering bad words out of text.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         public IBadWordFilter BadWordFilter => PluginManager.GetPluginByType<BadWordFilter>();
 
         /// <summary>
@@ -105,7 +88,6 @@ namespace DarkRift.Server
         ///     The server manager for remote servers.
         /// </summary>
         public IRemoteServerManager RemoteServerManager => InternalRemoteServerManager;
-#endif
 
         /// <summary>
         ///     Whether this server has been loaded yet.
@@ -132,7 +114,6 @@ namespace DarkRift.Server
         /// </summary>
         internal DataManager DataManager { get; }
 
-#if PRO
         /// <summary>
         ///     The server manager for remote servers.
         /// </summary>
@@ -142,7 +123,6 @@ namespace DarkRift.Server
         ///     The server registry connector manager.
         /// </summary>
         private readonly ServerRegistryConnectorManager internalServerRegistryConnectorManager;
-#endif
 
         /// <summary>
         ///     The server listener manager.
@@ -154,12 +134,10 @@ namespace DarkRift.Server
         /// </summary>
         private readonly LogManager logManager;
 
-#if PRO
         /// <summary>
         ///     The manager for metrics.
         /// </summary>
         private readonly MetricsManager metricsManager;
-#endif
 
         /// <summary>
         ///     The factory for plugins.
@@ -186,7 +164,6 @@ namespace DarkRift.Server
         /// </summary>
         private readonly Logger logger;
 
-#if PRO
         /// <summary>
         ///     Creates a new server given spawn details and a default cluster.
         /// </summary>
@@ -196,22 +173,13 @@ namespace DarkRift.Server
         {
 
         }
-#endif
 
-#if PRO
         /// <summary>
         ///     Creates a new server given spawn details.
         /// </summary>
         /// <param name="spawnData">The details of how to start the server.</param>
         /// <param name="clusterSpawnData">The details of the cluster this server is part of.</param>
         public DarkRiftServer(ServerSpawnData spawnData, ClusterSpawnData clusterSpawnData)
-#else
-        /// <summary>
-        ///     Creates a new server given spawn details.
-        /// </summary>
-        /// <param name="spawnData">The details of how to start the server.</param>
-        public DarkRiftServer(ServerSpawnData spawnData)
-#endif
         {
             //Initialize log manager and set initial writer
             logManager = new LogManager(this, spawnData.Logging);
@@ -264,7 +232,6 @@ namespace DarkRift.Server
                     typeof(Plugins.HealthCheck.HttpHealthCheck)
                 }
             );
-#if PRO
             pluginFactory.AddTypes(
                 new Type[]
                 {
@@ -272,7 +239,6 @@ namespace DarkRift.Server
                     typeof(Plugins.Metrics.Prometheus.PrometheusEndpoint)
                 }
             );
-#endif
 
             //Fix network listeners in
             pluginFactory.AddTypes(
@@ -293,30 +259,25 @@ namespace DarkRift.Server
             logger = logManager.GetLoggerFor(nameof(DarkRiftServer));
 
             //Write system details to logs
-            logger.Trace($"System Details:\n\tOS: {Environment.OSVersion}\n\tCLS Version: {Environment.Version}\n\tDarkRift: {ServerInfo.Version} - {ServerInfo.Type}");
+            logger.Trace($"System Details:\n\tOS: {Environment.OSVersion}\n\tCLS Version: {Environment.Version}\n\tDarkRift: {ServerInfo.Version}");
 
             //Write whether the cache was initialized
             if (!initializedCache)
                 logger.Trace("Cache already initialized, cannot update settings. The server will continue using the pre-existing cache.");
 
             //Load later stage things
-
-#if PRO
             metricsManager = new MetricsManager(this, spawnData.Metrics);
             metricsManager.LoadWriters(spawnData.Metrics, pluginFactory, logManager);
             internalServerRegistryConnectorManager = new ServerRegistryConnectorManager(this, pluginFactory, logManager, metricsManager);
-#endif
 
             networkListenerManager = new NetworkListenerManager(
                 this,
                 logManager,
-#if PRO
                 metricsManager,
-#endif
                 DataManager,
                 pluginFactory
             );
-#if PRO
+
             InternalRemoteServerManager = new RemoteServerManager(
                 spawnData.Server,
                 spawnData.ServerRegistry,
@@ -328,17 +289,15 @@ namespace DarkRift.Server
                 logManager.GetLoggerFor(nameof(RemoteServerManager)),
                 metricsManager
             );
-#endif
+
             InternalClientManager = new ClientManager(
                 spawnData.Server,
                 networkListenerManager,
                 ThreadHelper,
                 logManager.GetLoggerFor(nameof(ClientManager)),
-                logManager.GetLoggerFor(nameof(Client))
-#if PRO
-                , metricsManager.GetMetricsCollectorFor(nameof(ClientManager)),
+                logManager.GetLoggerFor(nameof(Client)),
+                metricsManager.GetMetricsCollectorFor(nameof(ClientManager)),
                 metricsManager.GetPerMessageMetricsCollectorFor(nameof(Client))
-#endif
             );
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -350,16 +309,12 @@ namespace DarkRift.Server
                 this,
                 DataManager,
                 logManager,
-#if PRO
                 metricsManager,
-#endif
                 pluginFactory,
                 logManager.GetLoggerFor(nameof(PluginManager))
             );
 
-#if PRO
             internalServerRegistryConnectorManager.LoadPlugins(spawnData.ServerRegistry);
-#endif
             InternalPluginManager.LoadPlugins(spawnData.Plugins);
             networkListenerManager.LoadNetworkListeners(spawnData.Listeners);
 
@@ -400,13 +355,10 @@ namespace DarkRift.Server
             InternalPluginManager.Loaded();
 
             // Now we've loaded, wire up the listeners
-#if PRO
             if (string.IsNullOrEmpty(RemoteServerManager.Group) || RemoteServerManager.Visibility == ServerVisibility.External)
             {
-#endif
                 logger.Trace("Binding listeners to ClientManager as server is externally visible.");
                 InternalClientManager.SubscribeToListeners();
-            #if PRO
             }
             else
             {
@@ -415,7 +367,6 @@ namespace DarkRift.Server
 
                 logger.Warning("Server clustering is in beta and is not currently considered suitable for production use.");
             }
-#endif
         }
 
         /// <summary>
@@ -439,7 +390,6 @@ namespace DarkRift.Server
         /// </summary>
         public void StartServer()
         {
-#if PRO
             try
             {
                 InternalRemoteServerManager.RegisterServer();
@@ -449,7 +399,6 @@ namespace DarkRift.Server
                 logger.Fatal("An exception was thrown whilst registering the server with the registry, the server cannot be started.", e);
                 throw;
             }
-#endif
 
             try
             {
@@ -482,7 +431,6 @@ namespace DarkRift.Server
             CommandEngine.HandleCommand(command);
         }
 
-#if PRO
         /// <summary>
         ///     Creates a new timer that will invoke the callback a single time.
         /// </summary>
@@ -505,7 +453,6 @@ namespace DarkRift.Server
         {
             return ThreadHelper.CreateTimer(initialDelay, repetitionPeriod, callback);
         }
-#endif
 
         /// <summary>
         ///     Forces the server to invoke events through the dispatcher.
@@ -530,22 +477,20 @@ namespace DarkRift.Server
         {
             if (disposing && !disposed)
             {
-#if PRO
+
                 InternalRemoteServerManager.DeregisterServer();
-#endif
+
                 InternalClientManager.Dispose();
 
                 InternalPluginManager.Dispose();
 
                 networkListenerManager.Dispose();
 
-#if PRO
                 internalServerRegistryConnectorManager.Dispose();
 
                 InternalRemoteServerManager.Dispose();
 
                 metricsManager.Dispose();
-#endif
 
                 DataManager.Dispose();
 

@@ -18,7 +18,6 @@ using System.Collections.Generic;
 
 namespace DarkRift.Server.Plugins.Chat
 {
-#if PRO
     /// <summary>
     /// The vanila Trie implementation.
     /// </summary>
@@ -193,5 +192,4 @@ namespace DarkRift.Server.Plugins.Chat
         #endregion IEnumerable<String> Implementation
 
     }
-#endif
 }

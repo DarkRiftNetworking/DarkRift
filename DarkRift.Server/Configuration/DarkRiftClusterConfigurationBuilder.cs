@@ -9,8 +9,6 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Net.Sockets;
 
-#if PRO
-
 namespace DarkRift.Server.Configuration
 {
     /// <summary>
@@ -92,5 +90,3 @@ namespace DarkRift.Server.Configuration
         }
     }
 }
-
-#endif

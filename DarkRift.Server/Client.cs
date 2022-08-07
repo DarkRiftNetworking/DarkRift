@@ -23,10 +23,8 @@ namespace DarkRift.Server
         /// <inheritdoc/>
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
-#if PRO
         /// <inheritdoc/>
         public event EventHandler<StrikeEventArgs> StrikeOccured;
-#endif
 
         /// <inheritdoc/>
         public ushort ID { get; }
@@ -47,49 +45,26 @@ namespace DarkRift.Server
         /// <inheritdoc/>
         public byte Strikes {
             get => (byte)Thread.VolatileRead(ref strikes);
-#if PRO
             set => Interlocked.Exchange(ref strikes, value);
-#endif
-
         }
 
         private int strikes;
 
         /// <inheritdoc/>
-#if PRO
-        public
-#else
-        internal
-#endif
-            DateTime ConnectionTime { get; }
+        public DateTime ConnectionTime { get; }
 
         /// <inheritdoc/>
-#if PRO
-        public
-#else
-        internal
-#endif
-        uint MessagesSent => (uint)Thread.VolatileRead(ref messagesSent);
+        public uint MessagesSent => (uint)Thread.VolatileRead(ref messagesSent);
 
         private int messagesSent;
 
         /// <inheritdoc/>
-#if PRO
-        public
-#else
-        internal
-#endif
-        uint MessagesPushed => (uint)Thread.VolatileRead(ref messagesPushed);
+        public uint MessagesPushed => (uint)Thread.VolatileRead(ref messagesPushed);
 
         private int messagesPushed;
 
         /// <inheritdoc/>
-#if PRO
-        public
-#else
-        internal
-#endif
-        uint MessagesReceived => (uint)Thread.VolatileRead(ref messagesReceived);
+        public uint MessagesReceived => (uint)Thread.VolatileRead(ref messagesReceived);
 
         private int messagesReceived;
 
@@ -119,7 +94,6 @@ namespace DarkRift.Server
         /// </summary>
         private readonly Logger logger;
 
-#if PRO
         /// <summary>
         ///     Counter metric of the number of messages sent.
         /// </summary>
@@ -139,9 +113,7 @@ namespace DarkRift.Server
         ///     Counter metric of failures executing the <see cref="MessageReceived"/> event.
         /// </summary>
         private readonly ICounterMetric messageReceivedEventFailuresCounter;
-#endif
 
-#if PRO
         /// <summary>
         ///     Creates a new client connection with a given global identifier and the client they are connected through.
         /// </summary>
@@ -152,30 +124,14 @@ namespace DarkRift.Server
         /// <param name="logger">The logger this client will use.</param>
         /// <param name="metricsCollector">The metrics collector this client will use.</param>
         internal static Client Create(NetworkServerConnection connection, ushort id, ClientManager clientManager, DarkRiftThreadHelper threadHelper, Logger logger, MetricsCollector metricsCollector)
-#else
-        /// <summary>
-        ///     Creates a new client connection with a given global identifier and the client they are connected through.
-        /// </summary>
-        /// <param name="connection">The connection we handle.</param>
-        /// <param name="id">The ID we've been assigned.</param>
-        /// <param name="clientManager">The client manager in charge of this client.</param>
-        /// <param name="threadHelper">The thread helper this client will use.</param>
-        /// <param name="logger">The logger this client will use.</param>
-        internal static Client Create(NetworkServerConnection connection, ushort id, ClientManager clientManager, DarkRiftThreadHelper threadHelper, Logger logger)
-#endif
         {
-#if PRO
             Client client = new Client(connection, id, clientManager, threadHelper, logger, metricsCollector);
-#else
-            Client client = new Client(connection, id, clientManager, threadHelper, logger);
-#endif
 
             client.SendID();
 
             return client;
         }
 
-#if PRO
         /// <summary>
         ///     Creates a new client connection with a given global identifier and the client they are connected through.
         /// </summary>
@@ -186,17 +142,6 @@ namespace DarkRift.Server
         /// <param name="logger">The logger this client will use.</param>
         /// <param name="metricsCollector">The metrics collector this client will use.</param>
         private Client(NetworkServerConnection connection, ushort id, ClientManager clientManager, DarkRiftThreadHelper threadHelper, Logger logger, MetricsCollector metricsCollector)
-#else
-        /// <summary>
-        ///     Creates a new client connection with a given global identifier and the client they are connected through.
-        /// </summary>
-        /// <param name="connection">The connection we handle.</param>
-        /// <param name="id">The ID we've been assigned.</param>
-        /// <param name="clientManager">The client manager in charge of this client.</param>
-        /// <param name="threadHelper">The thread helper this client will use.</param>
-        /// <param name="logger">The logger this client will use.</param>
-        private Client(NetworkServerConnection connection, ushort id, ClientManager clientManager, DarkRiftThreadHelper threadHelper, Logger logger)
-#endif
         {
             this.connection = connection;
             this.ID = id;
@@ -213,12 +158,10 @@ namespace DarkRift.Server
             //TODO make configurable
             this.RoundTripTime = new RoundTripTimeHelper(10, 10);
 
-#if PRO
             messagesSentCounter = metricsCollector.Counter("messages_sent", "The number of messages sent to clients.");
             messagesReceivedCounter = metricsCollector.Counter("messages_received", "The number of messages received from clients.");
             messageReceivedEventTimeHistogram = metricsCollector.Histogram("message_received_event_time", "The time taken to execute the MessageReceived event.");
             messageReceivedEventFailuresCounter = metricsCollector.Counter("message_received_event_failures", "The number of failures executing the MessageReceived event.");
-#endif
         }
 
         /// <summary>
@@ -235,10 +178,8 @@ namespace DarkRift.Server
                     command.IsCommandMessage = true;
                     PushBuffer(command.ToBuffer(), SendMode.Reliable);
 
-#if PRO
                     // Make sure we trigger the sent metric still
                     messagesSentCounter.Increment();
-#endif
                 }
             }
         }
@@ -263,9 +204,7 @@ namespace DarkRift.Server
 
             //Increment counter
             Interlocked.Increment(ref messagesSent);
-#if PRO
             messagesSentCounter.Increment();
-#endif
 
             return true;
         }
@@ -316,9 +255,7 @@ namespace DarkRift.Server
         {
             //Add to received message counter
             Interlocked.Increment(ref messagesReceived);
-#if PRO
             messagesReceivedCounter.Increment();
-#endif
 
             Message message;
             try
@@ -381,9 +318,7 @@ namespace DarkRift.Server
                     this
                 );
 
-#if PRO
                 long startTimestamp = Stopwatch.GetTimestamp();
-#endif
                 try
                 {
                     MessageReceived?.Invoke(this, args);
@@ -392,9 +327,7 @@ namespace DarkRift.Server
                 {
                     logger.Error("A plugin encountered an error whilst handling the MessageReceived event.", e);
 
-#if PRO
                     messageReceivedEventFailuresCounter.Increment();
-#endif
                     return;
                 }
                 finally
@@ -404,10 +337,8 @@ namespace DarkRift.Server
                     messageReference.Dispose();
                 }
 
-#if PRO
                 double time = (double)(Stopwatch.GetTimestamp() - startTimestamp) / Stopwatch.Frequency;
                 messageReceivedEventTimeHistogram.Report(time);
-#endif
             }
 
             //Inform plugins
@@ -432,7 +363,6 @@ namespace DarkRift.Server
         
 #region Strikes
 
-#if PRO
         /// <inheritdoc/>
         public void Strike(string message = null)
         {
@@ -444,7 +374,6 @@ namespace DarkRift.Server
         {
             Strike(StrikeReason.PluginRequest, message, weight);
         }
-#endif
 
         /// <summary>
         ///     Informs plugins and adds a strike to this client's record.
@@ -454,7 +383,6 @@ namespace DarkRift.Server
         /// <param name="weight">The number of strikes this accounts for.</param>
         internal void Strike(StrikeReason reason, string message, int weight)
         {
-#if PRO
             EventHandler<StrikeEventArgs> handler = StrikeOccured;
             if (handler != null)
             {
@@ -489,9 +417,6 @@ namespace DarkRift.Server
             {
                 EnforceStrike(reason, message, weight);
             }
-#else
-            EnforceStrike(reason, message, weight);
-#endif
         }
 
         /// <summary>

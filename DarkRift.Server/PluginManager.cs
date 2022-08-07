@@ -37,19 +37,16 @@ namespace DarkRift.Server
         /// </summary>
         private readonly LogManager logManager;
 
-#if PRO
         /// <summary>
         ///     The server's log manager.
         /// </summary>
         private readonly MetricsManager metricsManager;
-#endif
 
         /// <summary>
         ///     The server's plugin factory.
         /// </summary>
         private readonly PluginFactory pluginFactory;
 
-#if PRO
         /// <summary>
         ///     Creates a new PluginManager.
         /// </summary>
@@ -60,25 +57,12 @@ namespace DarkRift.Server
         /// <param name="logger">The logger for this manager.</param>
         /// <param name="metricsManager">The server's metrics manager.</param>
         internal PluginManager(DarkRiftServer server, DataManager dataManager, LogManager logManager, MetricsManager metricsManager, PluginFactory pluginFactory, Logger logger)
-#else
-        /// <summary>
-        ///     Creates a new PluginManager.
-        /// </summary>
-        /// <param name="server">The server that owns this plugin manager.</param>
-        /// <param name="dataManager">The server's datamanager.</param>
-        /// <param name="logManager">The server's log manager.</param>
-        /// <param name="pluginFactory">The server's plugin factory.</param>
-        /// <param name="logger">The logger for this manager.</param>
-        internal PluginManager(DarkRiftServer server, DataManager dataManager, LogManager logManager, PluginFactory pluginFactory, Logger logger)
-#endif
             : base (server, dataManager, pluginFactory, logger)
         {
             this.server = server;
             this.dataManager = dataManager;
             this.logManager = logManager;
-#if PRO
             this.metricsManager = metricsManager;
-#endif
             this.pluginFactory = pluginFactory;
         }
 
@@ -99,9 +83,7 @@ namespace DarkRift.Server
                     server, 
                     s?.Settings ?? new NameValueCollection(),
                     logManager.GetLoggerFor(type.Name),
-#if PRO
                     metricsManager.GetMetricsCollectorFor(type.Name),
-#endif
                     dataManager.GetResourceDirectory(type.Name)
                 );
 

@@ -9,12 +9,7 @@ namespace DarkRift.Server
     /// <summary>
     ///     Event arguments for when plugins have loaded.
     /// </summary>
-#if PRO
-    public 
-#else
-    internal
-#endif
-        class LoadedEventArgs
+    public class LoadedEventArgs
     {
     }
 }

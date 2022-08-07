@@ -9,16 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     Assign entities into groups based on a ranking between them.
     /// </summary>
     /// <typeparam name="T">The type of object the groups are being formed for.</typeparam>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public abstract class RankingMatchmaker<T> : Plugin, IMatchmaker<T>
     {
         /*
@@ -222,10 +218,7 @@ namespace DarkRift.Server.Plugins.Matchmaking
         ///     Method invoked when the server is loaded.
         /// </summary>
         /// <param name="args">The event args.</param>
-#if PRO
-        protected 
-#endif
-            internal override void Loaded(LoadedEventArgs args)
+        protected internal override void Loaded(LoadedEventArgs args)
         {
             Logger.Trace("Setting up timer with " + TickPeriod + "ms period.");
 
@@ -600,4 +593,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         }
     }
 }
-#endif

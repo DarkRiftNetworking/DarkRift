@@ -8,9 +8,7 @@ using DarkRift.Client;
 using DarkRift.Server;
 using DarkRift.Server.Configuration;
 using DarkRift.Server.Plugins.Listeners.Bichannel;
-#if PRO
 using DarkRift.SystemTesting.Plugins;
-#endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Specialized;
@@ -47,12 +45,10 @@ namespace DarkRift.SystemTesting
         {
             this.world = world;
             this.performanceSteps = performanceSteps;
-#if PRO
             world.ServerJoined += ServerJoined;
             world.ServerLeft += ServerLeft;
-#endif
         }
-#if PRO
+
         private void ServerJoined(object sender, ServerJoinedEventArgs e) {
 #if DEBUG
             // We've just requested a load of objects that wont be returned until we disconnect the servers again
@@ -73,7 +69,6 @@ namespace DarkRift.SystemTesting
                 performanceSteps.ExpectedUnaccountedForSocketAsyncEventArgs -= 3;
 #endif
         }
-#endif
 
             /// <summary>
             ///     Starts a server.
@@ -112,18 +107,12 @@ namespace DarkRift.SystemTesting
             };
 
             DarkRiftServerConfigurationBuilder serverConfigurationBuilder = DarkRiftServerConfigurationBuilder.CreateFromXml("Configurations/Server/" + serverConfig, parameters);
-#if PRO
             serverConfigurationBuilder.AddPluginType(typeof(InMemoryServerRegistryConnector));
 
             DarkRiftServer server = new DarkRiftServer(
                 serverConfigurationBuilder.ServerSpawnData,
                 ClusterSpawnData.CreateFromXml("Configurations/Cluster/" + clusterConfig, new NameValueCollection())
             );
-#else
-            DarkRiftServer server = new DarkRiftServer(
-                serverConfigurationBuilder.ServerSpawnData
-            );
-#endif
 
             server.StartServer();
 
@@ -318,7 +307,6 @@ namespace DarkRift.SystemTesting
             GivenIHaveARunningServer(config);
         }
 
-#if PRO
         [Then(@"server (\d)+ should synchronise to have (\d+) servers? in (\w+)")]
         public void ThenServerShouldSynchroniseToHaveServersInGroup(ushort serverID, ushort numberOfServers, string group)
         {
@@ -338,7 +326,6 @@ namespace DarkRift.SystemTesting
                 );
             });
         }
-#endif
 
         [When(@"I close (and forget )?server (\d+)")]
         public void WhenICloseServer(string andForget, ushort server)

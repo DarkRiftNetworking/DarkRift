@@ -14,12 +14,7 @@ namespace DarkRift.Server
     /// <summary>
     ///     Event arguments for plugin upgrades.
     /// </summary>
-#if PRO
-    public
-#else
-    internal
-#endif
-        class UpgradeEventArgs
+    public class UpgradeEventArgs
     {
         /// <summary>
         ///     The previous version of the plugin installed.

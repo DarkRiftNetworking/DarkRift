@@ -10,13 +10,9 @@ using System.Text.RegularExpressions;
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// Provides an interface for reporting basic metrics.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     public class MetricsCollector
     {
         /// <summary>
@@ -160,5 +156,4 @@ namespace DarkRift.Server.Metrics
             }
         }
     }
-#endif
 }

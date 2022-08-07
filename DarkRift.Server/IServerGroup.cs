@@ -8,7 +8,6 @@ using System;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Represents a group of servers in the cluster.
     /// </summary>
@@ -65,5 +64,4 @@ namespace DarkRift.Server
         /// <returns>The remote server.</returns>
         IRemoteServer GetRemoteServer(ushort id);
     }
-#endif
 }

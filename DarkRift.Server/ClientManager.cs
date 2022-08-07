@@ -129,7 +129,6 @@ namespace DarkRift.Server
         /// </summary>
         private readonly Logger clientLogger;
 
-#if PRO
         /// <summary>
         ///     Gauge metric of the number of clients currently connected.
         /// </summary>
@@ -159,9 +158,7 @@ namespace DarkRift.Server
         ///     Metrics collector used by the clients.
         /// </summary>
         private readonly MetricsCollector clientMetricsCollector;
-#endif
 
-#if PRO
         /// <summary>
         ///     Creates a new client manager.
         /// </summary>
@@ -173,24 +170,12 @@ namespace DarkRift.Server
         /// <param name="metricsCollector">The metrics collector to use.</param>
         /// <param name="clientMetricsCollector">The metrics collector clients will use.</param>
         internal ClientManager(ServerSpawnData.ServerSettings settings, NetworkListenerManager networkListenerManager, DarkRiftThreadHelper threadHelper, Logger logger, Logger clientLogger, MetricsCollector metricsCollector, MetricsCollector clientMetricsCollector)
-#else
-        /// <summary>
-        ///     Creates a new client manager.
-        /// </summary>
-        /// <param name="settings">The settings for this client manager.</param>
-        /// <param name="networkListenerManager">The server's network listener manager.</param>
-        /// <param name="threadHelper">The thread helper the client manager will use.</param>
-        /// <param name="logger">The logger this client manager will use.</param>
-        /// <param name="clientLogger">The logger clients will use.</param>
-        internal ClientManager(ServerSpawnData.ServerSettings settings, NetworkListenerManager networkListenerManager, DarkRiftThreadHelper threadHelper, Logger logger, Logger clientLogger)
-#endif
         {
             this.MaxStrikes = settings.MaxStrikes;
             this.networkListenerManager = networkListenerManager;
             this.threadHelper = threadHelper;
             this.logger = logger;
             this.clientLogger = clientLogger;
-#if PRO
             this.clientMetricsCollector = clientMetricsCollector;
 
             clientsConnectedGauge = metricsCollector.Gauge("clients_connected", "The number of clients connected to the server.");
@@ -198,7 +183,6 @@ namespace DarkRift.Server
             clientDisconnectedEventTimeHistogram = metricsCollector.Histogram("client_disconnected_event_time", "The time taken to execute the ClientDisconnected event.");
             clientConnectedEventFailuresCounter = metricsCollector.Counter("client_connected_event_failures", "The number of failures executing the ClientConnected event.");
             clientDisconnectedEventFailuresCounter = metricsCollector.Counter("client_disconnected_event_failures", "The number of failures executing the ClientDisconnected event.");
-#endif
         }
 
         /// <summary>
@@ -260,10 +244,8 @@ namespace DarkRift.Server
                     id,
                     this,
                     threadHelper,
-                    clientLogger
-#if PRO
-                    , clientMetricsCollector
-#endif
+                    clientLogger,
+                    clientMetricsCollector
                 );
             }
             catch (Exception e)
@@ -284,9 +266,8 @@ namespace DarkRift.Server
             connection.Client = client;
 
             logger.Info($"New client [{client.ID}] connected [{client.RemoteEndPoints.Format()}].");
-#if PRO
+
             clientsConnectedGauge.Report(noClients);
-#endif
 
             //Inform plugins of the new connection
             EventHandler<ClientConnectedEventArgs> handler = ClientConnected;
@@ -295,9 +276,7 @@ namespace DarkRift.Server
                 threadHelper.DispatchIfNeeded(
                     delegate ()
                     {
-#if PRO
                         long startTimestamp = Stopwatch.GetTimestamp();
-#endif
                         try
                         {
                             handler.Invoke(this, new ClientConnectedEventArgs(client));
@@ -308,16 +287,13 @@ namespace DarkRift.Server
 
                             client.DropConnection();
 
-#if PRO
                             clientConnectedEventFailuresCounter.Increment();
-#endif
+
                             return;
                         }
 
-#if PRO
                         double time = (double)(Stopwatch.GetTimestamp() - startTimestamp) / Stopwatch.Frequency;
                         clientConnectedEventTimeHistogram.Report(time);
-#endif
                     },
                     (_) => client.StartListening()
                 );
@@ -421,9 +397,7 @@ namespace DarkRift.Server
                 threadHelper.DispatchIfNeeded(
                     delegate ()
                     {
-#if PRO
                         long startTimestamp = Stopwatch.GetTimestamp();
-#endif
                         try
                         {
                             handler.Invoke(this, new ClientDisconnectedEventArgs(client, localDisconnect, error, exception));
@@ -431,16 +405,14 @@ namespace DarkRift.Server
                         catch (Exception e)
                         {
                             logger.Error("A plugin encountered an error whilst handling the ClientDisconnected event. (See logs for exception)", e);
-#if PRO
+
                             clientDisconnectedEventFailuresCounter.Increment();
-#endif
+
                             return;
                         }
 
-#if PRO
                         double time = (double)(Stopwatch.GetTimestamp() - startTimestamp) / Stopwatch.Frequency;
                         clientDisconnectedEventTimeHistogram.Report(time);
-#endif
                     },
                     delegate (ActionDispatcherTask t)
                     {
@@ -475,9 +447,7 @@ namespace DarkRift.Server
 
             client.Dispose();
 
-#if PRO
             clientsConnectedGauge.Report(noClients);
-#endif
         }
 
         /// <summary>
@@ -488,9 +458,7 @@ namespace DarkRift.Server
         {
             DeallocateID(client.ID, out int noClients);
 
-#if PRO
             clientsConnectedGauge.Report(noClients);
-#endif
         }
 
         // TODO calling the methods below rapidly can block new connections being accepted as the lock on clients cant be aquired

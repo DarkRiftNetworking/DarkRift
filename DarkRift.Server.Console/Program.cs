@@ -93,7 +93,6 @@ namespace DarkRift.Server.Console
             // Set this thread as the one executing dispatcher tasks
             serverConfigurationBuilder.WithDispatcherExecutorThreadID(Thread.CurrentThread.ManagedThreadId);
 
-#if PRO
             if (File.Exists(clusterConfigFile))
             {
                 DarkRiftClusterConfigurationBuilder clusterConfigurationBuilder;
@@ -127,9 +126,6 @@ namespace DarkRift.Server.Console
             {
                 server = new DarkRiftServer(serverConfigurationBuilder.ServerSpawnData);
             }
-#else
-            server = new DarkRiftServer(serverConfigurationBuilder.ServerSpawnData);
-#endif
 
 
             server.StartServer();

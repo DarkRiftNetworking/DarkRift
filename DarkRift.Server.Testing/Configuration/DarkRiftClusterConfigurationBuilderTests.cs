@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if PRO
 namespace DarkRift.Server.Configuration.Testing
 {
     [TestClass]
@@ -36,4 +35,3 @@ namespace DarkRift.Server.Configuration.Testing
         }
     }
 }
-#endif

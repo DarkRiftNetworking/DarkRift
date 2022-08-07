@@ -10,7 +10,6 @@ using DarkRift.Server.Metrics;
 
 namespace DarkRift.Server
 {
-#if PRO
     internal sealed class DownstreamServerGroup : ServerGroup<DownstreamRemoteServer>
     {
         /// <inheritdoc />
@@ -83,5 +82,4 @@ namespace DarkRift.Server
             logger.Trace($"Lost connection to server {remoteServer.ID} on {remoteServer.Host}:{remoteServer.Port}.", exception);
         }
     }
-#endif
 }

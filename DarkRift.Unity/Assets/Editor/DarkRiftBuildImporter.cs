@@ -45,31 +45,22 @@ public class DarkRiftBuildImporter
     [MenuItem("DarkRift/Import Debug")]
     private static void ImportDebug()
     {
-        Import("Debug", true, true);
+        Import("Debug", true);
     }
 
     /// <summary>
-    ///     Imports the debug files into the project.
+    ///     Imports the Release files into the project.
     /// </summary>
-    [MenuItem("DarkRift/Import Free")]
-    private static void ImportFree()
+    [MenuItem("DarkRift/Import Release")]
+    private static void ImportRelease()
     {
-        Import("Free", false, false);
-    }
-
-    /// <summary>
-    ///     Imports the debug files into the project.
-    /// </summary>
-    [MenuItem("DarkRift/Import Pro")]
-    private static void ImportPro()
-    {
-        Import("Pro", true, false);
+        Import("Release", false);
     }
 
     /// <summary>
     ///     Imports the given configuration into the project.
     /// </summary>
-    private static void Import(string configuration, bool importProAssets, bool importDebugFiles)
+    private static void Import(string configuration, bool importDebugFiles)
     {
         Clean();
 
@@ -92,20 +83,10 @@ public class DarkRiftBuildImporter
 
         success[6] = CopyFile(CompilePath(configuration, "net4.0", "DarkRift Server.zip"), @"DarkRift Server (.NET Framework 4.0).zip");
 
-        if (importProAssets)
-        {
-            success[7] = CopyFile(CompilePath(configuration, "netcoreapp2.0", "DarkRift Server.zip"), @"DarkRift Server (.NET Core 2.0).zip");
-            success[8] = CopyFile(CompilePath(configuration, "netcoreapp3.1", "DarkRift Server.zip"), @"DarkRift Server (.NET Core 3.1).zip");
-            success[9] = CopyFile(CompilePath(configuration, "net5.0", "DarkRift Server.zip"), @"DarkRift Server (.NET 5.0).zip");
-            success[10] = CopyFile(CompilePath("DarkRift Source.zip"), @"DarkRift Source.zip");
-        }
-        else
-        {
-            success[7] = true;
-            success[8] = true;
-            success[9] = true;
-            success[10] = true;
-        }
+        success[7] = CopyFile(CompilePath(configuration, "netcoreapp2.0", "DarkRift Server.zip"), @"DarkRift Server (.NET Core 2.0).zip");
+        success[8] = CopyFile(CompilePath(configuration, "netcoreapp3.1", "DarkRift Server.zip"), @"DarkRift Server (.NET Core 3.1).zip");
+        success[9] = CopyFile(CompilePath(configuration, "net5.0", "DarkRift Server.zip"), @"DarkRift Server (.NET 5.0).zip");
+        success[10] = CopyFile(CompilePath("DarkRift Source.zip"), @"DarkRift Source.zip");
 
         if (importDebugFiles)
         {

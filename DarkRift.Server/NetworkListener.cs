@@ -29,23 +29,15 @@ namespace DarkRift.Server
         /// </summary>
         public ushort Port { get; protected set; }
 
-#if PRO
         /// <summary>
         /// The server's metrics manager.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         protected IMetricsManager MetricsManager { get; }
 
         /// <summary>
         ///     Metrics collector for the plugin.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         protected MetricsCollector MetricsCollector { get; }
-#endif
 
         /// <summary>
         ///     Event fired when a new connection is registered.
@@ -61,10 +53,8 @@ namespace DarkRift.Server
         {
             Address = pluginLoadData.Address;
             Port = pluginLoadData.Port;
-#if PRO
             MetricsManager = pluginLoadData.MetricsManager;
             MetricsCollector = pluginLoadData.MetricsCollector;
-#endif
         }
 
         /// <summary>

@@ -51,7 +51,10 @@ namespace DarkRift.SystemTesting
 
             Assert.IsTrue(healthcheckObject.Listening, "Expected the health check to report the server is listening.");
             Assert.AreEqual(0, (world.GetServer(0).ServerInfo.StartTime - healthcheckObject.StartTime).TotalSeconds, 1, "Expected the health check start time to be within a second of the actual.");
+
+#pragma warning disable CS0618      // Testing obsolete functionality
             Assert.AreEqual(world.GetServer(0).ServerInfo.Type, healthcheckObject.Type, "Expected the health check to report the correct DarkRift tier.");
+#pragma warning restore CS0618
             Assert.AreEqual(world.GetServer(0).ServerInfo.Version, healthcheckObject.Version, "Expected the health check to report the correct DarkRift version.");
         }
 

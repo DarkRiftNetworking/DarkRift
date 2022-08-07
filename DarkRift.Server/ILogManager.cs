@@ -9,13 +9,7 @@ namespace DarkRift.Server
     /// <summary>
     ///     An object that manages the server's log writers.
     /// </summary>
-    /// <remarks>
-    ///     <c>Pro only.</c> 
-    /// </remarks>
-#if PRO
-    public
-#endif
-    interface ILogManager
+    public interface ILogManager
     {
         /// <summary>
         ///     Searches for a log writer by its name.

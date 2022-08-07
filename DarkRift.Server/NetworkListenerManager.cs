@@ -29,14 +29,11 @@ namespace DarkRift.Server
         /// </summary>
         private readonly LogManager logManager;
 
-#if PRO
         /// <summary>
         ///     The server's metrics manager.
         /// </summary>
         private readonly MetricsManager metricsManager;
-#endif
 
-#if PRO
         /// <summary>
         ///     Creates a new NetworkListenerManager.
         /// </summary>
@@ -46,22 +43,10 @@ namespace DarkRift.Server
         /// <param name="pluginFactory">The server's plugin factory.</param>
         /// <param name="metricsManager">The server's metrics manager.</param>
         internal NetworkListenerManager(DarkRiftServer server, LogManager logManager, MetricsManager metricsManager, DataManager dataManager, PluginFactory pluginFactory)
-#else
-        /// <summary>
-        ///     Creates a new NetworkListenerManager.
-        /// </summary>
-        /// <param name="server">The server that owns this plugin manager.</param>
-        /// <param name="logManager">The server's log manager.</param>
-        /// <param name="dataManager">The server's datamanager.</param>
-        /// <param name="pluginFactory">The server's plugin factory.</param>
-        internal NetworkListenerManager(DarkRiftServer server, LogManager logManager, DataManager dataManager, PluginFactory pluginFactory)
-#endif
             : base(server, dataManager, pluginFactory)
         {
             this.logManager = logManager;
-#if PRO
             this.metricsManager = metricsManager;
-#endif
             this.server = server;
         }
 
@@ -79,10 +64,7 @@ namespace DarkRift.Server
                     s.Port,
                     server,
                     s.Settings,
-                    logManager.GetLoggerFor(s.Name)
-#if PRO
-                    , metricsManager.GetMetricsCollectorFor(s.Name)
-#endif
+                    logManager.GetLoggerFor(s.Name), metricsManager.GetMetricsCollectorFor(s.Name)
                 );
 
                 LoadPlugin(s.Name, s.Type, loadData, null, false);
@@ -105,10 +87,8 @@ namespace DarkRift.Server
                 port,
                 server,
                 settings,
-                logManager.GetLoggerFor(name)
-#if PRO
-                , metricsManager.GetMetricsCollectorFor(name)
-#endif
+                logManager.GetLoggerFor(name),
+                metricsManager.GetMetricsCollectorFor(name)
             );
 
             return LoadPlugin(name, type, loadData, null, false);

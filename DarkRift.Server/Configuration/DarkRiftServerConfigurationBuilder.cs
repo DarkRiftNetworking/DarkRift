@@ -399,7 +399,6 @@ namespace DarkRift.Server.Configuration
             return this;
         }
 
-#if PRO
         /// <summary>
         /// Sets the group that this server belongs to.
         /// </summary>
@@ -411,7 +410,6 @@ namespace DarkRift.Server.Configuration
 
             return this;
         }
-#endif
 
         /// <summary>
         /// Sets the host the server advertises itself on to other servers.

@@ -15,7 +15,6 @@ using System.Threading;
 
 namespace DarkRift.Server.Plugins.Metrics.Prometheus
 {
-#if PRO
     /// <summary>
     /// Implements a HTTP endpoint exposing metrics for Prometheus.
     /// </summary>
@@ -505,5 +504,4 @@ namespace DarkRift.Server.Plugins.Metrics.Prometheus
             httpListener.Close();
         }
     }
-#endif
 }

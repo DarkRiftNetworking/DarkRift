@@ -29,7 +29,6 @@ namespace DarkRift.Server
 
         private static int returnedMessageReceivedEventArgs = 0;
 
-#if PRO
         /// <summary>
         ///     The number of <see cref="ServerMessageReceivedEventArgs"/> objects that were retrieved from the cache.
         /// </summary>
@@ -43,7 +42,6 @@ namespace DarkRift.Server
         public static int ReturnedServerMessageReceivedEventArgs => returnedServerMessageReceivedEventArgs;
 
         private static int returnedServerMessageReceivedEventArgs = 0;
-#endif
 
         /// <summary>
         ///     Indcates an <see cref="MessageReceivedEventArgs"/> was retrieved from the cache.
@@ -67,7 +65,6 @@ namespace DarkRift.Server
             Interlocked.Increment(ref returnedMessageReceivedEventArgs);
         }
 
-#if PRO
         /// <summary>
         ///     Indcates an <see cref="ServerMessageReceivedEventArgs"/> was retrieved from the cache.
         /// </summary>
@@ -89,7 +86,6 @@ namespace DarkRift.Server
         {
             Interlocked.Increment(ref returnedServerMessageReceivedEventArgs);
         }
-#endif
 
         /// <summary>
         ///     Resets all metrics recorded.
@@ -98,10 +94,8 @@ namespace DarkRift.Server
             Interlocked.Exchange(ref retrievedMessageReceivedEventArgs, 0);
             Interlocked.Exchange(ref returnedMessageReceivedEventArgs, 0);
 
-#if PRO
             Interlocked.Exchange(ref retrievedServerMessageReceivedEventArgs, 0);
             Interlocked.Exchange(ref returnedServerMessageReceivedEventArgs, 0);
-#endif
         }
     }
 #endif

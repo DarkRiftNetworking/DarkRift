@@ -11,7 +11,6 @@ using System.Xml.Linq;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Details of the architecture of the cluster.
     /// </summary>
@@ -198,5 +197,4 @@ namespace DarkRift.Server
             return new ClusterSpawnData();
         }
     }
-#endif
 }

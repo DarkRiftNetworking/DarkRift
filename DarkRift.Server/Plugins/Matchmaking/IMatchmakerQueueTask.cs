@@ -6,16 +6,12 @@
 
 using System;
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     Represents currently queued entities in a matchmaker.
     /// </summary>
     /// <typeparam name="T">The type of objects used as entities.</typeparam>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public interface IMatchmakerQueueTask<T>
     {
         /// <summary>
@@ -47,4 +43,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         void Cancel();
     }
 }
-#endif

@@ -3,7 +3,6 @@
 	I WANT to be able to connect servers together
 	SO THAT I can scale my system
 
-@Pro
 Scenario: I can connect two servers together
     Given I have a running server from ServerInGroup1.config and ClusterWithTwoGroups.config
 	And I have a running server from ServerInGroup2.config and ClusterWithTwoGroups.config
@@ -12,7 +11,6 @@ Scenario: I can connect two servers together
     And there are no recycling issues
     And the ServerConnected event has been fired 2 times
 
-@Pro
 Scenario Outline: I can send a message to an upstream server
     Given I have a running server from ServerInGroup1.config and ClusterWithTwoGroups.config
 	And I have a running server from ServerInGroup2.config and ClusterWithTwoGroups.config
@@ -28,7 +26,6 @@ Scenario Outline: I can send a message to an upstream server
 	| reliably   |
 	| unreliably |
 
-@Pro
 Scenario Outline: I can send a message to a downstream server
     Given I have a running server from ServerInGroup1.config and ClusterWithTwoGroups.config
 	And I have a running server from ServerInGroup2.config and ClusterWithTwoGroups.config
@@ -44,7 +41,6 @@ Scenario Outline: I can send a message to a downstream server
 	| reliably   |
 	| unreliably |
 
-@Pro
 Scenario: Servers can join during a scenario
     Given I have a running server from ServerInGroup1.config and ClusterWithTwoGroups.config
 	And I have a running server from ServerInGroup2.config and ClusterWithTwoGroups.config
@@ -56,7 +52,6 @@ Scenario: Servers can join during a scenario
     And server 2 should synchronise to have 1 server in Group1
     And the ServerConnected event has been fired 4 times
 
-@Pro
 Scenario: Servers can leave during a scenario
     Given I have a running server from ServerInGroup1.config and ClusterWithTwoGroups.config
 	And I have a running server from ServerInGroup2.config and ClusterWithTwoGroups.config

@@ -63,12 +63,11 @@ namespace DarkRift.Server.Plugins.Performance
         /// </summary>
         private int lastFinalizedAutoRecyclingArrays = 0;
 
-#if PRO
         /// <summary>
         /// Counter metric for the number of finalizations that have occured.
         /// </summary>
         private readonly TaggedMetricBuilder<ICounterMetric> finalizationsCounter;
-#endif
+
         public ObjectCacheMonitor(PluginLoadData pluginLoadData) : base(pluginLoadData)
         {
             string periodSetting = pluginLoadData.Settings["period"];
@@ -80,15 +79,10 @@ namespace DarkRift.Server.Plugins.Performance
 
             timer = new System.Threading.Timer(CheckObjectCache);
 
-#if PRO
             finalizationsCounter = MetricsCollector.Counter("finalizations", "The number of recyclable objects that have been finalized.", "type");
-#endif
         }
 
-#if PRO
-        protected
-#endif
-            internal override void Loaded(LoadedEventArgs args)
+        protected internal override void Loaded(LoadedEventArgs args)
         {
             base.Loaded(args);
 
@@ -108,54 +102,47 @@ namespace DarkRift.Server.Plugins.Performance
             int deltaAutoRecyclingArrays = ObjectCacheHelper.FinalizedAutoRecyclingArrays - lastFinalizedAutoRecyclingArrays;
             if (deltaAutoRecyclingArrays > 0)
                 Logger.Warning(deltaAutoRecyclingArrays + " AutoRecyclingArray objects were finalized last period. This is usually a sign that you are not recycling objects correctly.");
-#if PRO
+
             finalizationsCounter.WithTags("auto_recycling_array").Increment(deltaAutoRecyclingArrays);
-#endif
 
             lastFinalizedAutoRecyclingArrays = ObjectCacheHelper.FinalizedAutoRecyclingArrays;
 
             int deltaDarkRiftReaders = ObjectCacheHelper.FinalizedDarkRiftReaders - lastFinalizedDarkRiftReaders;
             if (deltaDarkRiftReaders > 0)
                 Logger.Warning(deltaDarkRiftReaders + " DarkRiftReader objects were finalized last period. This is usually a sign that you are not recycling objects correctly.");
-#if PRO
+
             finalizationsCounter.WithTags("darkrift_reader").Increment(deltaDarkRiftReaders);
-#endif
 
             lastFinalizedDarkRiftReaders = ObjectCacheHelper.FinalizedDarkRiftReaders;
 
             int deltaDarkRiftWriters = ObjectCacheHelper.FinalizedDarkRiftWriters - lastFinalizedDarkRiftWriters;
             if (deltaDarkRiftWriters > 0)
                 Logger.Warning(deltaDarkRiftWriters + " DarkRiftWriter objects were finalized last period. This is usually a sign that you are not recycling objects correctly.");
-#if PRO
             finalizationsCounter.WithTags("darkrift_writer").Increment(deltaDarkRiftWriters);
-#endif
 
             lastFinalizedDarkRiftWriters = ObjectCacheHelper.FinalizedDarkRiftWriters;
 
             int deltaMessages = ObjectCacheHelper.FinalizedMessages - lastFinalizedMessages;
             if (deltaMessages > 0)
                 Logger.Warning(deltaMessages + " Message objects were finalized last period. This is usually a sign that you are not recycling objects correctly.");
-#if PRO
+
             finalizationsCounter.WithTags("message").Increment(deltaMessages);
-#endif
 
             lastFinalizedMessages = ObjectCacheHelper.FinalizedMessages;
 
             int deltaMessageBuffers = ObjectCacheHelper.FinalizedMessageBuffers - lastFinalizedMessageBuffers;
             if (deltaMessageBuffers > 0)
                 Logger.Warning(deltaMessageBuffers + " MessageBuffer objects were finalized last period. This is usually a sign that you are not recycling objects correctly.");
-#if PRO
+
             finalizationsCounter.WithTags("message_buffer").Increment(deltaMessageBuffers);
-#endif
 
             lastFinalizedMessageBuffers = ObjectCacheHelper.FinalizedMessageBuffers;
 
             int deltaMessageReceivedEventArgs = ServerObjectCacheHelper.FinalizedMessageReceivedEventArgs - lastFinalizedMessageReceivedEventArgs;
             if (deltaMessageReceivedEventArgs > 0)
                 Logger.Warning(deltaMessageReceivedEventArgs + " MessageReceivedEventArgs objects were finalized last period. This is usually a sign that you are not recycling objects correctly.");
-#if PRO
+
             finalizationsCounter.WithTags("message_received_event_args").Increment(deltaMessageReceivedEventArgs);
-#endif
 
             lastFinalizedMessageReceivedEventArgs = ServerObjectCacheHelper.FinalizedMessageReceivedEventArgs;
         }

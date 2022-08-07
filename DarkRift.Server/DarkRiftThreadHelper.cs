@@ -110,7 +110,6 @@ namespace DarkRift.Server
             ThreadPool.QueueUserWorkItem(Callback, null);
         }
 
-#if PRO
         /// <summary>
         ///     Creates a new timer that will invoke the callback a single time.
         /// </summary>
@@ -133,7 +132,6 @@ namespace DarkRift.Server
         {
             return new Timer(this, initialDelay, repetitionPeriod, callback);
         }
-#endif
 
         /// <summary>
         ///     Class containing contextual information for an exponential backoff.

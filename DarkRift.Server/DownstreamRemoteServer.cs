@@ -13,7 +13,6 @@ using System.Net.Sockets;
 
 namespace DarkRift.Server
 {
-#if PRO
     internal sealed class DownstreamRemoteServer : IRemoteServer, IDisposable
     {
         /// <inheritdoc />
@@ -348,5 +347,4 @@ namespace DarkRift.Server
         }
 #pragma warning restore CS0628
     }
-#endif
 }

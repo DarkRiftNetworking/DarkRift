@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// A metric measuring a statistical disribution of values.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     public interface IHistogramMetric
     {
         /// <summary>
@@ -21,5 +17,4 @@ namespace DarkRift.Server.Metrics
         /// <param name="value">The value to add.</param>
         void Report(double value);
     }
-#endif
 }

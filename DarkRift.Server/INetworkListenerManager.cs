@@ -30,16 +30,11 @@ namespace DarkRift.Server
         /// <returns>An array of the listeners.</returns>
         NetworkListener[] GetNetworkListeners();
 
-#if PRO
         /// <summary>
         ///     Gets all the listeners loaded into this server.
         /// </summary>
         /// <returns>An array of the listeners.</returns>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         NetworkListener[] GetAllNetworkListeners();
-#endif
 
         /// <summary>
         ///     Gets the listener with the specified name.
