@@ -13,9 +13,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.104
-    - name: Build
-      run: dotnet build --configuration Pro -p:DRBuildMode=coreonly -p:SkipCopyToBuild=true
+    - name: Restore
+      run: dotnet tool restore
     - name: Test
-      run: dotnet test -p:DRBuildMode=coreonly -p:SkipCopyToBuild=true
-    # TODO create GitHub release, this might require moving away from MSBuildTasks due to no .NET Core support
+      run: dotnet cake --target Test --configuration Pro --core-only
+    # TODO create GitHub release
     # TODO pack unitypackage using somehting like https://github.com/FatihBAKIR/UnityPacker

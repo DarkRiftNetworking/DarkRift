@@ -1,5 +1,6 @@
 var target = Argument("target", "Test");
 var configuration = Argument("configuration", "Debug");
+var coreOnly = HasArgument("core-only");
 
 var version = System.IO.File.ReadAllText(".version").Trim();
 
@@ -21,7 +22,8 @@ Task("Build")
         {
             Properties = 
             {
-              { "Version", new List<string> {version} }
+              { "Version", new List<string> {version} },
+              { "DRBuildMode", new List<string> {coreOnly ? "coreonly" : "all"} }
             }
         }
     });
