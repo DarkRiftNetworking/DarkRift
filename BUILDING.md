@@ -1,4 +1,30 @@
-To build the DarkRift 2 solution *you must have Microsoft Visual Studio 2022* installed. The Community edition is fine for open source projects, and is easily attained from https://visualstudio.microsoft.com/vs/community/
+DarkRift is build using [Cake](https://cakebuild.net/). To create a full build of DarkRift run `dotnet cake` (you will need to run `dotnet tool restore` the first time).
+
+This command will:
+- Build DarkRift
+- Create neatly organized packages in `./Build`
+- Test DR
+
+You will need the .NET 6 SDK to build DarkRift.
+
+For editing DarkRift we recommend using Microsoft Visual Studio 2022 although other editors will work.
+
+## Cake Tasks
+The following tasks are defined in `build.cake`:
+- `Clean` - Cleans the `./Build` directory
+- `Build` - Builds DarkRift
+- `Test` (default) - Builds and tests DarkRift
+- `InstallInCLITool` - Builds and installs a dev version of DarkRift into the DarkRift CLI tool as version `dev`. This is useful for easy local testing
+
+The following arguments can be passed to the build script:
+- `--target <task>` - choose the task to run (see list above)
+- `--configuration <configuration>` - the configuration of DR to build (see below section)
+- `--core-only` - only build for .NET Core, this can get around issues building .NET Framework applications such as on Linux
+
+For example:
+```bash
+dotnet cake --target InstallInCLITool --configuration Pro
+```
 
 ## Configurations
 
