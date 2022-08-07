@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <!-- Import global props (must be done here for Version to have effect on class libraries) -->
-  <Import Project="$(SolutionDir).props" />
-
   <PropertyGroup>
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net4.5;net6.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(DRBuildMode)' == 'coreonly' ">net6.0</TargetFrameworks>

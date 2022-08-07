@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <!-- Import global props -->
-  <Import Project="$(SolutionDir).props" />
-
   <PropertyGroup>
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net4.0;netcoreapp2.0;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(DRBuildMode)' == 'coreonly' ">netcoreapp2.0;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
@@ -39,7 +36,4 @@
     <ProjectReference Include="..\DarkRift.Server\DarkRift.Server.csproj" />
     <ProjectReference Include="..\DarkRift\DarkRift.csproj" />
   </ItemGroup>
-
-  <Import Project="$(SolutionDir).targets" Condition="'$(SkipCopyToBuild)' != 'true'" />
-  
 </Project>
