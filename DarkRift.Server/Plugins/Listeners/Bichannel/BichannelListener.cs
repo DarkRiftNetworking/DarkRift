@@ -173,6 +173,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             catch (Exception e)
             {
                 Logger.Warning("UDP send failed as an exception was thrown.", e);
+                message.Dispose();
                 return false;
             }
 

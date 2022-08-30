@@ -205,7 +205,10 @@ namespace DarkRift.Client
         public override bool SendMessageReliable(MessageBuffer message)
         {
             if (connectionState == ConnectionState.Disconnected)
+            {
+                message.Dispose();
                 return false;
+            }
 
             byte[] header = new byte[4];
             BigEndianHelper.WriteBytes(header, 0, message.Count);
@@ -229,6 +232,7 @@ namespace DarkRift.Client
             }
             catch (Exception)
             {
+                message.Dispose();
                 return false;
             }
 
@@ -242,7 +246,10 @@ namespace DarkRift.Client
         public override bool SendMessageUnreliable(MessageBuffer message)
         {
             if (connectionState == ConnectionState.Disconnected)
+            {
+                message.Dispose();
                 return false;
+            }
 
             SocketAsyncEventArgs args = ObjectCache.GetSocketAsyncEventArgs();
             args.BufferList = null;
@@ -258,6 +265,7 @@ namespace DarkRift.Client
             }
             catch (Exception)
             {
+                message.Dispose();
                 return false;
             }
 
