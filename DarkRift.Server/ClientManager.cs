@@ -279,8 +279,6 @@ namespace DarkRift.Server
 
             AllocateIDToClient(id, client, out int noClients);
 
-            // TODO if a client sends immediately after connecting then the message will be missed as the Connected event has not yet fired
-
             connection.Client = client;
 
             logger.Info($"New client [{client.ID}] connected [{client.RemoteEndPoints.Format()}].");
@@ -321,6 +319,10 @@ namespace DarkRift.Server
                     },
                     (_) => client.StartListening()
                 );
+            } else
+            {
+                logger.Info($"Handler for client [{client.ID}] is null. Enabling listener, but nothing is likely to happen.");
+                client.StartListening();
             }
         }
 
