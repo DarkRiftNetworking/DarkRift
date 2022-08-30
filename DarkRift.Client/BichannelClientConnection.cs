@@ -475,7 +475,9 @@ namespace DarkRift.Client
         {
             MessageBuffer headerBuffer = (MessageBuffer)args.UserToken;
 
-            int bodyLength = BigEndianHelper.ReadInt32(headerBuffer.Buffer, headerBuffer.Offset);
+            int bodyLength = 0;
+            if (headerBuffer.Buffer?.Length > 3)
+                bodyLength = BigEndianHelper.ReadInt32(headerBuffer.Buffer, headerBuffer.Offset);
 
             headerBuffer.Dispose();
 
