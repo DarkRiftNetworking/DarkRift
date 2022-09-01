@@ -174,6 +174,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             {
                 Logger.Warning("UDP send failed as an exception was thrown.", e);
                 message.Dispose();
+                args.Completed -= UdpSendCompleted;
+                ObjectCache.ReturnSocketAsyncEventArgs(args);
                 return false;
             }
 

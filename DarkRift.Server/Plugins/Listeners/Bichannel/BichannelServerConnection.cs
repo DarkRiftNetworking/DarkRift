@@ -170,6 +170,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             catch (Exception)
             {
                 message.Dispose();
+                args.Completed -= TcpSendCompleted;
+                ObjectCache.ReturnSocketAsyncEventArgs(args);
                 return false;
             }
 

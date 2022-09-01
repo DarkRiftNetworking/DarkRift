@@ -233,6 +233,8 @@ namespace DarkRift.Client
             catch (Exception)
             {
                 message.Dispose();
+                args.Completed += TcpSendCompleted;
+                ObjectCache.ReturnSocketAsyncEventArgs(args);
                 return false;
             }
 
@@ -266,6 +268,8 @@ namespace DarkRift.Client
             catch (Exception)
             {
                 message.Dispose();
+                args.Completed -= UdpSendCompleted;
+                ObjectCache.ReturnSocketAsyncEventArgs(args);
                 return false;
             }
 
