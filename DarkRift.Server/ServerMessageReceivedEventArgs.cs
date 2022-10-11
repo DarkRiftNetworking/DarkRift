@@ -8,7 +8,6 @@ using System;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Arguments for the <see cref="IRemoteServer.MessageReceived"/> event.
     /// </summary>
@@ -99,5 +98,4 @@ namespace DarkRift.Server
                 ServerObjectCacheHelper.ServerMessageReceivedEventArgsWasFinalized();
         }
     }
-#endif
 }

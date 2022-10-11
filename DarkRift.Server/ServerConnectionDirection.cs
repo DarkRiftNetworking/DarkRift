@@ -6,7 +6,6 @@
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     The direction of a connection to another server.
     /// </summary>
@@ -22,5 +21,4 @@ namespace DarkRift.Server
         /// </summary>
         Downstream
     }
-#endif
 }

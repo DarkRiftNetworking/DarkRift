@@ -21,11 +21,9 @@ namespace DarkRift.Server
         /// </summary>
         public int MaxMessageReceivedEventArgs { get; set; }
 
-#if PRO
         /// <summary>
         ///     The maximum number of ServerMessageReceivedEventArgs to cache per thread.
         /// </summary>
         public int MaxServerMessageReceivedEventArgs { get; set; }
-#endif
     }
 }

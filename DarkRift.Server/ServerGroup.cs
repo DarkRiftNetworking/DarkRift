@@ -12,7 +12,6 @@ using System.Linq;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Base class for server groups.
     /// </summary>
@@ -254,5 +253,4 @@ namespace DarkRift.Server
         }
         #endregion
     }
-#endif
 }

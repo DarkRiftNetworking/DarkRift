@@ -3,7 +3,6 @@
     I WANT no exploitable vulnerablities in my server
     SO THAT users cannot cuase danage to my server
 
-@Free
 Scenario: large TCP body buffer allocations cause clients to be kicked
 	Given I have a running server from Server.config
 	And 1 client connected

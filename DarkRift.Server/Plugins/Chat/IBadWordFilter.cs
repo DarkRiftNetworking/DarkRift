@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Plugins.Chat
 {
-#if PRO
     /// <summary>
     ///     Helper plugin for filtering bad words out of text. To access an instance use <see cref="Plugin.BadWordFilter"/>.
     /// </summary>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public interface IBadWordFilter
     {
         /// <summary>
@@ -51,5 +47,4 @@ namespace DarkRift.Server.Plugins.Chat
         /// <param name="logConfirmation">If true, an Info log will be written on success.</param>
         void UpdateBadWordList(bool logConfirmation);
     }
-#endif
 }

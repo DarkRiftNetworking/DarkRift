@@ -31,16 +31,8 @@ namespace DarkRift.Server
         /// </summary>
         public ushort Port { get; set; }
 
-        internal NetworkListenerLoadData(string name, IPAddress address, ushort port, DarkRiftServer server, NameValueCollection settings, Logger logger
-#if PRO
-            , MetricsCollector metricsCollector
-#endif
-            )
-            : base(name, server, settings, logger
-#if PRO
-                  , metricsCollector
-#endif
-                  )
+        internal NetworkListenerLoadData(string name, IPAddress address, ushort port, DarkRiftServer server, NameValueCollection settings, Logger logger, MetricsCollector metricsCollector)
+            : base(name, server, settings, logger, metricsCollector)
         {
             this.Address = address;
             this.Port = port;

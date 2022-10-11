@@ -11,7 +11,6 @@ using System.Linq;
 
 namespace DarkRift.Server
 {
-#if PRO
     internal sealed class RemoteServerManager : IRemoteServerManager, IDisposable
     {
         /// <summary>
@@ -339,5 +338,4 @@ namespace DarkRift.Server
         }
 #pragma warning restore CS0628
     }
-#endif
 }

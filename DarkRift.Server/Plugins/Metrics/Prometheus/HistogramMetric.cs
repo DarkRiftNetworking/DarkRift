@@ -12,7 +12,6 @@ using System.Threading;
 
 namespace DarkRift.Server.Plugins.Metrics.Prometheus
 {
-#if PRO
     /// <summary>
     /// Implementation of <see cref="IHistogramMetric"/> for Prometheus.
     /// </summary>
@@ -99,5 +98,4 @@ namespace DarkRift.Server.Plugins.Metrics.Prometheus
             return Interlocked.Read(ref bucketCounts[bucketIndex]);
         }
     }
-#endif
 }

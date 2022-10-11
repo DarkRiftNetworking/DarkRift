@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// A metric representing the current value of a property, able to increase or decrease.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     public interface IGaugeMetric
     {
         /// <summary>
@@ -21,5 +17,4 @@ namespace DarkRift.Server.Metrics
         /// <param name="value">The value of the gauge to set.</param>
         void Report(double value);
     }
-#endif
 }

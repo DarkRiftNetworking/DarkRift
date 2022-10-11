@@ -4,7 +4,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#if PRO
 using DarkRift.Server.Plugins.Matchmaking;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -376,4 +375,3 @@ namespace DarkRift.Server.Plugins.Rooms.Tests.Plugins.Matchmaking
         }
     }
 }
-#endif

@@ -26,14 +26,11 @@ namespace DarkRift.Server
         /// </remarks>
         Plugin this[string name] { get; }
 
-#if PRO
         /// <summary>
         ///     Gets all the plugins loaded into this server including internal ones.
         /// </summary>
         /// <returns>An array of the plugins.</returns>
         /// <remarks>
-        ///     Pro only.
-        ///     
         ///     This cannot be called during server initialization as not all plugins may 
         ///     have been loaded at that point, consider using the 
         ///     <see cref="ExtendedPluginBase.Loaded(LoadedEventArgs)"/> event instead.
@@ -46,8 +43,6 @@ namespace DarkRift.Server
         /// </summary>
         /// <returns>An array of the plugins.</returns>
         /// <remarks>
-        ///     Pro only.
-        ///
         ///     This cannot be called during server initialization as not all plugins may 
         ///     have been loaded at that point, consider using the 
         ///     <see cref="ExtendedPluginBase.Loaded(LoadedEventArgs)"/> event instead.
@@ -59,11 +54,7 @@ namespace DarkRift.Server
         /// </summary>
         /// <param name="pluginName">The name of the plugin to look up.</param>
         /// <returns>The version of the plugin or null if not installed.</returns>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         Version GetInstalledVersion(string pluginName);
-#endif
 
         /// <summary>
         ///     Gets the plugin with the specified name.

@@ -7,16 +7,12 @@
 using System;
 using System.Collections.Generic;
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     A matchmmaker task for the <see cref="RankingMatchmaker{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of objects being used as entities.</typeparam>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     internal class RankingMatchmakerQueueTask<T> : IMatchmakerQueueTask<T>
     {
         /// <inheritdoc/>
@@ -67,4 +63,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         }
     }
 }
-#endif

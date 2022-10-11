@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 
 namespace DarkRift.Server.Plugins.Metrics.Prometheus
 {
-#if PRO
     /// <summary>
     /// Provides extensions to the <see cref="MetricsCollector"/> that enrich it for use with the Prometheus endpoint.
     /// </summary>
@@ -112,5 +111,4 @@ namespace DarkRift.Server.Plugins.Metrics.Prometheus
             }
         }
     }
-#endif
 }

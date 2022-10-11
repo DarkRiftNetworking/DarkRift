@@ -6,7 +6,6 @@
 
 using System;
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
@@ -27,8 +26,6 @@ namespace DarkRift.Server.Plugins.Matchmaking
     ///     cause mistakes in the generated rankings.
     ///     
     ///     This is not thread safe.
-    ///     
-    ///     <c>Pro only.</c>
     /// </remarks>
     public class MatchmakerRankingBuilder
     {
@@ -325,4 +322,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         }
     }
 }
-#endif

@@ -10,7 +10,6 @@ using System.Collections.Specialized;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     The manager of the server registry connector on the server.
     /// </summary>
@@ -95,5 +94,4 @@ namespace DarkRift.Server
         }
         #endregion
     }
-#endif
 }

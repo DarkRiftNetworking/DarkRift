@@ -14,7 +14,6 @@ using System.Xml.Linq;
 
 namespace DarkRift.Server.Plugins.Chat
 {
-#if PRO
     /// <inheritdoc/>
     internal class BadWordFilter : Plugin, IBadWordFilter
     {
@@ -243,5 +242,4 @@ namespace DarkRift.Server.Plugins.Chat
             }
         }
     }
-#endif
 }

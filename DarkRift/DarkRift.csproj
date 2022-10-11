@@ -6,7 +6,7 @@
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net3.5;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(DRBuildMode)' == 'coreonly' ">netstandard2.0</TargetFrameworks>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\DarkRift.xml</DocumentationFile>
-    <Configurations>Debug;Free;Pro</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -20,6 +20,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>DEBUG;TRACE;PRO</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 </Project>

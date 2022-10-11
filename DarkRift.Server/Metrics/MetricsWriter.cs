@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// Base class for plugins that handle writing out metrics.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     public abstract class MetricsWriter : PluginBase
     {
         /// <summary>
@@ -82,5 +78,4 @@ namespace DarkRift.Server.Metrics
         /// <returns>The created <see cref="IHistogramMetric"/>.</returns>
         protected internal abstract TaggedMetricBuilder<IHistogramMetric> CreateHistogram(MetricsCollector metricsCollector, string name, string description, string[] tags);
     }
-#endif
 }

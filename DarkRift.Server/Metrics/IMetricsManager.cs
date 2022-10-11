@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// An object that manages the server's metrics writers.
     /// </summary>
-    /// <remarks>
-    /// Pro only
-    /// </remarks>
     public interface IMetricsManager
     {
         /// <summary>
@@ -45,5 +41,4 @@ namespace DarkRift.Server.Metrics
         /// </remarks>
         MetricsCollector GetPerMessageMetricsCollectorFor(string name);
     }
-#endif
 }

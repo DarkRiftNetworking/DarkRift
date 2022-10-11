@@ -9,7 +9,6 @@ using System.Collections.Specialized;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Plugin load data for server registry connectors
     /// </summary>
@@ -45,5 +44,4 @@ namespace DarkRift.Server
         {
         }
     }
-#endif
 }

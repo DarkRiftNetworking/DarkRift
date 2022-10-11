@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 namespace DarkRift.Server.Plugins.Chat
 {
-#if PRO
     /// <summary>
     /// The Trie Node.
     /// </summary>
@@ -143,5 +142,4 @@ namespace DarkRift.Server.Plugins.Chat
             Children = null;
         }
     }
-#endif
 }

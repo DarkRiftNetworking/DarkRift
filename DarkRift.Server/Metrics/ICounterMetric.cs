@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// A metric capable only of increasing in value.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     public interface ICounterMetric
     {
         /// <summary>
@@ -26,5 +22,4 @@ namespace DarkRift.Server.Metrics
         /// <param name="value">The amount to increase the counter by.</param>
         void Increment(double value);
     }
-#endif
 }

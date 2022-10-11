@@ -9,14 +9,10 @@ using System.Text.RegularExpressions;
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// Builder for tagged metrics.
     /// </summary>
     /// <typeparam name="T">The type of metric being produced.</typeparam>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     public class TaggedMetricBuilder<T>
     {
         /// <summary>
@@ -67,5 +63,4 @@ namespace DarkRift.Server.Metrics
             return producer.Invoke(values);
         }
     }
-#endif
 }

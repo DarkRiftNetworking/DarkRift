@@ -9,7 +9,6 @@ using System.Threading;
 
 namespace DarkRift.Server.Plugins.Metrics.Prometheus
 {
-#if PRO
     /// <summary>
     /// Implementation of <see cref="ICounterMetric"/> for Prometheus.
     /// </summary>
@@ -55,5 +54,4 @@ namespace DarkRift.Server.Plugins.Metrics.Prometheus
             InterlockedDouble.Add(ref this.value, value);
         }
     }
-#endif
 }

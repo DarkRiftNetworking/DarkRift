@@ -113,11 +113,7 @@ namespace DarkRift.Server
                 
                 //Create a load data object and backup
                 LogWriterLoadData loadData = new LogWriterLoadData(s.Name, server, s.Settings, GetLoggerFor(nameof(s.Name)));
-                PluginLoadData backupLoadData = new PluginLoadData(s.Name, server, s.Settings, GetLoggerFor(nameof(s.Name)),
-#if PRO
-                    null,
-#endif
-                    null);
+                PluginLoadData backupLoadData = new PluginLoadData(s.Name, server, s.Settings, GetLoggerFor(nameof(s.Name)), null, null);
 
                 LogWriter writer = pluginFactory.Create<LogWriter>(s.Type, loadData, backupLoadData);
 

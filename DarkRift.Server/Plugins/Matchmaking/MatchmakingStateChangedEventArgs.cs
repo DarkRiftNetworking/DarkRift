@@ -7,16 +7,12 @@
 using System;
 using System.Collections.Generic;
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     Event args for changes to a groups's matchmaking state.
     /// </summary>
     /// <typeparam name="T">The type of object being matched.</typeparam>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public class MatchmakingStateChangedEventArgs<T> : EventArgs
     {
         /// <summary>
@@ -48,4 +44,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         }
     }
 }
-#endif

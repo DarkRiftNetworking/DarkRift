@@ -53,12 +53,7 @@ namespace DarkRift.Server
         /// <summary>
         ///     The server's log manager.
         /// </summary>
-#if PRO
-    public
-#else
-        internal
-#endif
-        ILogManager LogManager { get; }
+        public ILogManager LogManager { get; }
 
         /// <summary>
         ///     Default logger for the plugin.
@@ -89,7 +84,6 @@ namespace DarkRift.Server
             this.Server = pluginLoadData.Server;
         }
 
-#if PRO
         /// <summary>
         ///     Creates a new timer that will invoke the callback a single time.
         /// </summary>
@@ -112,7 +106,6 @@ namespace DarkRift.Server
         {
             return ThreadHelper.CreateTimer(initialDelay, repetitionPeriod, callback);
         }
-#endif
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls

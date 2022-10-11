@@ -8,15 +8,11 @@ using System;
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     internal sealed class MetricsManager : IDisposable, IMetricsManager
     {
         /// <summary>
         ///     The metric writer in use.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         public MetricsWriter MetricsWriter { get; private set; }
 
         /// <summary>
@@ -103,5 +99,4 @@ namespace DarkRift.Server.Metrics
 
         #endregion
     }
-#endif
 }

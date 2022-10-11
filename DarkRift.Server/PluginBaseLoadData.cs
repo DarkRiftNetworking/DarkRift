@@ -52,12 +52,7 @@ namespace DarkRift.Server
         /// <summary>
         ///     The server's log manager.
         /// </summary>
-#if PRO
-        public
-#else
-        internal
-#endif
-        ILogManager LogManager { get; set;  }
+        public ILogManager LogManager { get; set;  }
 
         /// <summary>
         ///     The logger this plugin will use.

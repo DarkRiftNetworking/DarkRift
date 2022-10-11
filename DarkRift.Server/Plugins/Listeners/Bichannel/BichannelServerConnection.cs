@@ -68,7 +68,6 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// </summary>
         private readonly BichannelListenerBase networkListener;
 
-#if PRO
         /// <summary>
         /// Counter for the number of bytes sent via TCP by the listener.
         /// </summary>
@@ -88,13 +87,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// Counter for the number of bytes received via UDP by the listener.
         /// </summary>
         private readonly ICounterMetric bytesReceivedCounterUdp;
-#endif
 
-        internal BichannelServerConnection(Socket tcpSocket, BichannelListenerBase networkListener, IPEndPoint udpEndPoint, long authToken
-#if PRO
-            , MetricsCollector metricsCollector
-#endif
-            )
+        internal BichannelServerConnection(Socket tcpSocket, BichannelListenerBase networkListener, IPEndPoint udpEndPoint, long authToken, MetricsCollector metricsCollector)
         {
             this.tcpSocket = tcpSocket;
             this.networkListener = networkListener;
@@ -105,14 +99,12 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             //Mark connected to allow sending
             CanSend = true;
 
-#if PRO
             TaggedMetricBuilder<ICounterMetric> bytesSentCounter = metricsCollector.Counter("bytes_sent", "The number of bytes sent to clients by the listener.", "protocol");
             TaggedMetricBuilder<ICounterMetric> bytesReceivedCounter = metricsCollector.Counter("bytes_received", "The number of bytes received from clients by the listener.", "protocol");
             bytesSentCounterTcp = bytesSentCounter.WithTags("tcp");
             bytesSentCounterUdp = bytesSentCounter.WithTags("udp");
             bytesReceivedCounterTcp = bytesReceivedCounter.WithTags("tcp");
             bytesReceivedCounterUdp = bytesReceivedCounter.WithTags("udp");
-#endif
         }
         
         /// <summary>
@@ -432,9 +424,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             int bytesReceived = buffer.Count;
             buffer.Dispose();
 
-#if PRO
             bytesReceivedCounterTcp.Increment(bytesReceived + 4);
-#endif
         }
 
         /// <summary>
@@ -542,9 +532,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         {
             HandleMessageReceived(buffer, SendMode.Unreliable);
 
-#if PRO
             bytesReceivedCounterUdp.Increment(buffer.Count);
-#endif
         }
 
         /// <summary>
@@ -567,9 +555,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
             ObjectCache.ReturnSocketAsyncEventArgs(e);
 
-#if PRO
             bytesSentCounterTcp.Increment(bytesSent + 4);
-#endif
         }
 
         /// <summary>
@@ -582,9 +568,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             if (e != SocketError.Success)
                 UnregisterAndDisconnect(e);
 
-#if PRO
             bytesSentCounterUdp.Increment(bytesSent);
-#endif
         }
 
         /// <summary>

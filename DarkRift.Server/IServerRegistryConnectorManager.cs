@@ -6,7 +6,6 @@
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Manager for the server registry connectors.
     /// </summary>
@@ -17,5 +16,4 @@ namespace DarkRift.Server
         /// </summary>
         ServerRegistryConnector ServerRegistryConnector { get; set; }
     }
-#endif
 }

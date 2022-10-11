@@ -4,15 +4,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     The state of a matchmaking operation by an <see cref="IMatchmaker{T}"/>.
     /// </summary>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public enum MatchmakingState
     {
         /// <summary>
@@ -36,4 +32,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         Cancelled
     }
 }
-#endif

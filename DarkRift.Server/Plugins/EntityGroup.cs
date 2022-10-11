@@ -8,7 +8,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-#if PRO
 namespace DarkRift.Server.Plugins
 {
     /// <summary>
@@ -98,4 +97,3 @@ namespace DarkRift.Server.Plugins
         }
     }
 }
-#endif

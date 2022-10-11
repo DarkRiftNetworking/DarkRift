@@ -11,7 +11,6 @@ using System.Text;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Event arguments for the <see cref="Client.StrikeOccured"/> event.
     /// </summary>
@@ -75,5 +74,4 @@ namespace DarkRift.Server
             Forgiven = true;
         }
     }
-#endif
 }

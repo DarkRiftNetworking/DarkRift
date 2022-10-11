@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// Implementation of <see cref="ICounterMetric"/> that does nothing.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     internal class NoOpCounterMetric : ICounterMetric
     {
         public void Increment()
@@ -25,5 +21,4 @@ namespace DarkRift.Server.Metrics
             // Nope
         }
     }
-#endif
 }
