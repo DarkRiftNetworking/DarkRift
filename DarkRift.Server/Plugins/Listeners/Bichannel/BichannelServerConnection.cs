@@ -47,6 +47,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             set => tcpSocket.NoDelay = value;
         }
 
+        private bool PreserveTcpOrdering => networkListener.PreserveTcpOrdering;
+
         /// <summary>
         ///     The token used to authenticate this user's UDP connection.
         /// </summary>
@@ -271,6 +273,9 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 
                 MessageBuffer bodyBuffer = ProcessBody(args);
 
+                if (PreserveTcpOrdering)
+                    ProcessMessage(bodyBuffer);
+
                 // Start next receive before invoking events
                 SetupReceiveHeader(args);
                 bool headerCompletingAsync;
@@ -284,7 +289,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                     return;
                 }
 
-                ProcessMessage(bodyBuffer);
+                if (!PreserveTcpOrdering)
+                    ProcessMessage(bodyBuffer);
 
                 if (headerCompletingAsync)
                     return;
@@ -337,6 +343,9 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
             MessageBuffer bodyBuffer = ProcessBody(args);
 
+            if (PreserveTcpOrdering)
+                ProcessMessage(bodyBuffer);
+
             // Start next receive before invoking events
             SetupReceiveHeader(args);
             bool headerCompletingAsync;
@@ -350,7 +359,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 return;
             }
 
-            ProcessMessage(bodyBuffer);
+            if (!PreserveTcpOrdering)
+                ProcessMessage(bodyBuffer);
 
             if (headerCompletingAsync)
                 return;

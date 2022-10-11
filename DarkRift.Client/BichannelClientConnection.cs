@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace DarkRift.Client
 {
@@ -35,6 +36,11 @@ namespace DarkRift.Client
             get => tcpSocket.NoDelay;
             set => tcpSocket.NoDelay = value;
         }
+
+        /// <summary>
+        ///     If true (default), reliable messages are delivered in order. If false, reliable messages can be delivered out of order to improve performance.
+        /// </summary>
+        public bool PreserveTcpOrdering { get; private set; } = true;
 
         /// <inheritdoc/>
         public override IEnumerable<IPEndPoint> RemoteEndPoints => new IPEndPoint[] { RemoteTcpEndPoint, RemoteUdpEndPoint };
@@ -354,6 +360,9 @@ namespace DarkRift.Client
 
                 MessageBuffer bodyBuffer = ProcessBody(args);
 
+                if (PreserveTcpOrdering)
+                    ProcessMessage(bodyBuffer);
+
                 // Start next receive before invoking events
                 SetupReceiveHeader(args);
                 bool headerCompletingAsync;
@@ -367,7 +376,8 @@ namespace DarkRift.Client
                     return;
                 }
 
-                ProcessMessage(bodyBuffer);
+                if (!PreserveTcpOrdering)
+                    ProcessMessage(bodyBuffer);
 
                 if (headerCompletingAsync)
                     return;
@@ -420,6 +430,9 @@ namespace DarkRift.Client
 
             MessageBuffer bodyBuffer = ProcessBody(args);
 
+            if (PreserveTcpOrdering)
+                ProcessMessage(bodyBuffer);
+
             // Start next receive before invoking events
             SetupReceiveHeader(args);
             bool headerCompletingAsync;
@@ -433,7 +446,8 @@ namespace DarkRift.Client
                 return;
             }
 
-            ProcessMessage(bodyBuffer);
+            if (!PreserveTcpOrdering)
+                ProcessMessage(bodyBuffer);
 
             if (headerCompletingAsync)
                 return;
