@@ -33,7 +33,7 @@ namespace DarkRift.SystemTesting
                 server.ClientManager.GetAllClients()[0].SendMessage(message, SendMode.Reliable);
             }
 
-            SendBunchOfMessagesToAndExpectOrderedArrival(SetupReceiver, Send);
+            SendBunchOfMessagesAndExpectOrderedArrival(SetupReceiver, Send);
         }
 
         [TestMethod]
@@ -60,10 +60,10 @@ namespace DarkRift.SystemTesting
                 client.SendMessage(message, SendMode.Reliable);
             }
 
-            SendBunchOfMessagesToAndExpectOrderedArrival(SetupReceiver, Send);
+            SendBunchOfMessagesAndExpectOrderedArrival(SetupReceiver, Send);
         }
 
-        private void SendBunchOfMessagesToAndExpectOrderedArrival(Action<DarkRiftClient, DarkRiftServer, Action<Message>> setupReceiver, Action<DarkRiftClient, DarkRiftServer, Message> send)
+        private void SendBunchOfMessagesAndExpectOrderedArrival(Action<DarkRiftClient, DarkRiftServer, Action<Message>> setupReceiver, Action<DarkRiftClient, DarkRiftServer, Message> send)
         {
             var spawnData = ServerSpawnData.CreateFromXml("Configurations/Server/Server.config", new NameValueCollection());
             spawnData.EventsFromDispatcher = false;

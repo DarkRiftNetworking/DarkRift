@@ -98,6 +98,9 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             else
                 this.UdpPort = this.Port;
 
+            var preserveTcpOrdering = listenerLoadData.Settings["preserveTcpOrdering"]?.ToLower();
+            this.PreserveTcpOrdering = preserveTcpOrdering == null || preserveTcpOrdering == "true"; // keep this true by default, but if user specifies it in config they probably want to disable it
+
             TcpListener = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             UdpListener = new Socket(Address.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
