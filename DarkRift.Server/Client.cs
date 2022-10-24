@@ -14,6 +14,7 @@ using DarkRift.Dispatching;
 using System.Diagnostics;
 using DarkRift.DataStructures;
 using DarkRift.Server.Metrics;
+using DarkRift.Client;
 
 namespace DarkRift.Server
 {

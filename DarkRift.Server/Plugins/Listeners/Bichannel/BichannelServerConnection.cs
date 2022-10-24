@@ -139,6 +139,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             BigEndianHelper.WriteBytes(header, 0, message.Count);
 
             SocketAsyncEventArgs args = ObjectCache.GetSocketAsyncEventArgs();
+            args.SocketError = SocketError.Success;
 
             args.SetBuffer(null, 0, 0);
             args.BufferList = new List<ArraySegment<byte>>()    // TODO pooollllllll!
@@ -154,7 +155,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             bool completingAsync;
             try
             {
-                completingAsync = tcpSocket.SendAsync(args);
+                tcpSocket.Send(args.BufferList);
+                completingAsync = false;
             }
             catch (Exception)
             {

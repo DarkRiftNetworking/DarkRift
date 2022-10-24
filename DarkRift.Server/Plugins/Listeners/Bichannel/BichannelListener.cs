@@ -159,6 +159,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         internal override bool SendUdpBuffer(EndPoint remoteEndPoint, MessageBuffer message, Action<int, SocketError> completed)
         {
             SocketAsyncEventArgs args = ObjectCache.GetSocketAsyncEventArgs();
+            args.SocketError = SocketError.Success;
             args.BufferList = null;
             args.UserToken = new UdpSendOperation { callback = completed, message = message };
             args.SetBuffer(message.Buffer, message.Offset, message.Count);
@@ -168,7 +169,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             bool completingAsync;
             try
             {
-                completingAsync = UdpListener.SendToAsync(args);
+                UdpListener.SendTo(message.Buffer, message.Offset, message.Count, SocketFlags.None, remoteEndPoint);
+                completingAsync = false;
             }
             catch (Exception e)
             {
