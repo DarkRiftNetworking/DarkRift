@@ -34,8 +34,8 @@ namespace DarkRift.Client
         ///     Whether Nagel's algorithm should be disabled or not.
         /// </summary>
         public bool NoDelay {
-            get => tcpSocket.NoDelay;
-            set => tcpSocket.NoDelay = value;
+            get => tcp.Socket.NoDelay;
+            set => tcp.Socket.NoDelay = value;
         }
 
         /// <inheritdoc/>
@@ -70,27 +70,8 @@ namespace DarkRift.Client
         private ConnectionState lockedConnectionState;
         private readonly object myLock = new object();
 
-        /// <summary>
-        ///     The socket used in TCP communication.
-        /// </summary>
-        private readonly Socket tcpSocket;
-
-        /// <summary>
-        ///     The socket used in UDP communication.
-        /// </summary>
-        private readonly Socket udpSocket;
-
-        private SocketAsyncEventArgs tcpArgs;
-        private TcpReceiveState tcpReceiveState;
-        private int tcpBytesTransferred;
-
-        private SocketAsyncEventArgs udpArgs;
-
-        private enum TcpReceiveState
-        {
-            ReceiveHeader,
-            ReceiveBody,
-        }
+        private readonly SynchronousTcpSocket tcp;
+        private readonly SynchronousUdpSocket udp;
 
         /// <summary>
         ///     Creates a new bichannel client.
@@ -116,8 +97,10 @@ namespace DarkRift.Client
             RemoteTcpEndPoint = new IPEndPoint(ipAddress, tcpPort);
             RemoteUdpEndPoint = new IPEndPoint(ipAddress, udpPort);
 
-            tcpSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            udpSocket = new Socket(tcpSocket.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            var tcpSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            tcp = new SynchronousTcpSocket(tcpSocket, Disconnect, HandleMessageReceived);
+            var udpSocket = new Socket(tcpSocket.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            udp = new SynchronousUdpSocket(udpSocket, Disconnect, HandleMessageReceived);
 
             NoDelay = noDelay;
         }
@@ -138,9 +121,11 @@ namespace DarkRift.Client
             RemoteTcpEndPoint = new IPEndPoint(ipAddress, port);
             RemoteUdpEndPoint = new IPEndPoint(ipAddress, port);
 
-            tcpSocket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
-            udpSocket = new Socket(tcpSocket.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            
+            var tcpSocket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
+            tcp = new SynchronousTcpSocket(tcpSocket, Disconnect, HandleMessageReceived);
+            var udpSocket = new Socket(tcpSocket.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            udp = new SynchronousUdpSocket(udpSocket, Disconnect, HandleMessageReceived);
+
             NoDelay = noDelay;
         }
 
@@ -154,7 +139,7 @@ namespace DarkRift.Client
                 //Connect TCP
                 try
                 {
-                    tcpSocket.Connect(RemoteTcpEndPoint);
+                    tcp.Socket.Connect(RemoteTcpEndPoint);
                 }
                 catch (SocketException e)
                 {
@@ -164,8 +149,8 @@ namespace DarkRift.Client
                 try
                 {
                     //Bind UDP to a free port
-                    udpSocket.Bind(new IPEndPoint(((IPEndPoint)tcpSocket.LocalEndPoint).Address, 0));
-                    udpSocket.Connect(RemoteUdpEndPoint);
+                    udp.Socket.Bind(new IPEndPoint(((IPEndPoint)tcp.Socket.LocalEndPoint).Address, 0));
+                    udp.Socket.Connect(RemoteUdpEndPoint);
                 }
                 catch (SocketException e)
                 {
@@ -174,28 +159,28 @@ namespace DarkRift.Client
 
                 //Receive auth token from TCP
                 byte[] buffer = new byte[9];
-                tcpSocket.ReceiveTimeout = 5000;
-                int receivedTcp = tcpSocket.Receive(buffer);
-                tcpSocket.ReceiveTimeout = 0;   //Reset to infinite
+                tcp.Socket.ReceiveTimeout = 5000;
+                int receivedTcp = tcp.Socket.Receive(buffer);
+                tcp.Socket.ReceiveTimeout = 0;   //Reset to infinite
 
                 if (receivedTcp != 9 || buffer[0] != 0)
                 {
-                    tcpSocket.Shutdown(SocketShutdown.Both);
+                    tcp.Shutdown();
                     throw new DarkRiftConnectionException("Timeout waiting for auth token from server.", SocketError.ConnectionAborted);
                 }
 
                 //Transmit token back over UDP to server listening port
-                udpSocket.Send(buffer);
+                udp.Socket.Send(buffer);
 
                 //Receive response from server to initiate the connection
                 buffer = new byte[1];
-                udpSocket.ReceiveTimeout = 5000;
-                int receivedUdp = udpSocket.Receive(buffer);
-                udpSocket.ReceiveTimeout = 0;   //Reset to infinite
+                udp.Socket.ReceiveTimeout = 5000;
+                int receivedUdp = udp.Socket.Receive(buffer);
+                udp.Socket.ReceiveTimeout = 0;   //Reset to infinite
 
                 if (receivedUdp != 1 || buffer[0] != 0)
                 {
-                    tcpSocket.Shutdown(SocketShutdown.Both);
+                    tcp.Shutdown();
                     throw new DarkRiftConnectionException("Timeout waiting for UDP acknowledgement from server.", SocketError.ConnectionAborted);
                 }
             }
@@ -212,15 +197,8 @@ namespace DarkRift.Client
                 throw;
             }
 
-            //Setup the TCP socket to receive a header
-            tcpArgs = ObjectCache.GetSocketAsyncEventArgs();
-            tcpArgs.BufferList = null;
-			SetupReceiveHeader(tcpArgs);
-
-            //Start receiving UDP packets
-            udpArgs = ObjectCache.GetSocketAsyncEventArgs();
-            udpArgs.BufferList = null;
-            udpArgs.SetBuffer(new byte[ushort.MaxValue], 0, ushort.MaxValue);
+            tcp.ResetBuffers();
+            udp.ResetBuffers();
 
             //Mark connected to allow sending
             connectionState = ConnectionState.Connected;
@@ -236,36 +214,7 @@ namespace DarkRift.Client
             if (connectionState == ConnectionState.Disconnected)
                 return false;
 
-            byte[] header = new byte[4];
-            BigEndianHelper.WriteBytes(header, 0, message.Count);
-
-            SocketAsyncEventArgs args = ObjectCache.GetSocketAsyncEventArgs();
-            args.SocketError = SocketError.Success;
-
-            args.SetBuffer(null, 0, 0);
-            args.BufferList = new List<ArraySegment<byte>>()
-            {
-                new ArraySegment<byte>(header),
-                new ArraySegment<byte>(message.Buffer, message.Offset, message.Count)
-            };
-            args.UserToken = message;
-
-            try
-            {
-                tcpSocket.Send(args.BufferList);
-            }
-            catch (SocketException ex)
-            {
-                args.SocketError = ex.SocketErrorCode;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            SendCompleted(args);
-
-            return true;
+            return tcp.SendMessageReliable(message);
         }
 
         /// <inheritdoc/>
@@ -274,24 +223,7 @@ namespace DarkRift.Client
             if (connectionState == ConnectionState.Disconnected)
                 return false;
 
-            SocketAsyncEventArgs args = ObjectCache.GetSocketAsyncEventArgs();
-            args.SocketError = SocketError.Success;
-            args.BufferList = null;
-            args.SetBuffer(message.Buffer, message.Offset, message.Count);
-            args.UserToken = message;
-            
-            try
-            {
-                udpSocket.Send(message.Buffer, message.Offset, message.Count, SocketFlags.None);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            SendCompleted(args);
-
-            return true;
+            return udp.SendMessageUnreliable(message);
         }
 
         /// <inheritdoc/>
@@ -304,7 +236,7 @@ namespace DarkRift.Client
 
             PollingThread.RemoveWork(DoPolling);
             
-            tcpSocket.Shutdown(SocketShutdown.Both);
+            tcp.Shutdown();
 
             return true;
         }
@@ -322,234 +254,8 @@ namespace DarkRift.Client
 
         private void DoPolling()
         {
-            PollReceiveTcpHeaderAndBody(tcpArgs);
-            PollReceiveUdpNonBlocking(udpArgs);
-        }
-
-        /// <summary>
-        ///     Receives TCP header followed by a TCP body. The operation
-        ///     may exit early in an incomplete state.
-        /// </summary>
-        private void PollReceiveTcpHeaderAndBody(SocketAsyncEventArgs args)
-        {
-            while (true)
-            {
-                if (tcpReceiveState == TcpReceiveState.ReceiveHeader)
-                {
-                    if (!PollReceiveTcpNonBlocking(args))
-                        return;
-
-                    int bodyLength = ProcessHeader(args);
-                    SetupReceiveBody(args, bodyLength);
-                }
-
-                if (tcpReceiveState == TcpReceiveState.ReceiveBody)
-                {
-                    if (!PollReceiveTcpNonBlocking(args))
-                        return;
-
-                    try
-                    {
-                        MessageBuffer bodyBuffer = ProcessBody(args);
-                        ProcessMessage(bodyBuffer);
-                    }
-                    finally
-                    {
-                        SetupReceiveHeader(tcpArgs);
-                    }
-                }
-            }
-        }
-
-        private bool IsTcpReceiveComplete(SocketAsyncEventArgs args)
-        {
-            if (tcpBytesTransferred == 0)
-                return false;
-
-            MessageBuffer buffer = (MessageBuffer)args.UserToken;
-
-            return args.Offset + tcpBytesTransferred - buffer.Offset >= buffer.Count;
-        }
-
-        private bool PollReceiveTcpNonBlocking(SocketAsyncEventArgs args)
-        {
-            while (!IsTcpReceiveComplete(args))
-            {
-                UpdateBufferPointers(args);
-
-                int bytesAvailable = tcpSocket.Available;
-
-                if (bytesAvailable == 0)
-                    return false;
-
-                try
-                {
-                    tcpBytesTransferred = tcpSocket.Receive(args.Buffer, args.Offset, Math.Min(bytesAvailable, args.Count), SocketFlags.None);
-                }
-                catch (ObjectDisposedException)
-                {
-                    HandleDisconnectionDuringTcpReceive(args);
-                    return false;
-                }
-                catch (SocketException ex)
-                {
-                    if (ex.SocketErrorCode == SocketError.WouldBlock)
-                        return false;
-
-                    args.SocketError = ex.SocketErrorCode;
-                    HandleDisconnectionDuringTcpReceive(args);
-                    return false;
-                }
-
-                if (tcpBytesTransferred == 0)
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        ///     Processes a TCP header received.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>The number of bytes in the body.</returns>
-        private int ProcessHeader(SocketAsyncEventArgs args)
-        {
-            MessageBuffer headerBuffer = (MessageBuffer)args.UserToken;
-
-            int bodyLength = BigEndianHelper.ReadInt32(headerBuffer.Buffer, headerBuffer.Offset);
-
-            headerBuffer.Dispose();
-
-            return bodyLength;
-        }
-
-        /// <summary>
-        ///     Processes a TCP body received.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>The buffer received.</returns>
-        private MessageBuffer ProcessBody(SocketAsyncEventArgs args)
-        {
-            return (MessageBuffer)args.UserToken;
-        }
-
-        /// <summary>
-        ///     Invokes message recevied events and cleans up.
-        /// </summary>
-        /// <param name="buffer">The TCP body received.</param>
-        private void ProcessMessage(MessageBuffer buffer)
-        {
-            HandleMessageReceived(buffer, SendMode.Reliable);
-
-            buffer.Dispose();
-        }
-
-        /// <summary>
-        ///     Handles a disconnection while receiving a TCP header.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        private void HandleDisconnectionDuringTcpReceive(SocketAsyncEventArgs args)
-        {
-            Disconnect(args.SocketError);
-        }
-
-        /// <summary>
-        ///     Setup a listen operation for a new TCP header.
-        /// </summary>
-        /// <param name="args">The socket args to use during the operation.</param>
-        private void SetupReceiveHeader(SocketAsyncEventArgs args)
-        {
-            tcpBytesTransferred = 0;
-            tcpReceiveState = TcpReceiveState.ReceiveHeader;
-
-            MessageBuffer headerBuffer = MessageBuffer.Create(4);
-
-            args.SetBuffer(headerBuffer.Buffer, headerBuffer.Offset, 4);
-            args.UserToken = headerBuffer;
-        }
-
-        /// <summary>
-        ///     Setup a listen operation for a new TCP body.
-        /// </summary>
-        /// <param name="args">The socket args to use during the operation.</param>
-        /// <param name="length">The number of bytes in the body.</param>
-        private void SetupReceiveBody(SocketAsyncEventArgs args, int length)
-        {
-            tcpBytesTransferred = 0;
-            tcpReceiveState = TcpReceiveState.ReceiveBody;
-
-            MessageBuffer bodyBuffer = MessageBuffer.Create(length);
-            bodyBuffer.Count = length;
-
-            args.SetBuffer(bodyBuffer.Buffer, bodyBuffer.Offset, length);
-            args.UserToken = bodyBuffer;
-        }
-
-        /// <summary>
-        ///     Updates the pointers on the buffer to continue a receive operation.
-        /// </summary>
-        /// <param name="args">The socket args to update.</param>
-        private void UpdateBufferPointers(SocketAsyncEventArgs args) {
-            args.SetBuffer(args.Offset + tcpBytesTransferred, args.Count - tcpBytesTransferred);
-        }
-
-        /// <summary>
-        ///     Called when a UDP message arrives.
-        /// </summary>
-        /// <param name="e"></param>
-        private void PollReceiveUdpNonBlocking(SocketAsyncEventArgs e)
-        {
-            while (true)
-            {
-                int bytesAvailable = udpSocket.Available;
-                if (bytesAvailable == 0)
-                    return;
-
-                int bytesTransferred;
-                try
-                {
-                    bytesTransferred = udpSocket.Receive(e.Buffer, ushort.MaxValue, SocketFlags.None);
-                }
-                catch (SocketException ex)
-                {
-                    if (ex.SocketErrorCode == SocketError.ConnectionReset)
-                    {
-                        //Ignore ConnectionReset (ICMP Port Unreachable) since NATs will return that when they get 
-                        //the punchthrough packets and they've not already been opened
-                        return;
-                    }
-
-                    //Anything else is probably bad news
-                    Disconnect(e.SocketError);
-                    return;
-                }
-                
-                using (MessageBuffer buffer = MessageBuffer.Create(bytesTransferred))
-                {
-                    Buffer.BlockCopy(e.Buffer, 0, buffer.Buffer, buffer.Offset, bytesTransferred);
-                    buffer.Count = bytesTransferred;
-
-                    //Length of 0 must be a hole punching packet
-                    if (buffer.Count != 0)
-                        HandleMessageReceived(buffer, SendMode.Unreliable);
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Called when a TCP or UDP send has completed.
-        /// </summary>
-        /// <param name="e"></param>
-        private void SendCompleted(SocketAsyncEventArgs e)
-        {
-            if (e.SocketError != SocketError.Success)
-                Disconnect(e.SocketError);
-
-            //Always dispose buffer when completed!
-            ((MessageBuffer)e.UserToken).Dispose();
-
-            ObjectCache.ReturnSocketAsyncEventArgs(e);
+            tcp.PollReceiveHeaderAndBodyNonBlocking();
+            udp.PollReceiveBodyNonBlocking();
         }
 
         /// <summary>
@@ -585,23 +291,11 @@ namespace DarkRift.Client
                 {
                     Disconnect();
 
-                    tcpSocket.Close();
-                    udpSocket.Close();
+                    tcp.Socket.Close();
+                    udp.Socket.Close();
 
-                    if (tcpArgs != null)
-                    {
-                        MessageBuffer buffer = (MessageBuffer)tcpArgs.UserToken;
-                        buffer.Dispose();
-
-                        ObjectCache.ReturnSocketAsyncEventArgs(tcpArgs);
-                        tcpArgs = null;
-                    }
-                    if (udpArgs != null)
-                    {
-                        udpArgs.SetBuffer(null, 0, 0);
-                        ObjectCache.ReturnSocketAsyncEventArgs(udpArgs);
-                        udpArgs = null;
-                    }
+                    tcp.Dispose();
+                    udp.Dispose();
                 }
 
                 disposedValue = true;
