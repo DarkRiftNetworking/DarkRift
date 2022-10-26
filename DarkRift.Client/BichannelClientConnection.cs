@@ -335,7 +335,8 @@ namespace DarkRift.Client
         }
 
         /// <summary>
-        ///     Receives TCP header followed by a TCP body, looping the operation becomes asynchronous.
+        ///     Receives TCP header followed by a TCP body. The operation
+        ///     may exit early in an incomplete state.
         /// </summary>
         private void PollReceiveTcpHeaderAndBody()
         {
@@ -345,39 +346,8 @@ namespace DarkRift.Client
             {
                 if (tcpReceiveState == TcpReceiveState.ReceiveHeader)
                 {
-                    while (!IsHeaderReceiveComplete(args))
-                    {
-                        UpdateBufferPointers(args);
-
-                        int bytesAvailable = tcpSocket.Available;
-                        int bytesReceived;
-
-                        if (bytesAvailable == 0)
-                            return;
-
-                        try
-                        {
-                            bytesReceived = tcpSocket.Receive(args.Buffer, args.Offset, Math.Min(bytesAvailable, args.Count), SocketFlags.None);
-                            tcpBytesTransferred = bytesReceived;
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            HandleDisconnectionDuringTcpReceive(args);
-                            return;
-                        }
-                        catch (SocketException ex)
-                        {
-                            if (ex.SocketErrorCode == SocketError.WouldBlock)
-                                return;
-
-                            args.SocketError = ex.SocketErrorCode;
-                            HandleDisconnectionDuringTcpReceive(args);
-                            return;
-                        }
-
-                        if (bytesReceived == 0)
-                            return;
-                    }
+                    if (!PollReceiveTcpNonBlocking(args))
+                        return;
 
                     int bodyLength = ProcessHeader(args);
                     SetupReceiveBody(args, bodyLength);
@@ -385,39 +355,8 @@ namespace DarkRift.Client
 
                 if (tcpReceiveState == TcpReceiveState.ReceiveBody)
                 {
-                    while (!IsBodyReceiveComplete(args))
-                    {
-                        UpdateBufferPointers(args);
-
-                        int bytesAvailable = tcpSocket.Available;
-                        int bytesReceived;
-
-                        if (bytesAvailable == 0)
-                            return;
-
-                        try
-                        {
-                            bytesReceived = tcpSocket.Receive(args.Buffer, args.Offset, Math.Min(bytesAvailable, args.Count), SocketFlags.None);
-                            tcpBytesTransferred = bytesReceived;
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            HandleDisconnectionDuringTcpReceive(args);
-                            return;
-                        }
-                        catch (SocketException ex)
-                        {
-                            if (ex.SocketErrorCode == SocketError.WouldBlock)
-                                return;
-
-                            args.SocketError = ex.SocketErrorCode;
-                            HandleDisconnectionDuringTcpReceive(args);
-                            return;
-                        }
-
-                        if (bytesReceived == 0)
-                            return;
-                    }
+                    if (!PollReceiveTcpNonBlocking(args))
+                        return;
 
                     try
                     {
@@ -432,31 +371,51 @@ namespace DarkRift.Client
             }
         }
 
-        /// <summary>
-        ///     Checks if a TCP header was received in its entirety.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>If the whole header has been received.</returns>
-        private bool IsHeaderReceiveComplete(SocketAsyncEventArgs args)
+        private bool IsReceiveComplete(SocketAsyncEventArgs args)
         {
             if (tcpBytesTransferred == 0)
                 return false;
 
-            MessageBuffer headerBuffer = (MessageBuffer)args.UserToken;
+            MessageBuffer buffer = (MessageBuffer)args.UserToken;
 
-            return args.Offset + tcpBytesTransferred - headerBuffer.Offset >= headerBuffer.Count;
+            return args.Offset + tcpBytesTransferred - buffer.Offset >= buffer.Count;
         }
 
-        /// <summary>
-        ///     Checks if a TCP body was received in its entirety.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>If the whole body has been received.</returns>
-        private bool IsBodyReceiveComplete(SocketAsyncEventArgs args)
+        private bool PollReceiveTcpNonBlocking(SocketAsyncEventArgs args)
         {
-            MessageBuffer bodyBuffer = (MessageBuffer)args.UserToken;
+            while (!IsReceiveComplete(args))
+            {
+                UpdateBufferPointers(args);
 
-            return args.Offset + tcpBytesTransferred - bodyBuffer.Offset >= bodyBuffer.Count;
+                int bytesAvailable = tcpSocket.Available;
+
+                if (bytesAvailable == 0)
+                    return false;
+
+                try
+                {
+                    tcpBytesTransferred = tcpSocket.Receive(args.Buffer, args.Offset, Math.Min(bytesAvailable, args.Count), SocketFlags.None);
+                }
+                catch (ObjectDisposedException)
+                {
+                    HandleDisconnectionDuringTcpReceive(args);
+                    return false;
+                }
+                catch (SocketException ex)
+                {
+                    if (ex.SocketErrorCode == SocketError.WouldBlock)
+                        return false;
+
+                    args.SocketError = ex.SocketErrorCode;
+                    HandleDisconnectionDuringTcpReceive(args);
+                    return false;
+                }
+
+                if (tcpBytesTransferred == 0)
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>
