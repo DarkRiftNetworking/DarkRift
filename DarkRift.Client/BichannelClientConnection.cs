@@ -4,6 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+using DarkRift.Dispatching;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,8 +83,6 @@ namespace DarkRift.Client
         private SocketAsyncEventArgs tcpArgs;
         private TcpReceiveState tcpReceiveState;
         private int tcpBytesTransferred;
-        private readonly ManualResetEvent stopPollingSignal = new ManualResetEvent(false);
-        private readonly ManualResetEvent stoppedPollingSignal = new ManualResetEvent(false);
 
         private enum TcpReceiveState
         {
@@ -232,9 +231,7 @@ namespace DarkRift.Client
 
             //Calling synchronously in game loop would probably be better as it keeps messages in socket buffer instead.
 
-            var pollingThread = new Thread(DoPolling);
-            pollingThread.Name = nameof(BichannelClientConnection) + "." + nameof(DoPolling);
-            pollingThread.Start();
+            PollingThread.AddWork(DoPolling);
         }
 
         /// <inheritdoc/>
@@ -257,21 +254,20 @@ namespace DarkRift.Client
             };
             args.UserToken = message;
 
-            args.Completed += TcpSendCompleted;
-
-            bool completingAsync;
             try
             {
                 tcpSocket.Send(args.BufferList);
-                completingAsync = false;
+            }
+            catch (SocketException ex)
+            {
+                args.SocketError = ex.SocketErrorCode;
             }
             catch (Exception)
             {
                 return false;
             }
 
-            if (!completingAsync)
-                TcpSendCompleted(this, args);
+            TcpSendCompleted(args);
 
             return true;
         }
@@ -315,9 +311,7 @@ namespace DarkRift.Client
 
             connectionState = ConnectionState.Disconnected;
 
-            stopPollingSignal.Set();
-            stoppedPollingSignal.WaitOne();
-
+            PollingThread.RemoveWork(DoPolling);
             
             tcpSocket.Shutdown(SocketShutdown.Both);
 
@@ -337,18 +331,13 @@ namespace DarkRift.Client
 
         private void DoPolling()
         {
-            while (!stopPollingSignal.WaitOne(1))
-            {
-                PollReceiveHeaderAndBody();
-            }
-
-            stoppedPollingSignal.Set();
+            PollReceiveTcpHeaderAndBody();
         }
 
         /// <summary>
         ///     Receives TCP header followed by a TCP body, looping the operation becomes asynchronous.
         /// </summary>
-        private void PollReceiveHeaderAndBody()
+        private void PollReceiveTcpHeaderAndBody()
         {
             var args = tcpArgs;
 
@@ -514,17 +503,10 @@ namespace DarkRift.Client
         private void HandleDisconnectionDuringTcpReceive(SocketAsyncEventArgs args)
         {
             Disconnect(args.SocketError);
-
-            /*
-            MessageBuffer buffer = (MessageBuffer)args.UserToken;
-            buffer.Dispose();
-
-            ObjectCache.ReturnSocketAsyncEventArgs(args);
-            */
         }
 
         /// <summary>
-        ///     Setup a lsiten operation for a new TCP header.
+        ///     Setup a listen operation for a new TCP header.
         /// </summary>
         /// <param name="args">The socket args to use during the operation.</param>
         private void SetupReceiveHeader(SocketAsyncEventArgs args)
@@ -614,14 +596,11 @@ namespace DarkRift.Client
         /// <summary>
         ///     Called when a TCP send has completed.
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TcpSendCompleted(object sender, SocketAsyncEventArgs e)
+        private void TcpSendCompleted(SocketAsyncEventArgs e)
         {
             if (e.SocketError != SocketError.Success)
                 Disconnect(e.SocketError);
-
-            e.Completed -= TcpSendCompleted;
 
             //Always dispose buffer when completed!
             ((MessageBuffer)e.UserToken).Dispose();
@@ -657,8 +636,7 @@ namespace DarkRift.Client
             {
                 connectionState = ConnectionState.Disconnected;
 
-                stopPollingSignal.Set();
-                stoppedPollingSignal.WaitOne();
+                PollingThread.RemoveWork(DoPolling);
 
                 HandleDisconnection(error);
             }
