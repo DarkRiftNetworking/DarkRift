@@ -11,7 +11,6 @@ namespace DarkRift.Dispatching
         private static readonly object myLock = new object();
         private static bool threadStarted;
         private static readonly List<Action> workList = new List<Action>();
-        private static Action[] threadsafeWorkList = new Action[0];
 
         private static readonly ManualResetEvent stopEvent = new ManualResetEvent(false);
 
@@ -20,7 +19,6 @@ namespace DarkRift.Dispatching
             lock (myLock)
             {
                 workList.Add(work);
-                threadsafeWorkList = workList.ToArray();
 
                 if (!threadStarted)
                 {
@@ -31,11 +29,16 @@ namespace DarkRift.Dispatching
 
         public static void RemoveWork(Action work)
         {
+            //this blocking on a polling iteration is intended
             lock (myLock)
             {
-                workList.Remove(work);
-                threadsafeWorkList = workList.ToArray();
+                InternalRemoveWork(work);
             }
+        }
+
+        private static void InternalRemoveWork(Action work)
+        {
+            workList.Remove(work);
         }
 
         public static void StopThread()
@@ -59,30 +62,40 @@ namespace DarkRift.Dispatching
         private static void PollingThreadLogic()
         {
             var rng = new Random();
-
+            
             while (!stopEvent.WaitOne(1))
             {
-                Action[] work = threadsafeWorkList;
-                rng.Shuffle(work);
-
-                foreach (Action item in work)
+                lock (myLock)
                 {
-                    try
-                    {
-                        item?.Invoke();
-                    }
-                    catch (Exception ex)
-                    {
-                        RemoveWork(item);
-                        ExceptionHandler?.Invoke(ex);
-                    }
+                    PollingIteration(rng);
                 }
             }
         }
 
-        private static void Shuffle<T>(this Random rng, T[] array)
+        private static void PollingIteration(Random rng)
         {
-            int n = array.Length;
+            var work = workList;
+            rng.Shuffle(work);
+
+            for (int i = work.Count - 1; i >= 0; --i)
+            {
+                var item = work[i];
+
+                try
+                {
+                    item?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    InternalRemoveWork(item);
+                    ExceptionHandler?.Invoke(ex);
+                }
+            }
+        }
+
+        private static void Shuffle<T>(this Random rng, IList<T> array)
+        {
+            int n = array.Count;
             while (n > 1)
             {
                 int k = rng.Next(n--);

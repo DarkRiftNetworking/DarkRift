@@ -197,14 +197,15 @@ namespace DarkRift.Client
                 throw;
             }
 
+            //tcp.Socket.Blocking = false;
+            //tcp.CheckAvailable = false;
+
             tcp.ResetBuffers();
             udp.ResetBuffers();
 
             //Mark connected to allow sending
             connectionState = ConnectionState.Connected;
-
-            //Calling synchronously in game loop would probably be better as it keeps messages in socket buffer instead.
-
+            
             PollingThread.AddWork(DoPolling);
         }
 
@@ -252,7 +253,10 @@ namespace DarkRift.Client
                 throw new ArgumentException("Endpoint name must either be TCP or UDP");
         }
 
-        private void DoPolling()
+        /// <summary>
+        /// Explicitly performs a step of message polling.
+        /// </summary>
+        public void DoPolling()
         {
             tcp.PollReceiveHeaderAndBodyNonBlocking();
             udp.PollReceiveBodyNonBlocking();
@@ -290,6 +294,8 @@ namespace DarkRift.Client
                 if (disposing)
                 {
                     Disconnect();
+
+                    PollingThread.RemoveWork(DoPolling);
 
                     tcp.Socket.Close();
                     udp.Socket.Close();

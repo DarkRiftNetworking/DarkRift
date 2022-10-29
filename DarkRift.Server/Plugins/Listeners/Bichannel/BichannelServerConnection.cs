@@ -4,9 +4,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+using DarkRift.Dispatching;
 using DarkRift.Server.Metrics;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -22,12 +24,26 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// <summary>
         ///     Is this client able to send or not.
         /// </summary>
-        public bool CanSend { get; private set; }
+        public bool CanSend
+        {
+            get
+            {
+                lock (myLock)
+                    return lockedCanSend;
+            }
+        }
 
         /// <summary>
         ///     Is this client currently listening for messages or not.
         /// </summary>
-        public bool IsListening { get; private set; }
+        public bool IsListening
+        {
+            get
+            {
+                lock (myLock)
+                    return lockedIsListening;
+            }
+        }
 
         /// <summary>
         ///     The end point of the remote client on TCP.
@@ -43,8 +59,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         ///     Whether Nagel's algorithm should be disabled or not.
         /// </summary>
         public bool NoDelay {
-            get => tcpSocket.NoDelay;
-            set => tcpSocket.NoDelay = value;
+            get => tcp.Socket.NoDelay;
+            set => tcp.Socket.NoDelay = value;
         }
 
         /// <summary>
@@ -57,11 +73,6 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
         /// <inheritdoc/>
         public override IEnumerable<IPEndPoint> RemoteEndPoints => new IPEndPoint[2] { RemoteTcpEndPoint, RemoteUdpEndPoint };
-
-        /// <summary>
-        ///     The socket used in TCP communication.
-        /// </summary>
-        private readonly Socket tcpSocket;
 
         /// <summary>
         ///     The listener used in UDP communication.
@@ -88,16 +99,22 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// </summary>
         private readonly ICounterMetric bytesReceivedCounterUdp;
 
+        private bool lockedIsListening;
+        private bool lockedCanSend;
+        private readonly object myLock = new object();
+
+        private readonly SynchronousTcpSocket tcp;
+
         internal BichannelServerConnection(Socket tcpSocket, BichannelListenerBase networkListener, IPEndPoint udpEndPoint, long authToken, MetricsCollector metricsCollector)
         {
-            this.tcpSocket = tcpSocket;
+            this.tcp = new SynchronousTcpSocket(tcpSocket, UnregisterAndDisconnect, HandleTcpMessage);
             this.networkListener = networkListener;
             this.RemoteTcpEndPoint = (IPEndPoint)tcpSocket.RemoteEndPoint;
             this.RemoteUdpEndPoint = udpEndPoint;
             this.AuthToken = authToken;
 
             //Mark connected to allow sending
-            CanSend = true;
+            lockedCanSend = true;
 
             TaggedMetricBuilder<ICounterMetric> bytesSentCounter = metricsCollector.Counter("bytes_sent", "The number of bytes sent to clients by the listener.", "protocol");
             TaggedMetricBuilder<ICounterMetric> bytesReceivedCounter = metricsCollector.Counter("bytes_received", "The number of bytes received from clients by the listener.", "protocol");
@@ -105,6 +122,9 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             bytesSentCounterUdp = bytesSentCounter.WithTags("udp");
             bytesReceivedCounterTcp = bytesReceivedCounter.WithTags("tcp");
             bytesReceivedCounterUdp = bytesReceivedCounter.WithTags("udp");
+
+            tcp.CheckBodyLength = CheckTcpBodyLength;
+            tcp.OnSendCompleted = TcpSendCompleted;
         }
         
         /// <summary>
@@ -112,21 +132,19 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// </summary>
         public override void StartListening()
         {
-            //Setup the TCP socket to receive a header
-            SocketAsyncEventArgs tcpArgs = ObjectCache.GetSocketAsyncEventArgs();
-            tcpArgs.BufferList = null;
+            //tcp.Socket.Blocking = false;
+            //tcp.CheckAvailable = false;
 
-            SetupReceiveHeader(tcpArgs);
-            // TODO can throw an object disposed exception here if we connect and disconnect very quickly
-            bool headerCompletingAsync = tcpSocket.ReceiveAsync(tcpArgs);
-            if (!headerCompletingAsync)
-                AsyncReceiveHeaderCompleted(this, tcpArgs);
+            tcp.ResetBuffers();
 
             //Register for UDP Messages
             networkListener.RegisterUdpConnection(this);
 
             //Mark as listening
-            IsListening = true;
+            lock (myLock)
+                lockedIsListening = true;
+
+            PollingThread.AddWork(DoPolling);
         }
 
         /// <inheritdoc/>
@@ -135,38 +153,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             if (!CanSend)
                 return false;
 
-            byte[] header = new byte[4];        // TODO pool!
-            BigEndianHelper.WriteBytes(header, 0, message.Count);
-
-            SocketAsyncEventArgs args = ObjectCache.GetSocketAsyncEventArgs();
-            args.SocketError = SocketError.Success;
-
-            args.SetBuffer(null, 0, 0);
-            args.BufferList = new List<ArraySegment<byte>>()    // TODO pooollllllll!
-            {
-                new ArraySegment<byte>(header),
-                new ArraySegment<byte>(message.Buffer, message.Offset, message.Count)
-            };
-            args.UserToken = message;
-
-            args.Completed += TcpSendCompleted;
-
-
-            bool completingAsync;
-            try
-            {
-                tcpSocket.Send(args.BufferList);
-                completingAsync = false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            if (!completingAsync)
-                TcpSendCompleted(this, args);
-
-            return true;
+            return tcp.SendMessageReliable(message);
         }
 
         /// <inheritdoc/>
@@ -184,12 +171,17 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// <returns>Whether the disconnect was successful.</returns>
         public override bool Disconnect()
         {
-            if (!CanSend && !IsListening)
-                return false;
+            lock (myLock)
+            {
+                if (!lockedCanSend && !lockedIsListening)
+                    return false;
+            }
+            
+            PollingThread.RemoveWork(DoPolling);
 
             try
             {
-                tcpSocket.Shutdown(SocketShutdown.Both);
+                tcp.Shutdown();
             }
             catch (SocketException)
             {
@@ -198,333 +190,20 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
             networkListener.UnregisterUdpConnection(this);
 
-            CanSend = false;
-            IsListening = false;
+            lock (myLock)
+            {
+                lockedCanSend = false;
+                lockedIsListening = false;
+            }
 
             return true;
         }
 
-        /// <summary>
-        ///     Receives TCP header followed by a TCP body, looping until the operation becomes asynchronous.
-        /// </summary>
-        /// <param name="args">The socket args to use during the operations.</param>
-        private void ReceiveHeaderAndBody(SocketAsyncEventArgs args)
+        private void HandleTcpMessage(MessageBuffer buffer, SendMode sendMode)
         {
-            while (true)
-            {
-                if (!WasHeaderReceiveSucessful(args))
-                {
-                    HandleDisconnectionDuringHeaderReceive(args);
-                    return;
-                }
+            this.HandleMessageReceived(buffer, sendMode);
 
-                if (!IsHeaderReceiveComplete(args))
-                {
-                    UpdateBufferPointers(args);
-
-                    try
-                    {
-                        bool headerContinueCompletingAsync = tcpSocket.ReceiveAsync(args);
-                        if (headerContinueCompletingAsync)
-                            return;
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        HandleDisconnectionDuringHeaderReceive(args);
-                        return;
-                    }
-
-                    continue;
-                }
-
-                int bodyLength = ProcessHeader(args);
-                if (bodyLength >= networkListener.MaxTcpBodyLength)
-                {
-                    Strike("TCP body length was above allowed limits.", 10);
-                    return;
-                }
-
-                SetupReceiveBody(args, bodyLength);
-                while (true)
-                {
-                    try
-                    {
-                        bool bodyCompletingAsync = tcpSocket.ReceiveAsync(args);
-                        if (bodyCompletingAsync)
-                            return;
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        HandleDisconnectionDuringBodyReceive(args);
-                        return;
-                    }
-
-                    if (!WasBodyReceiveSucessful(args))
-                    {
-                        HandleDisconnectionDuringBodyReceive(args);
-                        return;
-                    }
-
-                    if (IsBodyReceiveComplete(args))
-                        break;
-
-                    UpdateBufferPointers(args);
-                }
-                
-                MessageBuffer bodyBuffer = ProcessBody(args);
-
-                // Start next receive before invoking events
-                SetupReceiveHeader(args);
-                bool headerCompletingAsync;
-                try
-                {
-                    headerCompletingAsync = tcpSocket.ReceiveAsync(args);
-                }
-                catch (ObjectDisposedException)
-                {
-                    HandleDisconnectionDuringHeaderReceive(args);
-                    return;
-                }
-
-                ProcessMessage(bodyBuffer);
-
-                if (headerCompletingAsync)
-                    return;
-            }
-        }
-
-        /// <summary>
-        ///     Event handler for when a TCP header has been received.
-        /// </summary>
-        /// <param name="sender">The invoking object.</param>
-        /// <param name="args">The socket args used during the operation.</param>
-        private void AsyncReceiveHeaderCompleted(object sender, SocketAsyncEventArgs args)
-        {
-            //We can move straight back into main loop
-            ReceiveHeaderAndBody(args);
-        }
-
-        /// <summary>
-        ///     Event handler for when a TCP body has been received.
-        /// </summary>
-        /// <param name="sender">The invoking object.</param>
-        /// <param name="args">The socket args used during the operation.</param>
-        private void AsyncReceiveBodyCompleted(object sender, SocketAsyncEventArgs args)
-        {
-            while (true)
-            {
-                if (!WasBodyReceiveSucessful(args))
-                {
-                    HandleDisconnectionDuringBodyReceive(args);
-                    return;
-                }
-
-                if (IsBodyReceiveComplete(args))
-                    break;
-
-                UpdateBufferPointers(args);
-
-                try
-                {
-                    bool bodyContinueCompletingAsync = tcpSocket.ReceiveAsync(args);
-                    if (bodyContinueCompletingAsync)
-                        return;
-                }
-                catch (ObjectDisposedException)
-                {
-                    HandleDisconnectionDuringBodyReceive(args);
-                    return;
-                }
-            }
-
-            MessageBuffer bodyBuffer = ProcessBody(args);
-
-            // Start next receive before invoking events
-            SetupReceiveHeader(args);
-            bool headerCompletingAsync;
-            try
-            {
-                headerCompletingAsync = tcpSocket.ReceiveAsync(args);
-            }
-            catch (ObjectDisposedException)
-            {
-                HandleDisconnectionDuringHeaderReceive(args);
-                return;
-            }
-
-            ProcessMessage(bodyBuffer);
-
-            if (headerCompletingAsync)
-                return;
-
-            //Now move back into main loop until no more data is present
-            ReceiveHeaderAndBody(args);
-        }
-
-        /// <summary>
-        ///     Checks if a TCP header was received in its entirety.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>If the whole header has been received.</returns>
-        private bool IsHeaderReceiveComplete(SocketAsyncEventArgs args)
-        {
-            MessageBuffer headerBuffer = (MessageBuffer)args.UserToken;
-
-            return args.Offset + args.BytesTransferred - headerBuffer.Offset >= headerBuffer.Count;
-        }
-
-        /// <summary>
-        ///     Checks if a TCP body was received in its entirety.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>If the whole body has been received.</returns>
-        private bool IsBodyReceiveComplete(SocketAsyncEventArgs args)
-        {
-            MessageBuffer bodyBuffer = (MessageBuffer)args.UserToken;
-
-            return args.Offset + args.BytesTransferred - bodyBuffer.Offset >= bodyBuffer.Count;
-        }
-
-        /// <summary>
-        ///     Processes a TCP header received.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>The number of bytes in the body.</returns>
-        private int ProcessHeader(SocketAsyncEventArgs args)
-        {
-            MessageBuffer headerBuffer = (MessageBuffer)args.UserToken;
-
-            int bodyLength = BigEndianHelper.ReadInt32(headerBuffer.Buffer, headerBuffer.Offset);
-
-            headerBuffer.Dispose();
-
-            args.Completed -= AsyncReceiveHeaderCompleted;
-
-            return bodyLength;
-        }
-
-        /// <summary>
-        ///     Processes a TCP body received.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>The buffer received.</returns>
-        private MessageBuffer ProcessBody(SocketAsyncEventArgs args)
-        {
-            args.Completed -= AsyncReceiveBodyCompleted;
-
-            return (MessageBuffer)args.UserToken;
-        }
-
-        /// <summary>
-        ///     Invokes message recevied events and cleans up.
-        /// </summary>
-        /// <param name="buffer">The TCP body received.</param>
-        private void ProcessMessage(MessageBuffer buffer)
-        {
-            HandleMessageReceived(buffer, SendMode.Reliable);
-
-            int bytesReceived = buffer.Count;
-            buffer.Dispose();
-
-            bytesReceivedCounterTcp.Increment(bytesReceived + 4);
-        }
-
-        /// <summary>
-        ///     Checks if a TCP header was received correctly.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>If the receive completed correctly.</returns>
-        private bool WasHeaderReceiveSucessful(SocketAsyncEventArgs args)
-        {
-            return args.BytesTransferred != 0 && args.SocketError == SocketError.Success;
-        }
-
-        /// <summary>
-        ///     Checks if a TCP body was received correctly.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        /// <returns>If the receive completed correctly.</returns>
-        private bool WasBodyReceiveSucessful(SocketAsyncEventArgs args)
-        {
-            return args.BytesTransferred != 0 && args.SocketError == SocketError.Success;
-        }
-
-        /// <summary>
-        ///     Handles a disconnection while receiving a TCP header.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        private void HandleDisconnectionDuringHeaderReceive(SocketAsyncEventArgs args)
-        {
-            try
-            {
-                UnregisterAndDisconnect(args.SocketError);
-            }
-            finally
-            {
-                MessageBuffer buffer = (MessageBuffer)args.UserToken;
-                buffer.Dispose();
-
-                args.Completed -= AsyncReceiveHeaderCompleted;
-                ObjectCache.ReturnSocketAsyncEventArgs(args);
-            }
-        }
-
-        /// <summary>
-        ///     Handles a disconnection while receiving a TCP body.
-        /// </summary>
-        /// <param name="args">The socket args used during the operation.</param>
-        private void HandleDisconnectionDuringBodyReceive(SocketAsyncEventArgs args)
-        {
-            try
-            {
-                UnregisterAndDisconnect(args.SocketError);
-            }
-            finally
-            {
-                MessageBuffer buffer = (MessageBuffer)args.UserToken;
-                buffer.Dispose();
-
-                args.Completed -= AsyncReceiveBodyCompleted;
-                ObjectCache.ReturnSocketAsyncEventArgs(args);
-            }
-        }
-
-        /// <summary>
-        ///     Setup a listen operation for a new TCP header.
-        /// </summary>
-        /// <param name="args">The socket args to use during the operation.</param>
-        private void SetupReceiveHeader(SocketAsyncEventArgs args)
-        {
-            MessageBuffer headerBuffer = MessageBuffer.Create(4);
-            headerBuffer.Count = 4;
-
-            args.SetBuffer(headerBuffer.Buffer, headerBuffer.Offset, 4);
-            args.UserToken = headerBuffer;
-            args.Completed += AsyncReceiveHeaderCompleted;
-        }
-
-        /// <summary>
-        ///     Setup a listen operation for a new TCP body.
-        /// </summary>
-        /// <param name="args">The socket args to use during the operation.</param>
-        /// <param name="length">The number of bytes in the body.</param>
-        private void SetupReceiveBody(SocketAsyncEventArgs args, int length)
-        {
-            MessageBuffer bodyBuffer = MessageBuffer.Create(length);
-            bodyBuffer.Count = length;
-
-            args.SetBuffer(bodyBuffer.Buffer, bodyBuffer.Offset, length);
-            args.UserToken = bodyBuffer;
-            args.Completed += AsyncReceiveBodyCompleted;
-        }
-
-        /// <summary>
-        ///     Updates the pointers on the buffer to continue a receive operation.
-        /// </summary>
-        /// <param name="args">The socket args to update.</param>
-        private void UpdateBufferPointers(SocketAsyncEventArgs args)
-        {
-            args.SetBuffer(args.Offset + args.BytesTransferred, args.Count - args.BytesTransferred);
+            bytesReceivedCounterTcp.Increment(buffer.Count + 4);
         }
 
         /// <summary>
@@ -535,29 +214,6 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             HandleMessageReceived(buffer, SendMode.Unreliable);
 
             bytesReceivedCounterUdp.Increment(buffer.Count);
-        }
-
-        /// <summary>
-        ///     Called when a TCP send has completed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TcpSendCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            if (e.SocketError != SocketError.Success)
-                UnregisterAndDisconnect(e.SocketError);
-            
-            e.Completed -= TcpSendCompleted;
-
-            MessageBuffer messageBuffer = (MessageBuffer)e.UserToken;
-            int bytesSent = messageBuffer.Count;
-
-            //Always dispose buffer when completed!
-            messageBuffer.Dispose();
-
-            ObjectCache.ReturnSocketAsyncEventArgs(e);
-
-            bytesSentCounterTcp.Increment(bytesSent + 4);
         }
 
         /// <summary>
@@ -573,18 +229,43 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             bytesSentCounterUdp.Increment(bytesSent);
         }
 
+        private void TcpSendCompleted(MessageBuffer messageBuffer)
+        {
+            bytesSentCounterTcp.Increment(messageBuffer.Count + 4);
+        }
+
+        private bool CheckTcpBodyLength(int bodyLength)
+        {
+            if (bodyLength >= networkListener.MaxTcpBodyLength)
+            {
+                Strike("TCP body length was above allowed limits.", 10);
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         ///     Called when a socket error has occured.
         /// </summary>
         /// <param name="error"></param>
         private void UnregisterAndDisconnect(SocketError error)
         {
-            if (CanSend || IsListening)
+            bool canUnregister = false;
+            lock (myLock)
+            {
+                canUnregister = lockedCanSend || lockedIsListening;
+            }
+
+            if (canUnregister)
             {
                 networkListener.UnregisterUdpConnection(this);
 
-                CanSend = false;
-                IsListening = false;
+                lock (myLock)
+                {
+                    lockedCanSend = false;
+                    lockedIsListening = false;
+                }
 
                 HandleDisconnection(error);
             }
@@ -601,6 +282,14 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 throw new ArgumentException("Endpoint name must either be TCP or UDP");
         }
 
+        /// <summary>
+        /// Explicitly performs a step of message polling.
+        /// </summary>
+        public void DoPolling()
+        {
+            tcp.PollReceiveHeaderAndBodyNonBlocking();
+        }
+
 #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
@@ -610,10 +299,18 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             {
                 if (disposing)
                 {
-                    if (IsListening || CanSend)
+                    bool shouldDisconnect = false;
+                    lock (myLock)
+                    {
+                        shouldDisconnect = lockedIsListening || lockedCanSend;
+                    }
+
+                    if (shouldDisconnect)
                         Disconnect();
 
-                    tcpSocket.Close();
+                    PollingThread.RemoveWork(DoPolling);
+
+                    tcp.Dispose();
                 }
 
                 disposedValue = true;

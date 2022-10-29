@@ -12,6 +12,8 @@ namespace DarkRift
 
         private readonly Action<SocketError> disconnect;
         private readonly Action<MessageBuffer, SendMode> handleMessage;
+        public Func<int, bool> CheckBodyLength { get; set; }
+        public Action<MessageBuffer> OnSendCompleted { get; set; }
 
         private SocketAsyncEventArgs tcpArgs;
         private TcpReceiveState tcpReceiveState;
@@ -97,6 +99,10 @@ namespace DarkRift
                         return;
 
                     int bodyLength = ProcessHeader(args);
+                    if (CheckBodyLength != null && !CheckBodyLength(bodyLength))
+                    {
+                        return;
+                    }
                     SetupReceiveBody(args, bodyLength);
                 }
 
@@ -128,6 +134,8 @@ namespace DarkRift
             return args.Offset + tcpBytesTransferred - buffer.Offset >= buffer.Count;
         }
 
+        public bool CheckAvailable { get; set; } = true;
+
         private bool PollReceiveTcpNonBlocking(SocketAsyncEventArgs args)
         {
             while (!IsTcpReceiveComplete(args))
@@ -136,7 +144,7 @@ namespace DarkRift
 
                 int bytesAvailable = Socket.Available;
 
-                if (bytesAvailable == 0)
+                if (CheckAvailable && bytesAvailable == 0)
                     return false;
 
                 try
@@ -160,7 +168,10 @@ namespace DarkRift
                 }
 
                 if (tcpBytesTransferred == 0)
+                {
+                    HandleDisconnectionDuringTcpReceive(args);
                     return false;
+                }
             }
 
             return true;
@@ -262,8 +273,11 @@ namespace DarkRift
             if (e.SocketError != SocketError.Success)
                 disconnect(e.SocketError);
 
+            MessageBuffer messageBuffer = (MessageBuffer)e.UserToken;
+            OnSendCompleted?.Invoke(messageBuffer);
+
             //Always dispose buffer when completed!
-            ((MessageBuffer)e.UserToken).Dispose();
+            messageBuffer.Dispose();
 
             ObjectCache.ReturnSocketAsyncEventArgs(e);
         }
