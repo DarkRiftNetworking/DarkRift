@@ -22,13 +22,11 @@ namespace DarkRift.Server
         [ThreadStatic]
         private static ObjectPool<MessageReceivedEventArgs> messageReceivedEventArgsPool;
 
-#if PRO
         /// <summary>
         ///     Object pool of <see cref="ServerMessageReceivedEventArgs"/> objects.
         /// </summary>
         [ThreadStatic]
         private static ObjectPool<ServerMessageReceivedEventArgs> serverMessageReceivedEventArgsPool;
-#endif
 
         /// <summary>
         ///     The settings for all object caches.
@@ -66,9 +64,7 @@ namespace DarkRift.Server
             lock (settingsLock)
             {
                 messageReceivedEventArgsPool = new ObjectPool<MessageReceivedEventArgs>(settings.MaxMessageReceivedEventArgs, () => new MessageReceivedEventArgs());
-#if PRO
                 serverMessageReceivedEventArgsPool = new ObjectPool<ServerMessageReceivedEventArgs>(settings.MaxServerMessageReceivedEventArgs, () => new ServerMessageReceivedEventArgs());
-#endif
             }
 
             initialized = true;
@@ -111,7 +107,6 @@ namespace DarkRift.Server
             messageReceivedEventArgsPool.ReturnInstance(writer);
         }
 
-#if PRO
         /// <summary>
         ///     Returns a pooled <see cref="ServerMessageReceivedEventArgs"/> or generates a new one if there are none available.
         /// </summary>
@@ -148,6 +143,5 @@ namespace DarkRift.Server
 #endif
             serverMessageReceivedEventArgsPool.ReturnInstance(writer);
         }
-#endif
     }
 }

@@ -36,23 +36,15 @@ namespace DarkRift.Server
         /// </remarks>
         public virtual Command[] Commands => new Command[0];
 
-#if PRO
         /// <summary>
         /// The server's metrics manager.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         public IMetricsManager MetricsManager { get; }
 
         /// <summary>
         ///     Metrics collector for the plugin.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         protected MetricsCollector MetricsCollector { get; }
-#endif
 
         /// <summary>
         ///     The handler for writing events.
@@ -70,10 +62,8 @@ namespace DarkRift.Server
             writeEventHandler = pluginLoadData.WriteEventHandler;
 #pragma warning restore CS0618
 
-#if PRO
             MetricsManager = pluginLoadData.MetricsManager;
             MetricsCollector= pluginLoadData.MetricsCollector;
-#endif
         }
 
         /// <summary>
@@ -92,33 +82,21 @@ namespace DarkRift.Server
         ///     Method that will be called when the server and all plugins have loaded.
         /// </summary>
         /// <param name="args">The details of the load.</param>
-        /// <remarks>Pro only.</remarks>
-#if PRO
-        protected
-#endif
-        internal virtual void Loaded(LoadedEventArgs args)
+        protected internal virtual void Loaded(LoadedEventArgs args)
         { }
 
         /// <summary>
         ///     Method that will be called when the plugin is installed.
         /// </summary>
         /// <param name="args">The details of the installation.</param>
-        /// <remarks>Pro only.</remarks>
-#if PRO
-        protected
-#endif
-        internal virtual void Install(InstallEventArgs args)
+        protected internal virtual void Install(InstallEventArgs args)
         { }
 
         /// <summary>
         ///     Method that will be called when the plugin is upgraded.
         /// </summary>
         /// <param name="args">The details of the upgrade.</param>
-        /// <remarks>Pro only.</remarks>
-#if PRO
-        protected
-#endif
-        internal virtual void Upgrade(UpgradeEventArgs args)
+        protected internal virtual void Upgrade(UpgradeEventArgs args)
         { }
     }
 }

@@ -4,7 +4,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#if PRO
 using System;
 using System.Collections.Specialized;
 using System.Linq;
@@ -244,4 +243,3 @@ namespace DarkRift.Server.Plugins.Matchmaking.Tests
         }
     }
 }
-#endif

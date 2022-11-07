@@ -3,7 +3,6 @@
 	I WANT to be able to send messages between server and client
 	SO THAT I can exchange game data
 
-@Free
 Scenario Outline: I can send a message from client to server
 	Given I have a running server from Server.config
 	And 1 client connected
@@ -17,7 +16,6 @@ Scenario Outline: I can send a message from client to server
 	| reliably   |
 	| unreliably |
 
-@Free
 Scenario Outline: I can send a message from server to client
 	Given I have a running server from Server.config
 	And 1 client connected
@@ -31,7 +29,6 @@ Scenario Outline: I can send a message from server to client
 	| reliably   |
 	| unreliably |
 
-@Pro
 Scenario Outline: I can get ping the from the client
 	Given I have a running server from Server.config
 	And the server acknowledges ping messages after 55ms
@@ -47,7 +44,6 @@ Scenario Outline: I can get ping the from the client
 	| reliably   |
 	| unreliably |
 
-@Pro
 Scenario Outline: I can get the ping from the server
 	Given I have a running server from Server.config
 	And 1 client connected
@@ -63,7 +59,6 @@ Scenario Outline: I can get the ping from the server
 	| reliably   |
 	| unreliably |
 
-@Free
 Scenario Outline: I can stress test client to server
 	Given I have a running server from Server.config
 	And <clients> clients connected
@@ -80,7 +75,6 @@ Scenario Outline: I can stress test client to server
 	| 50      | 1000     |
 	| 50      | 10000    |
     
-@Free
 Scenario Outline: I can stress test client to server with dispatcher enabled on server
 	Given I have a running server from Server.config
 	And server 0 is using the dispatcher
@@ -98,7 +92,6 @@ Scenario Outline: I can stress test client to server with dispatcher enabled on 
 	| 50      | 1000     |
 	| 50      | 10000    |
 
-@Free
 Scenario Outline: I can stress test server to client
 	Given I have a running server from Server.config
 	And <clients> clients connected
@@ -115,7 +108,6 @@ Scenario Outline: I can stress test server to client
 	| 50      | 1000     |
 	| 50      | 10000    |
     
-@Free
 Scenario Outline: I can stress test server to client with dispatcher enabled on server
 	Given I have a running server from Server.config
 	And server 0 is using the dispatcher
@@ -133,7 +125,6 @@ Scenario Outline: I can stress test server to client with dispatcher enabled on 
 	| 50      | 1000     |
 	| 50      | 10000    |
 
-@Free
 Scenario Outline: I can stress test both
 	Given I have a running server from Server.config
 	And <clients> clients connected
@@ -150,7 +141,6 @@ Scenario Outline: I can stress test both
 	| 50      | 1000     |
 	| 50      | 10000    |
     
-@Free
 Scenario Outline: I can stress test both with dispatcher enabled on server
 	Given I have a running server from Server.config
 	And server 0 is using the dispatcher
@@ -170,7 +160,6 @@ Scenario Outline: I can stress test both with dispatcher enabled on server
 
 # TODO add stress test with client dispatchers enabled
 
-@Free
 Scenario: Issue #75 messages being corrupted
 	Given I have a running server from Server.config
 	And server 0 is using the dispatcher
@@ -178,7 +167,6 @@ Scenario: Issue #75 messages being corrupted
 	When I send 5000 messages reliably
 	Then all messages are accounted for
 
-@Free
 Scenario: Partial TCP headers do not disconnect client
     Given I have a running server from Server.config
     And TCP and UDP sockets connected
@@ -194,7 +182,6 @@ Scenario: Partial TCP headers do not disconnect client
     And I receive string on the server from TCP 'Hi'
     And the TCP socket is connected
     
-@Free
 Scenario: Clients can send messages as soon as they are connected
     Given I have a running server from Server.config
     And a delay of 100ms when a client connects before assigning message handlers

@@ -35,7 +35,6 @@ namespace DarkRift.Server
         /// </summary>
         public INetworkListenerManager NetworkListenerManager { get; }
 
-#if PRO
         /// <summary>
         ///     The manager for all cluster connectors on this server.
         /// </summary>
@@ -45,7 +44,6 @@ namespace DarkRift.Server
         ///     The server manager for remote servers.
         /// </summary>
         public IRemoteServerManager RemoteServerManager { get; }
-#endif
 
         /// <summary>
         ///     The location of this plugins resource store.
@@ -58,15 +56,10 @@ namespace DarkRift.Server
         /// </remarks>
         protected string ResourceDirectory { get; }
 
-#if PRO
         /// <summary>
         ///     Helper plugin for filtering bad words out of text.
         /// </summary>
-        /// <remarks>
-        ///     <c>Pro only.</c> 
-        /// </remarks>
         public IBadWordFilter BadWordFilter => PluginManager.GetPluginByType<BadWordFilter>();
-#endif
 
         /// <summary>
         ///     Creates a new plugin using the given plugin load data.
@@ -78,10 +71,8 @@ namespace DarkRift.Server
             ClientManager = pluginLoadData.ClientManager;
             PluginManager = pluginLoadData.PluginManager;
             NetworkListenerManager = pluginLoadData.NetworkListenerManager;
-#if PRO
             ServerRegistryConnectorManager = pluginLoadData.ServerRegistryConnectorManager;
             RemoteServerManager = pluginLoadData.RemoteServerManager;
-#endif
             ResourceDirectory = pluginLoadData.ResourceDirectory;
         }
     }

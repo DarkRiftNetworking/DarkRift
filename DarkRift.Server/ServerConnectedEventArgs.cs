@@ -10,7 +10,6 @@ using System.Net;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Event arguments for the <see cref="IRemoteServer.ServerConnected"/> event.
     /// </summary>
@@ -45,5 +44,4 @@ namespace DarkRift.Server
             return RemoteServer.GetRemoteEndPoint(name);
         }
     }
-#endif
 }

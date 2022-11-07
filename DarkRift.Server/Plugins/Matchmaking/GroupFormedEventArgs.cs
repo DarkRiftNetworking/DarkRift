@@ -7,15 +7,11 @@
 using System;
 using System.Collections.Generic;
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     Event args for the <see cref="IMatchmaker{T}.GroupFormed"/> event.
     /// </summary>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public class GroupFormedEventArgs<T> : EventArgs
     {
         /// <summary>
@@ -40,4 +36,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         }
     }
 }
-#endif

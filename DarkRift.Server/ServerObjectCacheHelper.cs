@@ -45,14 +45,12 @@ namespace DarkRift.Server
 
         private static int finalizedMessageReceivedEventArgs = 0;
 
-#if PRO
         /// <summary>
         ///     The number of <see cref="ServerMessageReceivedEventArgs"/> objects that were not recycled properly.
         /// </summary>
         public static int FinalizedServerMessageReceivedEventArgs => finalizedServerMessageReceivedEventArgs;
 
         private static int finalizedServerMessageReceivedEventArgs = 0;
-#endif
 
         /// <summary>
         ///     Indcates an <see cref="MessageReceivedEventArgs"/> did not get recycled properly.
@@ -62,7 +60,6 @@ namespace DarkRift.Server
             Interlocked.Increment(ref finalizedMessageReceivedEventArgs);
         }
 
-#if PRO
         /// <summary>
         ///     Indcates an <see cref="ServerMessageReceivedEventArgs"/> did not get recycled properly.
         /// </summary>
@@ -70,7 +67,6 @@ namespace DarkRift.Server
         {
             Interlocked.Increment(ref finalizedServerMessageReceivedEventArgs);
         }
-#endif
 
         /// <summary>
         ///     Resets all counters to 0.
@@ -78,9 +74,7 @@ namespace DarkRift.Server
         public static void ResetCounters()
         {
             Interlocked.Exchange(ref finalizedMessageReceivedEventArgs, 0);
-#if PRO
             Interlocked.Exchange(ref finalizedServerMessageReceivedEventArgs, 0);
-#endif
         }
     }
 }

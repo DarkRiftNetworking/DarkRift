@@ -8,7 +8,6 @@ using System;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Event arguments for the <see cref="IServerGroup.ServerJoined"/> event.
     /// </summary>
@@ -42,5 +41,4 @@ namespace DarkRift.Server
             this.ServerGroup = serverGroup;
         }
     }
-#endif
 }

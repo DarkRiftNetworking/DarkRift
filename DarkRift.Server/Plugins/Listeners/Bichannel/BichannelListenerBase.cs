@@ -72,12 +72,10 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// <remarks>This defaults to 65KB.</remarks>
         public override int MaxTcpBodyLength { get; }
 
-#if PRO
         /// <summary>
         /// Counter for the number of connections attempts that have timed out.
         /// </summary>
         private readonly ICounterMetric connectionAttemptTimeoutsCounter;
-#endif
 
         public BichannelListenerBase(NetworkListenerLoadData listenerLoadData)
             : base(listenerLoadData)
@@ -105,9 +103,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             else
                 this.MaxTcpBodyLength = 65535;
 
-#if PRO
             connectionAttemptTimeoutsCounter = MetricsCollector.Counter("connection_attempt_timeouts", "The number of connection attempts made to this listener that timed out.");
-#endif
         }
 
         /// <summary>
@@ -186,9 +182,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             if (remoteEndPoint != null)
                 Logger.Trace("Connection attempt from " + remoteEndPoint + " timed out.");
 
-#if PRO
             connectionAttemptTimeoutsCounter.Increment();
-#endif
         }
 
         /// <summary>
@@ -267,10 +261,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                     tcpSocket,
                     this,
                     (IPEndPoint)remoteEndPoint,
-                    token
-#if PRO
-                    , MetricsManager.GetPerMessageMetricsCollectorFor(Name)
-#endif
+                    token,
+                    MetricsManager.GetPerMessageMetricsCollectorFor(Name)
                 );
 
                 // Send message back to client to say hi

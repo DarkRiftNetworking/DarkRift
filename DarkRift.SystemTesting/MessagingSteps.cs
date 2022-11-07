@@ -161,7 +161,6 @@ namespace DarkRift.SystemTesting
         [When(@"server (\d+) sends '([\w\s]+)' to server (\d+) in (.+) with tag (\d+) (reliably|unreliably)")]
         public void WhenServerSendsToServerInWithTag(ushort server, string str, ushort remoteServer, string group, ushort tag, string mode)
         {
-#if PRO
             SendMode sendMode = mode == "reliably" ? SendMode.Reliable : SendMode.Unreliable;
 
             using (DarkRiftWriter writer = DarkRiftWriter.Create())
@@ -174,7 +173,6 @@ namespace DarkRift.SystemTesting
             }
 
             messageAssertions.ExpectMessageOnServer(new ReceivedMessage(str, server, remoteServer, tag, sendMode));
-#endif
         }
 
         /// <summary>

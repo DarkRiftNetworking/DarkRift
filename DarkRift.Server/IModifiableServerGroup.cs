@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Internal varient of IServerGroup that allows servers to join and leave.
     /// </summary>
@@ -30,5 +29,4 @@ namespace DarkRift.Server
         /// <param name="id">The ID of the server leaving.</param>
         void HandleServerLeave(ushort id);
     }
-#endif
 }

@@ -371,7 +371,6 @@ namespace DarkRift.Server.Configuration.Testing
             Assert.AreEqual(123, builder.ServerSpawnData.Server.ReconnectAttempts);
         }
 
-#if PRO
         [TestMethod]
         public void TestWithServerGroup()
         {
@@ -384,7 +383,6 @@ namespace DarkRift.Server.Configuration.Testing
             // THEN the server group is set in the spawn data
             Assert.AreEqual("group", builder.ServerSpawnData.Server.ServerGroup);
         }
-#endif
 
         [TestMethod]
         public void TestWithAdvertisedHost()

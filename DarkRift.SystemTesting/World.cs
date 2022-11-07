@@ -6,9 +6,7 @@
 
 using DarkRift.Client;
 using DarkRift.Server;
-#if PRO
 using DarkRift.SystemTesting.Plugins;
-#endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Concurrent;
@@ -32,7 +30,6 @@ namespace DarkRift.SystemTesting
         /// </summary>
         public event EventHandler<Server.MessageReceivedEventArgs> ServerMessageReceived;
 
-#if PRO
         /// <summary>
         ///     Event fired whenever a server connects to another.
         /// </summary>
@@ -42,7 +39,6 @@ namespace DarkRift.SystemTesting
         ///     Event fired whenever a server disconnects from another.
         /// </summary>
         public event EventHandler<ServerLeftEventArgs> ServerLeft;
-#endif
 
         /// <summary>
         /// The number of times the ServerConnected event has been fired.
@@ -105,13 +101,11 @@ namespace DarkRift.SystemTesting
             clients.Clear();
             servers.Clear();
 
-#if PRO
             Interlocked.Exchange(ref serverConnectedEvents, 0);
             Interlocked.Exchange(ref serverDisconnectedEvents, 0);
 
             // Reset server registry
             InMemoryServerRegistryConnector.Reset();
-#endif
 
             ClientConnectionDelay = 0;
         }
@@ -133,7 +127,6 @@ namespace DarkRift.SystemTesting
         /// <param name="server">The serverto add.</param>
         public void AddServer(DarkRiftServer server)
         {
-#if PRO
             servers.Add(server.RemoteServerManager.ServerID, server);
 
             server.ClientManager.ClientConnected += (s, a) => ClientConnected(s, a, server.RemoteServerManager.ServerID);
@@ -143,11 +136,6 @@ namespace DarkRift.SystemTesting
                 group.ServerJoined += (s, a) => ServerJoinedGroup(s, a, server.RemoteServerManager.ServerID);
                 group.ServerLeft += (s, a) => ServerLeftGroup(s, a, server.RemoteServerManager.ServerID);
             }
-#else
-            servers.Add(0, server);
-
-            server.ClientManager.ClientConnected += (s, a) => ClientConnected(s, a, 0);
-#endif
         }
 
         /// <summary>
@@ -257,7 +245,6 @@ namespace DarkRift.SystemTesting
             ServerMessageReceived.Invoke(sender, args);
         }
 
-        #if PRO
         /// <summary>
         ///     Handles a server joining a group.
         /// </summary>
@@ -329,6 +316,5 @@ namespace DarkRift.SystemTesting
 
             messageAssertions.AddMessageOnServer(new ReceivedMessage(str, args.RemoteServer.ID, serverID, message.Tag, args.SendMode));
         }
-#endif
     }
 }

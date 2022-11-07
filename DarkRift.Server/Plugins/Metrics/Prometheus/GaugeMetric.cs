@@ -10,7 +10,6 @@ using System.Threading;
 
 namespace DarkRift.Server.Plugins.Metrics.Prometheus
 {
-#if PRO
     /// <summary>
     /// Implementation of <see cref="IGaugeMetric"/> for Prometheus.
     /// </summary>
@@ -50,5 +49,4 @@ namespace DarkRift.Server.Plugins.Metrics.Prometheus
             Interlocked.Exchange(ref this.value, value);
         }
     }
-#endif
 }

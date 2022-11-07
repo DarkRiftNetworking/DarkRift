@@ -12,7 +12,6 @@ using System.Threading;
 
 namespace DarkRift.Server
 {
-#if PRO
     internal sealed class PendingDownstreamRemoteServer
     {
         /// <summary>
@@ -224,5 +223,4 @@ namespace DarkRift.Server
         }
 #pragma warning restore CS0628
     }
-#endif
 }

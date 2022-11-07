@@ -10,7 +10,6 @@ using System.Net;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Represents another server in the cluster.
     /// </summary>
@@ -82,5 +81,4 @@ namespace DarkRift.Server
         /// <returns>Whether the message was able to be sent.</returns>
         bool SendMessage(Message message, SendMode sendMode);
     }
-#endif
 }

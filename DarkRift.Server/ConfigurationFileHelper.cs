@@ -305,7 +305,6 @@ namespace DarkRift.Server
             return ResolveVariables(attribute.Value, attribute);
         }
 
-#if PRO
         /// <summary>
         ///     Reads a server visibility value from the XML element supplied.
         /// </summary>
@@ -327,7 +326,6 @@ namespace DarkRift.Server
             else
                 throw new XmlConfigurationException($"<{element.Name}> attribute '{attributeName}' not a valid server visibility. Expected 'external' or 'internal'.", $"{configurationDocsRoot}{element.Name}.html", attribute);
         }
-#endif
 
         /// <summary>
         ///     Reads a set of log levels from the XML element supplied.

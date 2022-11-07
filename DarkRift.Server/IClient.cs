@@ -17,13 +17,10 @@ namespace DarkRift.Server
     /// </summary>
     public interface IClient : IMessageSinkSource
     {
-#if PRO
         /// <summary>
         ///     Called when the client is given a strike for illegal behaviour.
         /// </summary>
-        /// <remarks><c>Pro only.</c> </remarks>
         event EventHandler<StrikeEventArgs> StrikeOccured;
-#endif
 
         /// <summary>
         ///     The ID of the client.
@@ -62,50 +59,28 @@ namespace DarkRift.Server
         byte Strikes
         {
             get;
-#if PRO
             set;
-#endif
         }
 
-#if PRO
         /// <summary>
         ///     The time this client connected to the server.
         /// </summary>
-        /// <remarks>
-        ///     <c>Pro only.</c> 
-        /// </remarks>
         DateTime ConnectionTime { get; }
-#endif
 
-#if PRO
         /// <summary>
         ///     The number of messages sent from the server.
         /// </summary>
-        /// <remarks>
-        ///     <c>Pro only.</c> 
-        /// </remarks>
         uint MessagesSent { get; }
-#endif
 
-#if PRO
         /// <summary>
         ///     The number of messages pushed from the server.
         /// </summary>
-        /// <remarks>
-        ///     <c>Pro only.</c> 
-        /// </remarks>
         uint MessagesPushed { get; }
-#endif
 
-#if PRO
         /// <summary>
         ///     The number of messages received at the server.
         /// </summary>
-        /// <remarks>
-        ///     <c>Pro only.</c> 
-        /// </remarks>
         uint MessagesReceived { get; }
-#endif
 
         /// <summary>
         ///     The collection of end points this client is connected to.
@@ -132,14 +107,10 @@ namespace DarkRift.Server
 
         #region Strikes
 
-#if PRO
         /// <summary>
         ///     Strikes this client.
         /// </summary>
         /// <param name="message">A message describing the reason for the strike.</param>
-        /// <remarks>
-        ///     <c>Pro only.</c> 
-        /// </remarks>
         void Strike(string message = null);
 
         /// <summary>
@@ -147,11 +118,7 @@ namespace DarkRift.Server
         /// </summary>
         /// <param name="message">A message describing the reason for the strike.</param>
         /// <param name="weight">The number of strikes this accounts for.</param>
-        /// <remarks>
-        ///     <c>Pro only.</c> 
-        /// </remarks>
         void Strike(string message = null, int weight = 1);
-#endif
 
         #endregion
     }

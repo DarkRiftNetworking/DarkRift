@@ -13,7 +13,6 @@ using DarkRift.Server.Metrics;
 
 namespace DarkRift.Server
 {
-#if PRO
     internal sealed class UpstreamServerGroup : ServerGroup<UpstreamRemoteServer>
     {
         /// <inheritdoc />
@@ -159,5 +158,4 @@ namespace DarkRift.Server
             );
         }
     }
-#endif
 }

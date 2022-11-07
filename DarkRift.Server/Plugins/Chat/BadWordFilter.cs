@@ -14,7 +14,6 @@ using System.Xml.Linq;
 
 namespace DarkRift.Server.Plugins.Chat
 {
-#if PRO
     /// <inheritdoc/>
     internal class BadWordFilter : Plugin, IBadWordFilter
     {
@@ -121,7 +120,7 @@ namespace DarkRift.Server.Plugins.Chat
             {
                 if (e.Error != null)
                 {
-                    Logger.Error($"Could not download bad word list from remote. The bad word filter cannot filter text without a source.\n\nConsider trying to reload the bad word list with the command 'badwordfilter update' or point the 'url' setting a an accessible source of bad words to filter (https://www.darkriftnetworking.com/DarkRift2/Docs/{ServerInfo.Version}/advanced/internal_plugins/bad_word_filter.html).", e.Error);
+                    Logger.Error($"Could not download bad word list from remote. The bad word filter cannot filter text without a source.\n\nConsider trying to reload the bad word list with the command 'badwordfilter update' or point the 'url' setting a an accessible source of bad words to filter ({ServerInfo.DocumentationRoot}/advanced/internal_plugins/bad_word_filter.html).", e.Error);
                 }
                 else
                 {
@@ -243,5 +242,4 @@ namespace DarkRift.Server.Plugins.Chat
             }
         }
     }
-#endif
 }

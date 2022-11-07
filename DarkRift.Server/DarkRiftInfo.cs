@@ -32,11 +32,8 @@ namespace DarkRift.Server
         /// <summary>
         ///     The type of server running.
         /// </summary>
-#if PRO
+        [Obsolete("Server is always pro now")]
         public ServerType Type => ServerType.Pro;
-#else
-        public ServerType Type => ServerType.Free;
-#endif
 
         /// <summary>
         ///     The type of server.

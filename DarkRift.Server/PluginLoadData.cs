@@ -34,7 +34,6 @@ namespace DarkRift.Server
         /// </summary>
         public INetworkListenerManager NetworkListenerManager { get; set; }
 
-#if PRO
         /// <summary>
         ///     The server regsitry connector manager to pass to the plugin.
         /// </summary>
@@ -44,31 +43,20 @@ namespace DarkRift.Server
         ///     The server manager to pass to the plugin.
         /// </summary>
         public IRemoteServerManager RemoteServerManager { get; set; }
-#endif
 
         /// <summary>
         ///     The resource directory to pass to the plugin.
         /// </summary>
         public string ResourceDirectory { get; set; }
 
-        internal PluginLoadData (string name, DarkRiftServer server, NameValueCollection settings, Logger logger,
-#if PRO
-            MetricsCollector metricsCollector,
-#endif
-            string resourceDirectory)
-            : base(name, server, settings, logger
-#if PRO
-                  , metricsCollector
-#endif
-                  )
+        internal PluginLoadData (string name, DarkRiftServer server, NameValueCollection settings, Logger logger, MetricsCollector metricsCollector, string resourceDirectory)
+            : base(name, server, settings, logger, metricsCollector)
         {
             this.ClientManager = server.ClientManager;
             this.PluginManager = server.PluginManager;
             this.NetworkListenerManager = server.NetworkListenerManager;
-#if PRO
             this.ServerRegistryConnectorManager = server.ServerRegistryConnectorManager;
             this.RemoteServerManager = server.RemoteServerManager;
-#endif
             this.ResourceDirectory = resourceDirectory;
         }
 

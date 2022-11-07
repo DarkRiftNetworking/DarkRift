@@ -10,13 +10,9 @@ using System.Threading;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     A timer for delaying execution or one-shot or repetative tasks.
     /// </summary>
-    /// <remarks>
-    ///     <c>Pro only.</c> 
-    /// </remarks>
     public sealed class Timer : IDisposable
     {
         /// <summary>
@@ -122,5 +118,4 @@ namespace DarkRift.Server
         }
     #endregion
     }
-#endif
 }

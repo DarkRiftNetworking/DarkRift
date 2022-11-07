@@ -4,7 +4,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#if PRO
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -62,4 +61,3 @@ namespace DarkRift.Server.Plugins.Chat.Testing
         }
     }
 }
-#endif

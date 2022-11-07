@@ -6,7 +6,6 @@
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Manages the connections to other server groups.
     /// </summary>
@@ -55,5 +54,4 @@ namespace DarkRift.Server
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">If this server is not connected to the specified server.</exception>
         IRemoteServer FindServer(ushort id);
     }
-#endif
 }

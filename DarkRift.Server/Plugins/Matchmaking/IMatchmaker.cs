@@ -7,16 +7,12 @@
 using System;
 using System.Collections.Generic;
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     Base interface for all matchmaker implementations.
     /// </summary>
     /// <typeparam name="T">The type of entity the matchmaker operates with.</typeparam>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public interface IMatchmaker<T>
     {
         /// <summary>
@@ -67,4 +63,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         void PerformFullSearch();
     }
 }
-#endif

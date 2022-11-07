@@ -8,13 +8,9 @@ using System.Collections.Specialized;
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     ///     Load data for <see cref="MetricsWriter"/> plugins.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     public class MetricsWriterLoadData : PluginBaseLoadData
     {
         /// <summary>
@@ -34,5 +30,4 @@ namespace DarkRift.Server.Metrics
         {
         }
     }
-#endif
 }

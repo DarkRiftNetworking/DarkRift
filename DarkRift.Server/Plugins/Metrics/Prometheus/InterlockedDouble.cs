@@ -12,7 +12,6 @@ using System.Threading;
 
 namespace DarkRift.Server.Plugins.Metrics.Prometheus
 {
-#if PRO
     /// <summary>
     /// Helpful interlocked methods for doubles.
     /// </summary>
@@ -48,5 +47,4 @@ namespace DarkRift.Server.Plugins.Metrics.Prometheus
             }
         }
     }
-#endif
 }

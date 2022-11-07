@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     A plugin that provides the server with information about the current architecture.
     /// </summary>
@@ -118,5 +117,4 @@ namespace DarkRift.Server
             server.InternalRemoteServerManager.HandleServerLeave(id);
         }
     }
-#endif
 }

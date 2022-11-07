@@ -127,12 +127,10 @@ namespace DarkRift.Server
             [Obsolete("UseFallbackNetworking is obsolete, use CombatabilityBichannelListener instead. These properties will only have effect if no listeners are defined.")]
             public bool UseFallbackNetworking { get; set; }
 
-#if PRO
             /// <summary>
             ///     The server group this server belongs to.
             /// </summary>
             public string ServerGroup { get; set; }
-#endif
 
             /// <summary>
             ///     The number of times to try to reconnect to a server before considering it unconnectable.
@@ -193,14 +191,12 @@ namespace DarkRift.Server
                     "maxStrikes"
                 );
 
-#if PRO
                 //Read server group
                 ServerGroup = helper.ReadStringAttributeOrDefault(
                     element,
                     "serverGroup",
                     null
                 );
-#endif
 
                 //Read reconnect attempts
                 ReconnectAttempts = helper.ReadUInt16AttributeOrDefault(

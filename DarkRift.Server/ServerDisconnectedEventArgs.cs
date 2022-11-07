@@ -11,7 +11,6 @@ using System.Net.Sockets;
 
 namespace DarkRift.Server
 {
-#if PRO
     /// <summary>
     ///     Event arguments for <see cref="IRemoteServer.ServerDisconnected"/> events.
     /// </summary>
@@ -65,5 +64,4 @@ namespace DarkRift.Server
             return RemoteServer.GetRemoteEndPoint(name);
         }
     }
-#endif
 }

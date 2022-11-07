@@ -5,7 +5,7 @@
   <PropertyGroup>
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net4.5;net6.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(DRBuildMode)' == 'coreonly' ">net6.0</TargetFrameworks>
-    <Configurations>Debug;Free;Pro</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- MSTest.TestAdapter package is for .NET Framework 4.6.1 so throws errors on .NET Standard build -->
     <NoWarn>NU1701</NoWarn>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>TRACE;DEBUG;PRO</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

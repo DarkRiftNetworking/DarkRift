@@ -193,10 +193,9 @@ namespace DarkRift.SystemTesting
             if (ServerObjectCacheHelper.FinalizedMessageReceivedEventArgs > 0)
                 Assert.Fail(ServerObjectCacheHelper.FinalizedMessageReceivedEventArgs + " MessageReceivedEventArgs (server) objects were finalized last period.");
 
-#if PRO
             if (ServerObjectCacheHelper.FinalizedServerMessageReceivedEventArgs > 0)
                 Assert.Fail(ServerObjectCacheHelper.FinalizedServerMessageReceivedEventArgs + " ServeMessageReceivedEventArgs (server) objects were finalized last period.");
-#endif
+
             if (ClientObjectCacheHelper.FinalizedMessageReceivedEventArgs > 0)
                 Assert.Fail(ClientObjectCacheHelper.FinalizedMessageReceivedEventArgs + " MessageReceivedEventArgs (client) objects were finalized last period.");
         }

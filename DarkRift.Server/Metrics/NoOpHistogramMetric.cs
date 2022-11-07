@@ -6,13 +6,9 @@
 
 namespace DarkRift.Server.Metrics
 {
-#if PRO
     /// <summary>
     /// Implementation of <see cref="IHistogramMetric"/> that does nothing.
     /// </summary>
-    /// <remarks>
-    ///     Pro only.
-    /// </remarks>
     internal class NoOpHistogramMetric : IHistogramMetric
     {
         public void Report(double value)
@@ -20,5 +16,4 @@ namespace DarkRift.Server.Metrics
             // Nope
         }
     }
-#endif
 }

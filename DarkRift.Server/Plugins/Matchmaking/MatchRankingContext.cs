@@ -4,16 +4,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#if PRO
 namespace DarkRift.Server.Plugins.Matchmaking
 {
     /// <summary>
     ///     Provides additional information about a ranking operation.
     /// </summary>
     /// <typeparam name="T">The type of entities being ranked.</typeparam>
-    /// <remarks>
-    ///     <c>Pro only.</c>
-    /// </remarks>
     public class MatchRankingContext<T>
     {
         /// <summary>
@@ -27,4 +23,3 @@ namespace DarkRift.Server.Plugins.Matchmaking
         }
     }
 }
-#endif

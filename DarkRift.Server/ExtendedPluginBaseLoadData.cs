@@ -18,23 +18,15 @@ namespace DarkRift.Server
     /// </summary>
     public abstract class ExtendedPluginBaseLoadData : PluginBaseLoadData
     {
-#if PRO
         /// <summary>
         ///     The server's metrics manager.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         public IMetricsManager MetricsManager { get; set; }
 
         /// <summary>
         ///     The metrics collector this plugin will use.
         /// </summary>
-        /// <remarks>
-        ///     Pro only.
-        /// </remarks>
         public MetricsCollector MetricsCollector { get; set; }
-#endif
 
         /// <summary>
         ///     The handler for writing events via <see cref="ExtendedPluginBase.WriteEvent(string, LogType, Exception)"/>.
@@ -42,10 +34,7 @@ namespace DarkRift.Server
         [Obsolete("Use Logger instead. This is kept for plugins using the legacy WriteEvent methods only.")]
         public WriteEventHandler WriteEventHandler { get; set; }
         
-        internal ExtendedPluginBaseLoadData(string name, DarkRiftServer server, NameValueCollection settings, Logger logger
-#if PRO
-            , MetricsCollector metricsCollector
-#endif
+        internal ExtendedPluginBaseLoadData(string name, DarkRiftServer server, NameValueCollection settings, Logger logger, MetricsCollector metricsCollector
             )
             : base(name, server, settings, logger)
         {
@@ -54,10 +43,8 @@ namespace DarkRift.Server
                 WriteEventHandler = logger.Log;
 #pragma warning restore CS0618
 
-#if PRO
             this.MetricsManager = server.MetricsManager;
             MetricsCollector = metricsCollector;
-#endif
         }
 
         /// <summary>

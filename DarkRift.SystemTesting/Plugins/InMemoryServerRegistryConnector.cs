@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DarkRift.Server;
-#if PRO
 using Timer = DarkRift.Server.Timer;
 
 namespace DarkRift.SystemTesting.Plugins
@@ -128,4 +127,3 @@ namespace DarkRift.SystemTesting.Plugins
         }
     }
 }
-#endif

@@ -9,12 +9,7 @@ namespace DarkRift.Server
     /// <summary>
     ///     Event arguments for when a plugin has been installed.
     /// </summary>
-#if PRO
-    public 
-#else
-    internal
-#endif
-        class InstallEventArgs
+    public class InstallEventArgs
     {
     }
 }
