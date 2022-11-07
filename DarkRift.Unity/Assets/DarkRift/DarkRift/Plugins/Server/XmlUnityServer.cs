@@ -38,25 +38,13 @@ namespace DarkRift.Server.Unity
         public DarkRiftServer Server { get; private set; }
 
 #pragma warning disable IDE0044 // Add readonly modifier, Unity can't serialize readonly fields
-        [SerializeField]
         [Tooltip("The configuration file to use.")]
-        private TextAsset configuration;
-
-        [SerializeField]
-        [Tooltip("Indicates whether the server will be created in the OnEnable method.")]
-        private bool createOnEnable = true;
+        public TextAsset configuration;
 
         [SerializeField]
         [Tooltip("Indicates whether the server events will be routed through the dispatcher or just invoked.")]
         private bool eventsFromDispatcher = true;
 #pragma warning restore IDE0044 // Add readonly modifier, Unity can't serialize readonly fields
-
-        private void OnEnable()
-        {
-            //If createOnEnable is selected create a server
-            if (createOnEnable)
-                Create();
-        }
 
         private void Update()
         {
@@ -80,7 +68,7 @@ namespace DarkRift.Server.Unity
         {
             if (Server != null)
                 throw new InvalidOperationException("The server has already been created! (Is CreateOnEnable enabled?)");
-            
+
             if (configuration != null)
             {
                 // Create spawn data from config

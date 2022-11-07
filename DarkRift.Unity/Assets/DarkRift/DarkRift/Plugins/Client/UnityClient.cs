@@ -77,11 +77,6 @@ namespace DarkRift.Client.Unity
         private bool noDelay = false;
 
         [SerializeField]
-        [FormerlySerializedAs("autoConnect")]
-        [Tooltip("Indicates whether the client will connect to the server in the Start method.")]
-        private bool connectOnStart = true;
-
-        [SerializeField]
         [FormerlySerializedAs("invokeFromDispatcher")]
         [Tooltip("Specifies that DarkRift should take care of multithreading and invoke all events from Unity's main thread.")]
         private volatile bool eventsFromDispatcher = true;
@@ -240,7 +235,7 @@ namespace DarkRift.Client.Unity
         ///     The dispatcher for moving work to the main thread.
         /// </summary>
         public Dispatcher Dispatcher { get; private set; }
-        
+
         private void Awake()
         {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -256,13 +251,6 @@ namespace DarkRift.Client.Unity
             Client.MessageReceived += Client_MessageReceived;
             Client.Disconnected += Client_Disconnected;
         }
-
-        private void Start()
-		{
-            //If connect on start is true then connect to the server
-            if (connectOnStart)
-			    Connect(host, port, noDelay);
-		}
 
         private void Update()
         {
@@ -366,8 +354,8 @@ namespace DarkRift.Client.Unity
         {
             Client.ConnectInBackground(
                 ip,
-                port, 
-                ipVersion, 
+                port,
+                ipVersion,
                 delegate (Exception e)
                 {
                     if (callback != null)
@@ -377,7 +365,7 @@ namespace DarkRift.Client.Unity
                         else
                             callback.Invoke(e);
                     }
-                    
+
                     if (ConnectionState == ConnectionState.Connected)
                         Debug.Log("Connected to " + ip + " on port " + port + " using " + ipVersion + ".");
                     else
@@ -409,7 +397,7 @@ namespace DarkRift.Client.Unity
                         else
                             callback.Invoke(e);
                     }
-                    
+
                     if (ConnectionState == ConnectionState.Connected)
                         Debug.Log("Connected to " + ip + " on port " + port + ".");
                     else
@@ -459,7 +447,7 @@ namespace DarkRift.Client.Unity
                         else
                             callback.Invoke(e);
                     }
-                    
+
                     if (ConnectionState == ConnectionState.Connected)
                         Debug.Log("Connected to " + ip + " on port " + tcpPort + "|" + udpPort + ".");
                     else
@@ -467,7 +455,7 @@ namespace DarkRift.Client.Unity
                 }
             );
         }
-        
+
         /// <summary>
         ///     Connects to a remote asynchronously.
         /// </summary>
@@ -515,7 +503,7 @@ namespace DarkRift.Client.Unity
                 MessageReceivedEventArgs args = MessageReceivedEventArgs.Create(message, e.SendMode);
 
                 Dispatcher.InvokeAsync(
-                    () => 
+                    () =>
                         {
                             EventHandler<MessageReceivedEventArgs> handler = MessageReceived;
                             if (handler != null)
@@ -564,7 +552,7 @@ namespace DarkRift.Client.Unity
             {
                 if (!e.LocalDisconnect)
                     Debug.Log("Disconnected from server, error: " + e.Error);
-                
+
                 EventHandler<DisconnectedEventArgs> handler = Disconnected;
                 if (handler != null)
                 {
