@@ -38,6 +38,11 @@ namespace DarkRift.Client
             set => tcp.Socket.NoDelay = value;
         }
 
+        /// <summary>
+        /// When true no background thread is used and polling must instead be conducted by user by calling PollSockets().
+        /// </summary>
+        public bool ExplicitPolling { get; set; }
+
         /// <inheritdoc/>
         public override IEnumerable<IPEndPoint> RemoteEndPoints => new IPEndPoint[] { RemoteTcpEndPoint, RemoteUdpEndPoint };
 
@@ -205,8 +210,9 @@ namespace DarkRift.Client
 
             //Mark connected to allow sending
             connectionState = ConnectionState.Connected;
-            
-            PollingThread.AddWork(DoPolling);
+
+            if (!ExplicitPolling)
+                PollingThread.AddWork(PollSockets);
         }
 
         /// <inheritdoc/>
@@ -235,7 +241,7 @@ namespace DarkRift.Client
 
             connectionState = ConnectionState.Disconnected;
 
-            PollingThread.RemoveWork(DoPolling);
+            PollingThread.RemoveWork(PollSockets);
             
             tcp.Shutdown();
 
@@ -256,7 +262,7 @@ namespace DarkRift.Client
         /// <summary>
         /// Explicitly performs a step of message polling.
         /// </summary>
-        public void DoPolling()
+        public void PollSockets()
         {
             tcp.PollReceiveHeaderAndBodyNonBlocking();
             udp.PollReceiveBodyNonBlocking();
@@ -272,7 +278,7 @@ namespace DarkRift.Client
             {
                 connectionState = ConnectionState.Disconnected;
 
-                PollingThread.RemoveWork(DoPolling);
+                PollingThread.RemoveWork(PollSockets);
 
                 HandleDisconnection(error);
             }
@@ -295,7 +301,7 @@ namespace DarkRift.Client
                 {
                     Disconnect();
 
-                    PollingThread.RemoveWork(DoPolling);
+                    PollingThread.RemoveWork(PollSockets);
 
                     tcp.Socket.Close();
                     udp.Socket.Close();
