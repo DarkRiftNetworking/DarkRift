@@ -321,6 +321,16 @@ namespace DarkRift
             ObjectCacheTestHelper.SocketAsyncEventArgsWasReturned();
 #endif
 
+            // added safety restore to default state before going ito the pool
+            socketAsyncEventArgs.SocketFlags = SocketFlags.None;
+            socketAsyncEventArgs.SocketError = SocketError.Success;
+            socketAsyncEventArgs.SendPacketsSendSize = 0;
+            socketAsyncEventArgs.SendPacketsFlags = TransmitFileOptions.UseDefaultWorkerThread;
+            socketAsyncEventArgs.SendPacketsElements = null;
+            socketAsyncEventArgs.BufferList = null;
+            socketAsyncEventArgs.UserToken = null;
+            socketAsyncEventArgs.SetBuffer(null, 0, 0);
+
             if (!socketAsyncEventArgsPool.ReturnInstance(socketAsyncEventArgs))
                 socketAsyncEventArgs.Dispose();
         }

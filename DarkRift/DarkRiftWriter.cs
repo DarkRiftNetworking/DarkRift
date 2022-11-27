@@ -117,7 +117,18 @@ namespace DarkRift
         {
             serializeEventSingleton = new SerializeEvent(this);
         }
-        
+
+        /// <summary>
+        /// Clears out the buffer, making it empty and reusable.
+        /// </summary>
+        /// <remarks>Added by kova@freerangegames.com 2022-05-20</remarks>
+        public void Clear()
+        {
+            Position = 0;
+            buffer.Count = 0;
+            buffer.Offset = 0;
+        }
+
         /// <summary>
         ///     Writes a single byte to the writer.
         /// </summary>
@@ -565,7 +576,7 @@ namespace DarkRift
         public void WriteRaw(byte[] bytes, int offset, int length)
         {
             buffer.EnsureLength(Position + length);
-            System.Buffer.BlockCopy(bytes, offset, buffer.Buffer, Position, length);
+            Buffer.BlockCopy(bytes, offset, buffer.Buffer, Position, length);
 
             Position += length;
             buffer.Count = Math.Max(Length, Position);
