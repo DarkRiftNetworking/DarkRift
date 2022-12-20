@@ -7,11 +7,8 @@
 using DarkRift.Server.Metrics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 
 namespace DarkRift.Server.Plugins.Listeners.Bichannel
 {
@@ -63,7 +60,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             /// <summary>
             ///     The timer for timing out the connection request.
             /// </summary>
-            public System.Threading.Timer Timer { get; set; }
+            public Timer Timer { get; set; }
         }
 
         /// <summary>
@@ -152,7 +149,10 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 PendingConnection pendingConnection = new PendingConnection
                 {
                     TcpSocket = acceptSocket,
-                    Timer = new System.Threading.Timer(ConnectionTimeoutHandler, token, 5000, Timeout.Infinite)
+                    Timer = CreateOneShotTimer(5000, delegate
+                    {
+                        ConnectionTimeoutHandler(token);
+                    })
                 };
 
                 //Store token
@@ -181,10 +181,17 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// <summary>
         ///     Called when a connection times out due to lack the of a UDP connection.
         /// </summary>
-        /// <param name="state">The token given to the connection.</param>
-        private void ConnectionTimeoutHandler(object state)
+        /// <param name="token">The token given to the connection.</param>
+        private void ConnectionTimeoutHandler(long token)
         {
-            EndPoint remoteEndPoint = CancelPendingTcpConnection((long)state);
+            lock (PendingTcpSockets)
+            {
+                if (PendingTcpSockets.ContainsKey(token) == false)
+                    return;
+            }
+
+            EndPoint remoteEndPoint = CancelPendingTcpConnection(token);
+
 
             //Check found (should always be but will crash server otherwise)
             if (remoteEndPoint != null)
