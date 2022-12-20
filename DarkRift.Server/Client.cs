@@ -127,8 +127,6 @@ namespace DarkRift.Server
         {
             Client client = new Client(connection, id, clientManager, threadHelper, logger, metricsCollector);
 
-            client.SendID();
-
             return client;
         }
 
@@ -189,15 +187,16 @@ namespace DarkRift.Server
         /// </summary>
         internal void StartListening()
         {
-           try
-              {
+            try
+            {
                 connection.StartListening();
-              }
-              catch (Exception e)
-              {
+                SendID();
+            }
+            catch (Exception e)
+            {
                 logger.Error("Failed to start listening to connection.", e);
                 clientManager.HandleDisconnection(this, false, SocketError.SocketError, e);
-              }
+            }
         }
 
         /// <inheritdoc/>
