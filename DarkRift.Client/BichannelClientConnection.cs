@@ -171,13 +171,13 @@ namespace DarkRift.Client
                 udpSocket.Send(buffer);
 
                 //Receive response from server to initiate the connection
-                buffer = new byte[1];
+                byte[] udpBuffer = new byte[8];
                 udpSocket.ReceiveTimeout = 5000;
                 
                 int receivedUdp;
                 try
                 {
-                    receivedUdp = udpSocket.Receive(buffer);
+                    receivedUdp = udpSocket.Receive(udpBuffer);
                 }
                 catch (SocketException ex)
                 {
@@ -188,7 +188,20 @@ namespace DarkRift.Client
                     udpSocket.ReceiveTimeout = 0;   //Reset to infinite
                 }
 
-                if (receivedUdp != 1 || buffer[0] != 0)
+                bool failedUdpReceive = receivedUdp != 8;
+                if (!failedUdpReceive)
+                {
+                    for (int i = 0; i < udpBuffer.Length; ++i)
+                    {
+                        if (udpBuffer[i] != buffer[i + 1])
+                        {
+                            failedUdpReceive = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (failedUdpReceive)
                 {
                     tcpSocket.Shutdown(SocketShutdown.Both);
                     throw new DarkRiftConnectionException("Timeout waiting for UDP acknowledgement from server.", SocketError.ConnectionAborted);
