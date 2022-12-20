@@ -308,5 +308,63 @@ namespace DarkRift.Testing
             // THEN the array is as expected
             AssertExtensions.AreEqualAndSameLength(new byte[] { 0, 0, 0, 6, 65, 0, 66, 0, 67, 0 }, array);
         }
+
+        [TestMethod]
+        public void ToArrayWithCountAndOffsetTest()
+        {
+            // WHEN I write a string to the writer
+            writer.Write("ABC");
+
+            // AND I convert the writer to an array
+            byte[] array = writer.ToArray(4, 4);
+
+            // THEN the array is as expected
+            AssertExtensions.AreEqualAndSameLength(new byte[] { 65, 0, 66, 0 }, array);
+        }
+
+        [TestMethod]
+        public void CopyToWithOffsetTest()
+        {
+            // WHEN I write a string to the writer
+            writer.Write("ABC");
+
+            // AND I copy the writer to an array
+            byte[] array = new byte[11];
+            array[0] = 9;
+            writer.CopyTo(array, 1);
+
+            // THEN the array is as expected
+            AssertExtensions.AreEqualAndSameLength(new byte[] { 9, 0, 0, 0, 6, 65, 0, 66, 0, 67, 0 }, array);
+        }
+
+        [TestMethod]
+        public void CopyToWithCountTest()
+        {
+            // WHEN I write a string to the writer
+            writer.Write("ABC");
+
+            // AND I copy the writer to an array
+            byte[] array = new byte[10];
+            array[0] = 9;
+            writer.CopyTo(array, 1, 9);
+
+            // THEN the array is as expected
+            AssertExtensions.AreEqualAndSameLength(new byte[] { 9, 0, 0, 0, 6, 65, 0, 66, 0, 67 }, array);
+        }
+
+        [TestMethod]
+        public void CopyToWithCountAndOffsetsTest()
+        {
+            // WHEN I write a string to the writer
+            writer.Write("ABC");
+
+            // AND I copy the writer to an array
+            byte[] array = new byte[5];
+            array[0] = 9;
+            writer.CopyTo(array, 4, 1, 4);
+
+            // THEN the array is as expected
+            AssertExtensions.AreEqualAndSameLength(new byte[] { 9, 65, 0, 66, 0 }, array);
+        }
     }
 }
