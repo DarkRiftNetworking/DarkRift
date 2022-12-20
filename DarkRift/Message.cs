@@ -20,6 +20,11 @@ namespace DarkRift
     public sealed class Message : IDisposable
     {
         /// <summary>
+        /// How many bytes is reserved for message header with value of rest of the message
+        /// </summary>
+        public const int HEADER_RESERVED_BYTES_COUNT = 4;
+
+        /// <summary>
         ///     Bitmask for the command message flag.
         /// </summary>
         private const byte COMMAND_FLAG_MASK = 0b10000000;
@@ -420,19 +425,23 @@ namespace DarkRift
         //TODO DR3 Make this return an IMessageBuffer
         internal MessageBuffer ToBuffer()
         {
-            int headerLength = IsPingMessage || IsPingAcknowledgementMessage ? 5 : 3;
+            int headerLength = HEADER_RESERVED_BYTES_COUNT + (IsPingMessage || IsPingAcknowledgementMessage ? 5 : 3);
             int totalLength = headerLength + DataLength;
 
             MessageBuffer buffer = MessageBuffer.Create(totalLength);
             buffer.Count = totalLength;
 
-            buffer.Buffer[buffer.Offset] = flags;
-            BigEndianHelper.WriteBytes(buffer.Buffer, buffer.Offset + 1, tag);
+            // write length of the rest of the message
+            BigEndianHelper.WriteBytes(buffer.Buffer, 0, totalLength - HEADER_RESERVED_BYTES_COUNT);
+
+            buffer.Buffer[HEADER_RESERVED_BYTES_COUNT] = flags;
+            BigEndianHelper.WriteBytes(buffer.Buffer, buffer.Offset + 1 + HEADER_RESERVED_BYTES_COUNT, tag);
 
             if (IsPingMessage || IsPingAcknowledgementMessage)
-                BigEndianHelper.WriteBytes(buffer.Buffer, buffer.Offset + 3, PingCode);
+                BigEndianHelper.WriteBytes(buffer.Buffer, buffer.Offset + 3 + HEADER_RESERVED_BYTES_COUNT, PingCode);
 
-            //Due to poor design, here's un unavoidable memory copy! Hooray!
+            // Due to poor design, here's un unavoidable memory copy! Hooray!
+            // Copy the content of the message into rest of the new buffer
             Buffer.BlockCopy(this.buffer.Buffer, this.buffer.Offset, buffer.Buffer, buffer.Offset + headerLength, this.buffer.Count);
 
             return buffer;

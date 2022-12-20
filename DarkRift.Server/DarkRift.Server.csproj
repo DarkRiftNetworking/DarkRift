@@ -8,6 +8,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\DarkRift.Server.xml</DocumentationFile>
     <Configurations>Debug;Release</Configurations>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net3.5' ">

@@ -232,8 +232,7 @@ namespace DarkRift.Client
         {
             setupMutex.Reset();
 
-            if (this.Connection != null)
-                this.Connection.Dispose();
+            this.Connection?.Dispose();
 
             this.Connection = connection;
             connection.MessageReceived = MessageReceivedHandler;
@@ -371,26 +370,25 @@ namespace DarkRift.Client
         /// <param name="sendMode">The SendMode used to send the data.</param>
         private void MessageReceivedHandler(MessageBuffer buffer, SendMode sendMode)
         {
-            using (Message message = Message.Create(buffer, true))
-            {
-                //Record any ping acknowledgements
-                if (message.IsPingAcknowledgementMessage)
-                {
-                    try
-                    {
-                        RoundTripTime.RecordInboundPing(message.PingCode);
-                    }
-                    catch (KeyNotFoundException)
-                    {
-                        //Nothing we can really do about this
-                    }
-                }
+            using Message message = Message.Create(buffer, true);
 
-                if (message.IsCommandMessage)
-                    HandleCommand(message);
-                else
-                    HandleMessage(message, sendMode);
+            //Record any ping acknowledgements
+            if (message.IsPingAcknowledgementMessage)
+            {
+                try
+                {
+                    RoundTripTime.RecordInboundPing(message.PingCode);
+                }
+                catch (KeyNotFoundException)
+                {
+                    //Nothing we can really do about this
+                }
             }
+
+            if (message.IsCommandMessage)
+                HandleCommand(message);
+            else
+                HandleMessage(message, sendMode);
         }
 
         /// <summary>
@@ -399,16 +397,14 @@ namespace DarkRift.Client
         /// <param name="message">The message that was received.</param>
         private void HandleCommand(Message message)
         {
-            using (DarkRiftReader reader = message.GetReader())
+            using DarkRiftReader reader = message.GetReader();
+            switch ((CommandCode)message.Tag)
             {
-                switch ((CommandCode)message.Tag)
-                {
-                    case CommandCode.Configure:
-                        ID = reader.ReadUInt16();
+                case CommandCode.Configure:
+                    ID = reader.ReadUInt16();
 
-                        setupMutex.Set();
-                        break;
-                }
+                    setupMutex.Set();
+                    break;
             }
         }
 
@@ -420,8 +416,8 @@ namespace DarkRift.Client
         private void HandleMessage(Message message, SendMode sendMode)
         {
             //Invoke for message received event
-            using (MessageReceivedEventArgs args = MessageReceivedEventArgs.Create(message, sendMode))
-                MessageReceived?.Invoke(this, args);
+            using MessageReceivedEventArgs args = MessageReceivedEventArgs.Create(message, sendMode);
+            MessageReceived?.Invoke(this, args);
         }
 
         /// <summary>
@@ -455,8 +451,7 @@ namespace DarkRift.Client
             {
                 disposed = true;
 
-                if (Connection != null)
-                    Connection.Dispose();
+                Connection?.Dispose();
 
                 setupMutex.Close();
             }

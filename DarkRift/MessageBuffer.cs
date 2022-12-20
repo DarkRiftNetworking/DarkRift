@@ -114,6 +114,9 @@ namespace DarkRift
         #region IDisposable Support
         public void Dispose()
         {
+            Count = 0;
+            Offset = 0;
+
             //AutoRecyclingArray is reference counted, mark that we're no longer using it
             backingBuffer.DecrementReference();
 
