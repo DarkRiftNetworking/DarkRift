@@ -135,7 +135,10 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         public override bool SendMessageReliable(MessageBuffer message)
         {
             if (!CanSend)
+            {
+                message.Dispose();
                 return false;
+            }
 
             byte[] header = new byte[4];        // TODO pool!
             BigEndianHelper.WriteBytes(header, 0, message.Count);
@@ -160,6 +163,9 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             }
             catch (Exception)
             {
+                message.Dispose();
+                args.Completed -= TcpSendCompleted;
+                ObjectCache.ReturnSocketAsyncEventArgs(args);
                 return false;
             }
 
@@ -173,7 +179,10 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         public override bool SendMessageUnreliable(MessageBuffer message)
         {
             if (!CanSend)
+            {
+                message.Dispose();
                 return false;
+            }
             
             return networkListener.SendUdpBuffer(RemoteUdpEndPoint, message, UdpSendCompleted);
         }
