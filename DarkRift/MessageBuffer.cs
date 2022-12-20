@@ -98,7 +98,8 @@ namespace DarkRift
             if (newLength > backingBuffer.Buffer.Length)
             {
                 //Get a new buffer and copy over data
-                AutoRecyclingArray newBackingBuffer = AutoRecyclingArray.Create(newLength);
+                int newCapacity = Math.Max(newLength, backingBuffer.Buffer.Length * 2);
+                AutoRecyclingArray newBackingBuffer = AutoRecyclingArray.Create(newCapacity);
                 Array.Copy(backingBuffer.Buffer, newBackingBuffer.Buffer, backingBuffer.Buffer.Length);
 
                 // Swap out the buffer
