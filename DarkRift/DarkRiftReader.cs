@@ -107,6 +107,15 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single byte from the reader.
+        /// </summary>
+        /// <param name="value">The byte read.</param>
+        public void Read(out byte value)
+        {
+            value = ReadByte();
+        }
+
+        /// <summary>
         ///     Reads a single character from the reader.
         /// </summary>
         /// <returns>The character read.</returns>
@@ -117,12 +126,30 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single character from the reader.
+        /// </summary>
+        /// <param name="value">The character read.</param>
+        public void Read(out char value)
+        {
+            value = ReadChar();
+        }
+
+        /// <summary>
         ///     Reads a single boolean from the reader.
         /// </summary>
         /// <returns>The boolean read.</returns>
         public bool ReadBoolean()
         {
             return ReadByte() == 1;
+        }
+
+        /// <summary>
+        ///     Reads a single boolean from the reader.
+        /// </summary>
+        /// <param name="value">The boolean read.</param>
+        public void Read(out bool value)
+        {
+            value = ReadBoolean();
         }
 
         /// <summary>
@@ -141,6 +168,15 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single double from the reader.
+        /// </summary>
+        /// <param name="value">The double read.</param>
+        public void Read(out double value)
+        {
+            value = ReadDouble();
+        }
+
+        /// <summary>
         ///     Reads a single 16bit integer from the reader.
         /// </summary>
         /// <returns>The 16bit integer read.</returns>
@@ -153,6 +189,15 @@ namespace DarkRift
             Position += 2;
 
             return v;
+        }
+
+        /// <summary>
+        ///     Reads a single 16bit integer from the reader.
+        /// </summary>
+        /// <param name="value">The 16bit integer read.</param>
+        public void Read(out short value)
+        {
+            value = ReadInt16();
         }
 
         /// <summary>
@@ -171,6 +216,15 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single 32bit integer from the reader.
+        /// </summary>
+        /// <param name="value">The 32bit integer read.</param>
+        public void Read(out int value)
+        {
+            value = ReadInt32();
+        }
+
+        /// <summary>
         ///     Reads a single 64bit integer from the reader.
         /// </summary>
         /// <returns>The 64bit integer read.</returns>
@@ -186,12 +240,30 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single 64bit integer from the reader.
+        /// </summary>
+        /// <param name="value">The 64bit integer read.</param>
+        public void Read(out long value)
+        {
+            value = ReadInt64();
+        }
+
+        /// <summary>
         ///     Reads a single signed byte from the reader.
         /// </summary>
         /// <returns>The signed byte read.</returns>
         public sbyte ReadSByte()
         {
             return (sbyte)ReadByte();
+        }
+
+        /// <summary>
+        ///     Reads a single signed byte from the reader.
+        /// </summary>
+        /// <param name="value">The signed byte read.</param>
+        public void Read(out sbyte value)
+        {
+            value = ReadSByte();
         }
 
         /// <summary>
@@ -210,12 +282,30 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single single from the reader.
+        /// </summary>
+        /// <param name="value">The single read.</param>
+        public void Read(out float value)
+        {
+            value = ReadSingle();
+        }
+
+        /// <summary>
         ///     Reads a single string from the reader using the reader's encoding.
         /// </summary>
         /// <returns>The string read.</returns>
         public string ReadString()
         {
             return ReadString(Encoding);
+        }
+
+        /// <summary>
+        ///     Reads a single string from the reader using the reader's encoding.
+        /// </summary>
+        /// <param name="value">The string read.</param>
+        public void Read(out string value)
+        {
+            value = ReadString();
         }
 
         /// <summary>
@@ -242,6 +332,16 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single string from the reader using the given encoding.
+        /// </summary>
+        /// <param name="value">The string read.</param>
+        /// <param name="encoding">The encoding to deserialize the string using.</param>
+        public void Read(out string value, Encoding encoding)
+        {
+            value = ReadString(encoding);
+        }
+
+        /// <summary>
         ///     Reads a single unsigned 16bit integer from the reader.
         /// </summary>
         /// <returns>The unsigned 16bit integer read.</returns>
@@ -254,6 +354,15 @@ namespace DarkRift
             Position += 2;
 
             return v;
+        }
+
+        /// <summary>
+        ///     Reads a single unsigned 16bit integer from the reader.
+        /// </summary>
+        /// <param name="value">The unsigned 16bit integer read.</param>
+        public void Read(out ushort value)
+        {
+            value = ReadUInt16();
         }
 
         /// <summary>
@@ -272,6 +381,15 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single unsigned 32bit integer from the reader.
+        /// </summary>
+        /// <param name="value">The unsigned 32bit integer read.</param>
+        public void Read(out uint value)
+        {
+            value = ReadUInt32();
+        }
+
+        /// <summary>
         ///     Reads a single unsigned 64bit integer from the reader.
         /// </summary>
         /// <returns>The unsigned 64bit integer read.</returns>
@@ -287,6 +405,15 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Reads a single unsigned 64bit integer from the reader.
+        /// </summary>
+        /// <param name="value">The unsigned 64bit integer read.</param>
+        public void Read(out ulong value)
+        {
+            value = ReadUInt64();
+        }
+
+        /// <summary>
         ///     Reads a single serializable object from the reader.
         /// </summary>
         /// <typeparam name="T">The type of the object to read.</typeparam>
@@ -296,6 +423,16 @@ namespace DarkRift
             T t = new T();
             ReadSerializableInto(ref t);
             return t;
+        }
+
+        /// <summary>
+        ///     Reads a single serializable object from the reader.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to read.</typeparam>
+        /// <param name="value">The serializable object read.</param>
+        public void Read<T>(out T value) where T : IDarkRiftSerializable, new()
+        {
+            value = ReadSerializable<T>();
         }
 
         /// <summary>
@@ -333,6 +470,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array of bytes from the reader.
         /// </summary>
+        /// <param name="value">The array of bytes read.</param>
+        public void Read(out byte[] value)
+        {
+            value = ReadBytes();
+        }
+
+        /// <summary>
+        ///     Reads an array of bytes from the reader.
+        /// </summary>
         /// <param name="destination">The array to read bytes into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
         public void ReadBytesInto(byte[] destination, int offset)
@@ -357,6 +503,15 @@ namespace DarkRift
         public char[] ReadChars()
         {
             return ReadChars(Encoding);
+        }
+
+        /// <summary>
+        ///     Reads a array of characters from the reader.
+        /// </summary>
+        /// <param name="value">The array of characters read.</param>
+        public void Read(out char[] value)
+        {
+            value = ReadChars();
         }
 
         /// <summary>
@@ -390,6 +545,16 @@ namespace DarkRift
             Position += 4 + length;
 
             return array;
+        }
+
+        /// <summary>
+        ///     Reads an array of characters from the reader using the given encoding.
+        /// </summary>
+        /// <param name="value">The array of characters read.</param>
+        /// <param name="encoding">The encoding to use during the deserialization.</param>
+        public void Read(out char[] value, Encoding encoding)
+        {
+            value = ReadChars(encoding);
         }
 
         /// <summary>
@@ -451,6 +616,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array of booleans from the reader.
         /// </summary>
+        /// <param name="value">The array of booleans read.</param>
+        public void Read(out bool[] value)
+        {
+            value = ReadBooleans();
+        }
+
+        /// <summary>
+        ///     Reads an array of booleans from the reader.
+        /// </summary>
         /// <param name="destination">The array to read booleans into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
         public void ReadBooleansInto(bool[] destination, int offset)
@@ -506,6 +680,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array of doubles from the reader.
         /// </summary>
+        /// <param name="value">The array of doubles read.</param>
+        public void Read(out double[] value)
+        {
+            value = ReadDoubles();
+        }
+
+        /// <summary>
+        ///     Reads an array of doubles from the reader.
+        /// </summary>
         /// <returns>The array of doubles read.</returns>
         /// <param name="destination">The array to read doubles into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
@@ -546,6 +729,15 @@ namespace DarkRift
             Position += 4 + length *2;
 
             return array;
+        }
+
+        /// <summary>
+        ///     Reads an array of 16bit integers from the reader.
+        /// </summary>
+        /// <param name="value">The array of 16bit integers read.</param>
+        public void Read(out short[] value)
+        {
+            value = ReadInt16s();
         }
 
         /// <summary>
@@ -595,6 +787,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array of 32bit integers from the reader.
         /// </summary>
+        /// <param name="value">The array of 32bit integers read.</param>
+        public void Read(out int[] value)
+        {
+            value = ReadInt32s();
+        }
+
+        /// <summary>
+        ///     Reads an array of 32bit integers from the reader.
+        /// </summary>
         /// <param name="destination">The array to read int32s into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
         public void ReadInt32sInto(int[] destination, int offset)
@@ -634,6 +835,15 @@ namespace DarkRift
             Position += 4 + length * 8;
 
             return array;
+        }
+
+        /// <summary>
+        ///     Reads an array of 64bit integers from the reader.
+        /// </summary>
+        /// <param name="value">The array of 64bit integers read.</param>
+        public void Read(out long[] value)
+        {
+            value = ReadInt64s();
         }
 
         /// <summary>
@@ -682,6 +892,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array of signed bytes from the reader.
         /// </summary>
+        /// <param name="value">The array of signed bytes read.</param>
+        public void Read(out sbyte[] value)
+        {
+            value = ReadSBytes();
+        }
+
+        /// <summary>
+        ///     Reads an array of signed bytes from the reader.
+        /// </summary>
         /// <param name="destination">The array to read sbytes into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
         public void ReadSBytesInto(sbyte[] destination, int offset)
@@ -720,6 +939,15 @@ namespace DarkRift
             Position += 4 + length * 4;
 
             return array;
+        }
+
+        /// <summary>
+        ///     Reads an array of singles from the reader.
+        /// </summary>
+        /// <param name="value">The array of singles read.</param>
+        public void Read(out float[] value)
+        {
+            value = ReadSingles();
         }
 
         /// <summary>
@@ -765,6 +993,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array of strings from the reader using the reader's encoding.
         /// </summary>
+        /// <param name="value">The array of strings read.</param>
+        public void Read(out string[] value)
+        {
+            value = ReadStrings();
+        }
+
+        /// <summary>
+        ///     Reads an array of strings from the reader using the reader's encoding.
+        /// </summary>
         /// <param name="destination">The array to read strings into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
         public void ReadStringsInto(string[] destination, int offset)
@@ -800,6 +1037,15 @@ namespace DarkRift
             Position += 4 + length * 2;
 
             return array;
+        }
+        
+        /// <summary>
+        ///     Reads an array unsigned 16bit integers from the reader.
+        /// </summary>
+        /// <param name="value">The array of unsigned 16bit integers read.</param>
+        public void Read(out ushort[] value)
+        {
+            value = ReadUInt16s();
         }
 
         /// <summary>
@@ -849,6 +1095,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array unsigned 32bit integers from the reader.
         /// </summary>
+        /// <param name="value">The array of unsigned 32bit integers read.</param>
+        public void Read(out uint[] value)
+        {
+            value = ReadUInt32s();
+        }
+
+        /// <summary>
+        ///     Reads an array unsigned 32bit integers from the reader.
+        /// </summary>
         /// <param name="destination">The array to read strings into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
         public void ReadUInt32sInto(uint[] destination, int offset)
@@ -893,6 +1148,15 @@ namespace DarkRift
         /// <summary>
         ///     Reads an array unsigned 64bit integers from the reader.
         /// </summary>
+        /// <param name="value">The array of unsigned 64bit integers read.</param>
+        public void Read(out ulong[] value)
+        {
+            value = ReadUInt64s();
+        }
+
+        /// <summary>
+        ///     Reads an array unsigned 64bit integers from the reader.
+        /// </summary>
         /// <param name="destination">The array to read strings into.</param>
         /// <param name="offset">The offset at which to write bytes into the array.</param>
         public void ReadUInt64sInto(ulong[] destination, int offset)
@@ -930,6 +1194,16 @@ namespace DarkRift
                 array[i] = ReadSerializable<T>();
             
             return array;
+        }
+
+        /// <summary>
+        ///     Reads an array of a serializable object from the reader.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to read.</typeparam>
+        /// <param name="value">The serializable objects read.</param>
+        public void Read<T>(out T[] value) where T : IDarkRiftSerializable, new()
+        {
+            value = ReadSerializables<T>();
         }
 
         /// <summary>
