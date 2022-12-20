@@ -14,6 +14,14 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 {
     internal abstract class BichannelListenerBase : AbstractBichannelListener
     {
+        private const uint IOC_IN = 0x80000000U;
+        private const uint IOC_VENDOR = 0x18000000U;
+
+        /// <summary>
+        /// Controls whether UDP PORT_UNREACHABLE messages are reported.
+        /// </summary>
+        private const int SIO_UDP_CONNRESET = unchecked((int)(IOC_IN | IOC_VENDOR | 12));
+
         /// <summary>
         ///     The TCP listening socket.
         /// </summary>
@@ -101,12 +109,24 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             TcpListener = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             UdpListener = new Socket(Address.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
+            // TODO DR3 this should default to true
             this.NoDelay = listenerLoadData.Settings["noDelay"]?.ToLower() == "true";
 
             if (listenerLoadData.Settings["maxTcpBodyLength"] != null)
                 this.MaxTcpBodyLength = int.Parse(listenerLoadData.Settings["maxTcpBodyLength"]);
             else
                 this.MaxTcpBodyLength = 65535;
+
+            // By default on Windows ICMP Port Unreachable messages cause the socket to close, we really don't want that
+            // https://stackoverflow.com/a/74327430/2755790
+            try
+            {
+              UdpListener.IOControl(SIO_UDP_CONNRESET, new byte[] { 0x00 }, null);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                // Not on Windows, no need to worry about the option
+            }
 
             connectionAttemptTimeoutsCounter = MetricsCollector.Counter("connection_attempt_timeouts", "The number of connection attempts made to this listener that timed out.");
         }
