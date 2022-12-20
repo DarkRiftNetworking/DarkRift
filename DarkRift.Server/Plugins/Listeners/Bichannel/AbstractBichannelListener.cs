@@ -25,6 +25,11 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         public abstract bool NoDelay { get; set; }
 
         /// <summary>
+        ///     If true (default), reliable messages are delivered in order. If false, reliable messages can be delivered out of order to improve performance.
+        /// </summary>
+        public abstract bool PreserveTcpOrdering { get; protected set; }
+
+        /// <summary>
         ///     The maximum size the client can ask a TCP body to be without being striked.
         /// </summary>
         /// <remarks>This defaults to 65KB.</remarks>

@@ -41,6 +41,11 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         }
 
         /// <summary>
+        ///     If true (default), reliable messages are delivered in order. If false, reliable messages can be delivered out of order to improve performance.
+        /// </summary>
+        public override bool PreserveTcpOrdering { get; protected set; } = true;
+
+        /// <summary>
         ///     Dictionary of TCP connections awaiting their UDP counterpart.
         /// </summary>
         protected Dictionary<long, PendingConnection> PendingTcpSockets { get; } = new Dictionary<long, PendingConnection>();
@@ -92,6 +97,9 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 this.UdpPort = ushort.Parse(listenerLoadData.Settings["udpPort"]);
             else
                 this.UdpPort = this.Port;
+
+            var preserveTcpOrdering = listenerLoadData.Settings["preserveTcpOrdering"]?.ToLower();
+            this.PreserveTcpOrdering = preserveTcpOrdering == null || preserveTcpOrdering == "true"; // keep this true by default, but if user specifies it in config they probably want to disable it
 
             TcpListener = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             UdpListener = new Socket(Address.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
