@@ -319,9 +319,10 @@ namespace DarkRift.Server
                     },
                     (_) => client.StartListening()
                 );
-            } else
+            }
+            else
             {
-                logger.Info($"Handler for client [{client.ID}] is null. Enabling listener, but nothing is likely to happen.");
+                logger.Warning($"Client [{client.ID}] has connected but none of your plugins have set a handler for the ClientConnected event. The client will remain connected.");
                 client.StartListening();
             }
         }

@@ -246,16 +246,16 @@ namespace DarkRift.Server
         /// </summary>
         internal void StartListening()
         {
-           try
-              {
+            try
+            {
                 connection.StartListening();
                 SendID();
             }
             catch (Exception e)
-              {
+            {
                 logger.Error("Failed to start listening to connection.", e);
                 clientManager.HandleDisconnection(this, false, SocketError.SocketError, e);
-              }
+            }
         }
 
         /// <inheritdoc/>
