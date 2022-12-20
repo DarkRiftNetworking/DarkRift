@@ -302,9 +302,11 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
                 // Send message back to client to say hi
                 // This MemoryBuffer is not supposed to be disposed here! It's disposed when the message is sent!
-                MessageBuffer helloBuffer = MessageBuffer.Create(1);
-                helloBuffer.Count = 1;
-                helloBuffer.Buffer[0] = 0;                          // Layout: 0 - Version
+                const int NumBytesOfHello = 8; // This used to be 1 which caused issues with some ISPs.
+                MessageBuffer helloBuffer = MessageBuffer.Create(NumBytesOfHello);
+                helloBuffer.Count = NumBytesOfHello;
+                for (int i = 0; i < NumBytesOfHello; ++i)
+                    helloBuffer.Buffer[i] = buffer.Buffer[i + 1];
                 connection.SendMessageUnreliable(helloBuffer);
 
                 //Inform everyone

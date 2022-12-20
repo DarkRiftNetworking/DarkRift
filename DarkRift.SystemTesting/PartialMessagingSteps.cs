@@ -69,21 +69,22 @@ namespace DarkRift.SystemTesting
         public void GivenTheHandshakeHasCompeleted()
         {
             // Receive token
-            byte[] buffer = new byte[9];
-            int receivedTcp = tcpSocket.Receive(buffer);
+            byte[] tcpBuffer = new byte[9];
+            int receivedTcp = tcpSocket.Receive(tcpBuffer);
 
             Assert.AreEqual(9, receivedTcp);
-            Assert.AreEqual(0, buffer[0]);
+            Assert.AreEqual(0, tcpBuffer[0]);
 
             // Return token
-            udpSocket.Send(buffer);
+            udpSocket.Send(tcpBuffer);
 
             // Receive punchthrough
-            byte[] buffer2 = new byte[1];
-            int receivedUdp = udpSocket.Receive(buffer);
+            byte[] udpBuffer = new byte[8];
+            int receivedUdp = udpSocket.Receive(udpBuffer);
 
-            Assert.AreEqual(1, receivedUdp);
-            Assert.AreEqual(0, buffer2[0]);
+            Assert.AreEqual(8, receivedUdp);
+            for (int i = 0; i < 8; ++i)
+                Assert.AreEqual(tcpBuffer[i + 1], udpBuffer[i], $"Token byte {i} mismatch");
 
             // Stupid race condition to attach the MessageReceived handler
             System.Threading.Thread.Sleep(100);
