@@ -27,6 +27,13 @@ indent_size = 2
 [*.json]
 indent_size = 2
 
+# npm package files
+[package.json]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
+charset = utf-8
+
 # Powershell files
 [*.ps1]
 indent_size = 2
@@ -38,6 +45,13 @@ indent_size = 2
 
 # Dotnet code style settings:
 [*.{cs,vb}]
+dotnet_diagnostic.IDE0005.severity = suggestion
+dotnet_diagnostic.IDE0007.severity = none
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0011.severity = none
+
+file_header_template = This Source Code Form is subject to the terms of the Mozilla Public\nLicense, v. 2.0. If a copy of the MPL was not distributed with this\nfile, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 # Sort using and Import directives with System.* appearing first and seperate groups
 dotnet_sort_system_directives_first = true:error
 dotnet_separate_import_directive_groups = true:suggestion
@@ -246,5 +260,5 @@ csharp_style_deconstructed_variable_declaration = true:suggestion
 csharp_style_pattern_local_over_anonymous_function = true:error
 csharp_using_directive_placement = outside_namespace:error
 csharp_prefer_static_local_function = true:error
-csharp_prefer_simple_using_statement = true:error
+csharp_prefer_simple_using_statement = true:suggestion
 csharp_style_prefer_switch_expression = true:suggestion

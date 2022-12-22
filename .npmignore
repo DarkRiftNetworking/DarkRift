@@ -1,0 +1,7 @@
+.github
+.gitattributes
+.gitmodules
+.gitignore
+.editorconfig
+.DS_Store
+MSBuild~

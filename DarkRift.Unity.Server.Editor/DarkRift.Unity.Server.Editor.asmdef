@@ -1,0 +1,21 @@
+{
+    "name": "DarkRift.Unity.Server.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:946957ecf1ca94f148ed5fbadd24e3de",
+        "GUID:c50fea142a1f744838196804f5838d9b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "!DARKRIFT_NO_SERVER"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
