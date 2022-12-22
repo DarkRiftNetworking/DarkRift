@@ -1,0 +1,19 @@
+{
+    "name": "DarkRift.Unity.Client",
+    "rootNamespace": "",
+    "references": [
+        "GUID:74b22b8f1e899468c828514608b766c6",
+        "GUID:76832b94ba439479ca17ebb829c50a03"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "!DARKRIFT_NO_CLIENT"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

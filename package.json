@@ -1,0 +1,14 @@
+{
+  "name": "com.unordial.darkrift",
+  "version": "2.10.1",
+  "displayName": "DarkRift",
+  "description": "DarkRift Networking",
+  "keywords": [
+    "editor"
+  ],
+  "author": {
+    "name": "Francisco Requena",
+    "email": "frarees@gmail.com",
+    "url": "https://frarees.github.io"
+  }
+}
