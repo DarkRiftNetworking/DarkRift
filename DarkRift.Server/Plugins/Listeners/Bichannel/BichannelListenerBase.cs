@@ -14,6 +14,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 {
     internal abstract class BichannelListenerBase : AbstractBichannelListener
     {
+        private const int BichannelProtocolVersion = 1;
+
         private const uint IOC_IN = 0x80000000U;
         private const uint IOC_VENDOR = 0x18000000U;
 
@@ -185,6 +187,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             {
                 //Send token via TCP
                 byte[] buffer = new byte[9];                    //Version, Token * 8
+                buffer[0] = BichannelProtocolVersion;
                 BigEndianHelper.WriteBytes(buffer, 1, token);
                 acceptSocket.Send(buffer);
             }
