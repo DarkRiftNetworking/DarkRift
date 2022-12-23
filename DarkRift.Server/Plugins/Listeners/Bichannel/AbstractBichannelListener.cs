@@ -30,6 +30,13 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         public abstract bool PreserveTcpOrdering { get; protected set; }
 
         /// <summary>
+        ///     The version of the protocol used. The defaults to the latest version.
+        ///     You only need to change this if you intend to retain backwards compatibility.
+        ///     Will be removed in the next major release.
+        /// </summary>
+        public abstract int BichannelProtocolVersion { get; protected set; }
+
+        /// <summary>
         ///     The maximum size the client can ask a TCP body to be without being striked.
         /// </summary>
         /// <remarks>This defaults to 65KB.</remarks>

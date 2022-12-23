@@ -14,8 +14,6 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 {
     internal abstract class BichannelListenerBase : AbstractBichannelListener
     {
-        private const int BichannelProtocolVersion = 1;
-
         private const uint IOC_IN = 0x80000000U;
         private const uint IOC_VENDOR = 0x18000000U;
 
@@ -51,6 +49,13 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         ///     If true (default), reliable messages are delivered in order. If false, reliable messages can be delivered out of order to improve performance.
         /// </summary>
         public override bool PreserveTcpOrdering { get; protected set; } = true;
+
+        /// <summary>
+        ///     The version of the protocol used. The defaults to the latest version.
+        ///     You only need to change this if you intend to retain backwards compatibility.
+        ///     Will be removed in the next major release.
+        /// </summary>
+        public override int BichannelProtocolVersion { get; protected set; } = 1;
 
         /// <summary>
         ///     Dictionary of TCP connections awaiting their UDP counterpart.
@@ -104,6 +109,9 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 this.UdpPort = ushort.Parse(listenerLoadData.Settings["udpPort"]);
             else
                 this.UdpPort = this.Port;
+
+            if (listenerLoadData.Settings["protocolVersion"] != null)
+                this.BichannelProtocolVersion = int.Parse(listenerLoadData.Settings["protocolVersion"]);
 
             var preserveTcpOrdering = listenerLoadData.Settings["preserveTcpOrdering"]?.ToLower();
             this.PreserveTcpOrdering = preserveTcpOrdering == null || preserveTcpOrdering == "true"; // keep this true by default, but if user specifies it in config they probably want to disable it
@@ -187,7 +195,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             {
                 //Send token via TCP
                 byte[] buffer = new byte[9];                    //Version, Token * 8
-                buffer[0] = BichannelProtocolVersion;
+                buffer[0] = (byte)BichannelProtocolVersion;
                 BigEndianHelper.WriteBytes(buffer, 1, token);
                 acceptSocket.Send(buffer);
             }
@@ -305,11 +313,20 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
                 // Send message back to client to say hi
                 // This MemoryBuffer is not supposed to be disposed here! It's disposed when the message is sent!
-                const int NumBytesOfHello = 8; // This used to be 1 which caused issues with some ISPs.
-                MessageBuffer helloBuffer = MessageBuffer.Create(NumBytesOfHello);
-                helloBuffer.Count = NumBytesOfHello;
-                for (int i = 0; i < NumBytesOfHello; ++i)
-                    helloBuffer.Buffer[i] = buffer.Buffer[i + 1];
+                int numBytesOfHello = BichannelProtocolVersion >= 1? 8 : 1; // This used to be 1 which caused issues with some ISPs.
+                MessageBuffer helloBuffer = MessageBuffer.Create(numBytesOfHello);
+                helloBuffer.Count = numBytesOfHello;
+
+                if (BichannelProtocolVersion >= 1)
+                {
+                    for (int i = 0; i < numBytesOfHello; ++i)
+                        helloBuffer.Buffer[i] = buffer.Buffer[i + 1];
+                }
+                else
+                {
+                    helloBuffer.Buffer[0] = 0;
+                }
+                
                 connection.SendMessageUnreliable(helloBuffer);
 
                 //Inform everyone
