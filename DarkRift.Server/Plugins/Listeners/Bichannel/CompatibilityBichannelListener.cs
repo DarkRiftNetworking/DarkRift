@@ -21,6 +21,11 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
         public override void StartListening()
         {
+            if (TcpOnly)
+            {
+                throw new InvalidOperationException(nameof(CompatibilityBichannelListener) + " has no support for " + nameof(TcpOnly));
+            }
+
             BindSockets();
 
             Logger.Trace("Starting compatibility listener.");
