@@ -73,7 +73,7 @@ namespace DarkRift.SystemTesting
             int receivedTcp = tcpSocket.Receive(tcpBuffer);
 
             Assert.AreEqual(9, receivedTcp);
-            Assert.AreEqual(0, tcpBuffer[0]);
+            Assert.AreEqual(1, tcpBuffer[0]); //TODO: Would be better to use constant from BichannelListenerBase.BichannelProtocolVersion
 
             // Return token
             udpSocket.Send(tcpBuffer);

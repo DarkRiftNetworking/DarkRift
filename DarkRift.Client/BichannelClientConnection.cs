@@ -19,6 +19,8 @@ namespace DarkRift.Client
     /// </summary>
     public sealed class BichannelClientConnection : NetworkClientConnection, IDisposable
     {
+        private const int BichannelProtocolVersion = 1;
+
         /// <summary>
         ///     The IP address of the remote client.
         /// </summary>
@@ -160,20 +162,31 @@ namespace DarkRift.Client
                 {
                     tcpSocket.ReceiveTimeout = 0;   //Reset to infinite
                 }
-                
-                if (receivedTcp != 9 || buffer[0] != 0)
+
+                int protocolVersion = buffer[0];
+
+                if (receivedTcp != 9)
                 {
                     tcpSocket.Shutdown(SocketShutdown.Both);
-                    throw new DarkRiftConnectionException("Timeout waiting for auth token from server.", SocketError.ConnectionAborted);
+                    string errorMessage = receivedTcp == 0 ? "Timeout waiting for TCP auth token from server."
+                        : "Malformatted TCP auth token from server.";
+                    throw new DarkRiftConnectionException(errorMessage, SocketError.ConnectionAborted);
+                }
+                if (protocolVersion > BichannelProtocolVersion)
+                {
+                    tcpSocket.Shutdown(SocketShutdown.Both);
+                    string errorMessage = "Server has a newer DarkRift protocol, please update client.";
+                    throw new DarkRiftConnectionException(errorMessage, SocketError.ConnectionAborted);
                 }
 
                 //Transmit token back over UDP to server listening port
                 udpSocket.Send(buffer);
 
                 //Receive response from server to initiate the connection
-                byte[] udpBuffer = new byte[8];
+                int udpAcknowledgmentSize = protocolVersion >= 1 ? 8 : 1;
+                byte[] udpBuffer = new byte[udpAcknowledgmentSize];
                 udpSocket.ReceiveTimeout = 5000;
-                
+
                 int receivedUdp;
                 try
                 {
@@ -181,30 +194,40 @@ namespace DarkRift.Client
                 }
                 catch (SocketException ex)
                 {
-                    throw new DarkRiftConnectionException("UDP auth token reception error", ex);
+                    throw new DarkRiftConnectionException("UDP acknowledgment reception error", ex);
                 }
                 finally
                 {
                     udpSocket.ReceiveTimeout = 0;   //Reset to infinite
                 }
 
-                bool failedUdpReceive = receivedUdp != 8;
+                bool failedUdpReceive = receivedUdp != udpAcknowledgmentSize;
                 if (!failedUdpReceive)
                 {
-                    for (int i = 0; i < udpBuffer.Length; ++i)
+                    if (protocolVersion != 0)
                     {
-                        if (udpBuffer[i] != buffer[i + 1])
+                        for (int i = 0; i < udpAcknowledgmentSize; ++i)
                         {
-                            failedUdpReceive = true;
-                            break;
+                            if (udpBuffer[i] != buffer[i + 1])
+                            {
+                                failedUdpReceive = true;
+                                break;
+                            }
                         }
+                    }
+                    if (protocolVersion == 0)
+                    {
+                        if (udpBuffer[0] != 0)
+                            failedUdpReceive = true;
                     }
                 }
 
                 if (failedUdpReceive)
                 {
                     tcpSocket.Shutdown(SocketShutdown.Both);
-                    throw new DarkRiftConnectionException("Timeout waiting for UDP acknowledgement from server.", SocketError.ConnectionAborted);
+                    string errorMessage = receivedUdp == 0 ? "Timeout waiting for UDP acknowledgment from server."
+                        : "Malformatted UDP acknowledgement from server.";
+                    throw new DarkRiftConnectionException(errorMessage, SocketError.ConnectionAborted);
                 }
             }
             catch (DarkRiftConnectionException)
