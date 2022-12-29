@@ -5,6 +5,7 @@
  */
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -184,6 +185,456 @@ namespace DarkRift
         }
 
         /// <summary>
+        /// Creates a new message with the given tag and one byte as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, byte content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and one char as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, char content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and bool as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, bool content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and double as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, double content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and short as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, short content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and int as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, int content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and long as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, long content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and sbyte as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, sbyte content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and float as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, float content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and ushort as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, ushort content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and uint as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, uint content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and ulong as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, ulong content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and string as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, string content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and string as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <param name="encoding">The encoding to be used by DarkRiftWriter.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, string content, Encoding encoding)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content, encoding);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        ///     Creates a new message with the given tag and serializable object.
+        /// </summary>
+        /// <param name="tag">The tag the message has.</param>
+        /// <param name="obj">The initial object in the message data.</param>
+        public static Message Create<T>(ushort tag, T obj) where T : IDarkRiftSerializable
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(obj);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an byte array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, byte[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an char array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, char[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an char array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <param name="encoding">The encoding to by used by DarkRiftWriter.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, char[] content, Encoding encoding)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content, encoding);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an bool array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, bool[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an double array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, double[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an short array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, short[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an int array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, int[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an long array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, long[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an sbyte array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, sbyte[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an float array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, float[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an string array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, string[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an ushort array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, ushort[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an uint array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, uint[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new message with the given tag and an ulong array as its content.
+        /// </summary>
+        /// <param name="tag"> The tag the message has.</param>
+        /// <param name="content">The content of the message.</param>
+        /// <returns></returns>
+        public static Message Create(ushort tag, ulong[] content)
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(content);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
+        ///     Creates a new message with the given tag and an array of serializable objects.
+        /// </summary>
+        /// <param name="tag">The tag the message has.</param>
+        /// <param name="obj">The initial object in the message data.</param>
+        public static Message Create<T>(ushort tag, T[] obj) where T : IDarkRiftSerializable
+        {
+            using (DarkRiftWriter writer = DarkRiftWriter.Create())
+            {
+                writer.Write(obj);
+                return Create(tag, writer);
+            }
+        }
+
+        /// <summary>
         ///     Creates a new message with the given tag and writer.
         /// </summary>
         /// <param name="tag">The tag the message has.</param>
@@ -196,32 +647,6 @@ namespace DarkRift
 
             message.IsReadOnly = false;
             message.buffer = writer.ToBuffer();
-            message.tag = tag;
-            message.flags = 0;
-            message.PingCode = 0;
-            return message;
-        }
-
-        /// <summary>
-        ///     Creates a new message with the given tag and serializable object.
-        /// </summary>
-        /// <param name="tag">The tag the message has.</param>
-        /// <param name="obj">The initial object in the message data.</param>
-        public static Message Create<T>(ushort tag, T obj) where T : IDarkRiftSerializable
-        {
-            Message message = ObjectCache.GetMessage();
-
-            message.isCurrentlyLoungingInAPool = false;
-
-            message.IsReadOnly = false;
-
-            using (DarkRiftWriter writer = DarkRiftWriter.Create())
-            {
-                writer.Write(obj);
-
-                message.buffer = writer.ToBuffer();
-            }
-
             message.tag = tag;
             message.flags = 0;
             message.PingCode = 0;
@@ -268,7 +693,7 @@ namespace DarkRift
 
             // We clone the message buffer so we can modify it's properties safely
             message.buffer = buffer.Clone();
-            
+
             //Get flags first so we can query it
             message.flags = buffer.Buffer[buffer.Offset];
 
@@ -289,7 +714,7 @@ namespace DarkRift
         /// </summary>
         internal Message()
         {
-            
+
         }
 
         /// <summary>
@@ -448,7 +873,7 @@ namespace DarkRift
 
             //We don't want to give a reference to our buffer so we need to clone it
             message.buffer = buffer.Clone();
-            
+
             message.flags = flags;
             message.tag = tag;
             message.PingCode = PingCode;
