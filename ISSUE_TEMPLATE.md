@@ -1,3 +1,5 @@
+# Issue Template
+
 Thanks for creating an issue/feature request! Please use the template below to ensure you have all the necessary information.
 
 If your issue/feature relates to documentation you probably want to post it in the [documentation repository](https://github.com/DarkRiftNetworking/DarkRift.Documentation) instead!

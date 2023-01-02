@@ -1,3 +1,5 @@
+# Source Code License
+
 Most source code files are licensed through the MPL 2.0 license by the following header:
 
 > This Source Code Form is subject to the terms of the Mozilla Public

@@ -1,3 +1,5 @@
+# Building DarkRift from Source
+
 To build the DarkRift 2 solution *you must have Microsoft Visual Studio 2022* installed. The Community edition is fine for open source projects, and is easily attained from https://visualstudio.microsoft.com/vs/community/
 
 ## Configurations

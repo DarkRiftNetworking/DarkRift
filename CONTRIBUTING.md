@@ -1,3 +1,5 @@
+# Contributing
+
 Welcome to the DarkRift 2 open source project!
 
 DarkRift 1 and 2 were originally written by Jamie Read. DarkRift 2 has since been open sourced under the care of Unordinal AB and the DarkRift community.

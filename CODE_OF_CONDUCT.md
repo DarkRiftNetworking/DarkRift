@@ -1,3 +1,5 @@
+# Code of Conduct
+
 The following Code of Conduct applies to this open source project:
 https://www.contributor-covenant.org/version/2/1/code_of_conduct/
 
