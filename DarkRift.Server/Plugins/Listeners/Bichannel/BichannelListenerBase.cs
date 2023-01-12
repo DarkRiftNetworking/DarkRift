@@ -51,6 +51,13 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         public override bool PreserveTcpOrdering { get; protected set; } = true;
 
         /// <summary>
+        ///     If set to true, all messages (whether marked as reliable or unreliable) are sent over TCP.
+        ///     This modifies the connection sequence which means this server will only
+        ///     be able to serve to DR2 clients marked as TcpOnly.
+        /// </summary>
+        public override bool TcpOnly { get; protected set; } = true;
+
+        /// <summary>
         ///     The version of the protocol used. The defaults to the latest version.
         ///     You only need to change this if you intend to retain backwards compatibility.
         ///     Will be removed in the next major release.
@@ -94,6 +101,11 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// </summary>
         private readonly ICounterMetric connectionAttemptTimeoutsCounter;
 
+        /// <summary>
+        ///     Are we even using UDP?
+        /// </summary>
+        protected bool EnableUdp => !TcpOnly;
+
         public BichannelListenerBase(NetworkListenerLoadData listenerLoadData)
             : base(listenerLoadData)
         {
@@ -117,7 +129,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             this.PreserveTcpOrdering = preserveTcpOrdering == null || preserveTcpOrdering == "true"; // keep this true by default, but if user specifies it in config they probably want to disable it
 
             TcpListener = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            UdpListener = new Socket(Address.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            if (EnableUdp)
+                UdpListener = new Socket(Address.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
             // TODO DR3 this should default to true
             this.NoDelay = listenerLoadData.Settings["noDelay"]?.ToLower() == "true";
@@ -127,15 +140,18 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             else
                 this.MaxTcpBodyLength = 65535;
 
-            // By default on Windows ICMP Port Unreachable messages cause the socket to close, we really don't want that
-            // https://stackoverflow.com/a/74327430/2755790
-            try
+            if (EnableUdp)
             {
-              UdpListener.IOControl(SIO_UDP_CONNRESET, new byte[] { 0x00 }, null);
-            }
-            catch (PlatformNotSupportedException)
-            {
-                // Not on Windows, no need to worry about the option
+                // By default on Windows ICMP Port Unreachable messages cause the socket to close, we really don't want that
+                // https://stackoverflow.com/a/74327430/2755790
+                try
+                {
+                    UdpListener.IOControl(SIO_UDP_CONNRESET, new byte[] { 0x00 }, null);
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    // Not on Windows, no need to worry about the option
+                }
             }
 
             connectionAttemptTimeoutsCounter = MetricsCollector.Counter("connection_attempt_timeouts", "The number of connection attempts made to this listener that timed out.");
@@ -152,10 +168,13 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             // If Port was set as 0, we'll now have been assigned a port. Use that from now on
             Port = (ushort)((IPEndPoint)TcpListener.LocalEndPoint).Port;
 
-            UdpListener.Bind(new IPEndPoint(Address, UdpPort));
+            if (EnableUdp)
+            {
+                UdpListener.Bind(new IPEndPoint(Address, UdpPort));
 
-            // If UdpPort was set as 0, we'll now have been assigned a port. Use that from now on
-            UdpPort = (ushort)((IPEndPoint)UdpListener.LocalEndPoint).Port;
+                // If UdpPort was set as 0, we'll now have been assigned a port. Use that from now on
+                UdpPort = (ushort)((IPEndPoint)UdpListener.LocalEndPoint).Port;
+            }
         }
 
         /// <summary>
@@ -198,6 +217,18 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 buffer[0] = (byte)BichannelProtocolVersion;
                 BigEndianHelper.WriteBytes(buffer, 1, token);
                 acceptSocket.Send(buffer);
+
+                if (TcpOnly)
+                {
+                    using (MessageBuffer evenBetterBuffer = MessageBuffer.Create(buffer.Length))
+                    {
+                        evenBetterBuffer.Count = buffer.Length;
+                        for (int i = 0; i < buffer.Length; ++i)
+                            evenBetterBuffer.Buffer[i] = buffer[i];
+
+                        HandleUdpConnection(evenBetterBuffer, acceptSocket.RemoteEndPoint);
+                    } 
+                }
             }
             catch (SocketException e)
             {
@@ -272,6 +303,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// <param name="remoteEndPoint">The originating endpoint.</param>
         protected void HandleUdpConnection(MessageBuffer buffer, EndPoint remoteEndPoint)
         {
+            //Note: This function can be called by despite TcpOnly/!EnableUdp.
+
             //Check length
             if (buffer.Count != 9)
                 return;
@@ -300,7 +333,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
             if (tcpSocket != null)
             {
-                Logger.Trace("Accepted UDP connection from " + remoteEndPoint + ".");
+                if (EnableUdp)
+                    Logger.Trace("Accepted UDP connection from " + remoteEndPoint + ".");
 
                 //Create connection object
                 BichannelServerConnection connection = new BichannelServerConnection(
@@ -311,23 +345,26 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                     MetricsManager.GetPerMessageMetricsCollectorFor(Name)
                 );
 
-                // Send message back to client to say hi
-                // This MemoryBuffer is not supposed to be disposed here! It's disposed when the message is sent!
-                int numBytesOfHello = BichannelProtocolVersion >= 1? 8 : 1; // This used to be 1 which caused issues with some ISPs.
-                MessageBuffer helloBuffer = MessageBuffer.Create(numBytesOfHello);
-                helloBuffer.Count = numBytesOfHello;
+                if (EnableUdp)
+                {
+                    // Send message back to client to say hi
+                    // This MemoryBuffer is not supposed to be disposed here! It's disposed when the message is sent!
+                    int numBytesOfHello = BichannelProtocolVersion >= 1 ? 8 : 1; // This used to be 1 which caused issues with some ISPs.
+                    MessageBuffer helloBuffer = MessageBuffer.Create(numBytesOfHello);
+                    helloBuffer.Count = numBytesOfHello;
 
-                if (BichannelProtocolVersion >= 1)
-                {
-                    for (int i = 0; i < numBytesOfHello; ++i)
-                        helloBuffer.Buffer[i] = buffer.Buffer[i + 1];
+                    if (BichannelProtocolVersion >= 1)
+                    {
+                        for (int i = 0; i < numBytesOfHello; ++i)
+                            helloBuffer.Buffer[i] = buffer.Buffer[i + 1];
+                    }
+                    else
+                    {
+                        helloBuffer.Buffer[0] = 0;
+                    }
+
+                    connection.SendMessageUnreliable(helloBuffer);
                 }
-                else
-                {
-                    helloBuffer.Buffer[0] = 0;
-                }
-                
-                connection.SendMessageUnreliable(helloBuffer);
 
                 //Inform everyone
                 RegisterConnection(connection);
@@ -379,7 +416,8 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
                 if (disposing)
                 {
                     TcpListener.Close();
-                    UdpListener.Close();
+                    if (EnableUdp)
+                        UdpListener.Close();
                 }
 
                 disposedValue = true;

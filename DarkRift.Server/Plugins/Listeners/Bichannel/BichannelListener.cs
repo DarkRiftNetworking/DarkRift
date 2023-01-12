@@ -45,17 +45,24 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             if (!completingAsync)
                 TcpAcceptCompleted(this, tcpArgs);
 
-            //Sort UDP
-            SocketAsyncEventArgs udpArgs = ObjectCache.GetSocketAsyncEventArgs();
-            udpArgs.Completed += UdpMessageReceived;
+            if (EnableUdp)
+            {
+                //Sort UDP
+                SocketAsyncEventArgs udpArgs = ObjectCache.GetSocketAsyncEventArgs();
+                udpArgs.Completed += UdpMessageReceived;
 
-            udpArgs.RemoteEndPoint = new IPEndPoint(Address, 0);
-            udpArgs.BufferList = null;
-            udpArgs.SetBuffer(new byte[ushort.MaxValue], 0, ushort.MaxValue);
+                udpArgs.RemoteEndPoint = new IPEndPoint(Address, 0);
+                udpArgs.BufferList = null;
+                udpArgs.SetBuffer(new byte[ushort.MaxValue], 0, ushort.MaxValue);
 
-            completingAsync = UdpListener.ReceiveFromAsync(udpArgs);
-            if (!completingAsync)
-                UdpMessageReceived(this, udpArgs);
+                completingAsync = UdpListener.ReceiveFromAsync(udpArgs);
+                if (!completingAsync)
+                    UdpMessageReceived(this, udpArgs);
+            }
+            else
+            {
+                UdpPort = Port; // Cleaner message.
+            }
 
             Logger.Info($"Server mounted, listening on port {Port}{(UdpPort != Port ? "|" + UdpPort : "")}.");
         }

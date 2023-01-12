@@ -30,6 +30,13 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         public abstract bool PreserveTcpOrdering { get; protected set; }
 
         /// <summary>
+        ///     If set to true, all messages (whether marked as reliable or unreliable) are sent over TCP.
+        ///     This modifies the connection sequence which means this server will only
+        ///     be able to serve to DR2 clients marked as TcpOnly.
+        /// </summary>
+        public abstract bool TcpOnly { get; protected set; }
+
+        /// <summary>
         ///     The version of the protocol used. The defaults to the latest version.
         ///     You only need to change this if you intend to retain backwards compatibility.
         ///     Will be removed in the next major release.

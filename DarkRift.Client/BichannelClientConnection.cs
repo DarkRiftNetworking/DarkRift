@@ -44,6 +44,13 @@ namespace DarkRift.Client
         /// </summary>
         public bool PreserveTcpOrdering { get; private set; } = true;
 
+        /// <summary>
+        ///     If set to true, all messages (whether marked as reliable or unreliable) are sent over TCP.
+        ///     This modifies the connection sequence which means this client will only
+        ///     be able to connect to DR2 server bichannel listeners marked as TcpOnly.
+        /// </summary>
+        public bool TcpOnly { get; private set; } = true;
+
         /// <inheritdoc/>
         public override IEnumerable<IPEndPoint> RemoteEndPoints => new IPEndPoint[] { RemoteTcpEndPoint, RemoteUdpEndPoint };
 
@@ -64,6 +71,11 @@ namespace DarkRift.Client
         ///     The socket used in UDP communication.
         /// </summary>
         private readonly Socket udpSocket;
+
+        /// <summary>
+        ///     Are we even using UDP?
+        /// </summary>
+        private bool EnableUdp => !TcpOnly;
 
         /// <summary>
         ///     Creates a new bichannel client.
@@ -87,10 +99,12 @@ namespace DarkRift.Client
             : base ()
         {
             RemoteTcpEndPoint = new IPEndPoint(ipAddress, tcpPort);
-            RemoteUdpEndPoint = new IPEndPoint(ipAddress, udpPort);
+            if (EnableUdp)
+                RemoteUdpEndPoint = new IPEndPoint(ipAddress, udpPort);
 
             tcpSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            udpSocket = new Socket(tcpSocket.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            if (EnableUdp)
+                udpSocket = new Socket(tcpSocket.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
             NoDelay = noDelay;
         }
@@ -134,15 +148,18 @@ namespace DarkRift.Client
                     throw new DarkRiftConnectionException("Unable to establish TCP connection to remote server.", e);
                 }
 
-                try
+                if (EnableUdp)
                 {
-                    //Bind UDP to a free port
-                    udpSocket.Bind(new IPEndPoint(((IPEndPoint)tcpSocket.LocalEndPoint).Address, 0));
-                    udpSocket.Connect(RemoteUdpEndPoint);
-                }
-                catch (SocketException e)
-                {
-                    throw new DarkRiftConnectionException("Unable to bind UDP ports.", e);
+                    try
+                    {
+                        //Bind UDP to a free port
+                        udpSocket.Bind(new IPEndPoint(((IPEndPoint)tcpSocket.LocalEndPoint).Address, 0));
+                        udpSocket.Connect(RemoteUdpEndPoint);
+                    }
+                    catch (SocketException e)
+                    {
+                        throw new DarkRiftConnectionException("Unable to bind UDP ports.", e);
+                    }
                 }
 
                 //Receive auth token from TCP
@@ -179,55 +196,58 @@ namespace DarkRift.Client
                     throw new DarkRiftConnectionException(errorMessage, SocketError.ConnectionAborted);
                 }
 
-                //Transmit token back over UDP to server listening port
-                udpSocket.Send(buffer);
+                if (EnableUdp)
+                {
+                    //Transmit token back over UDP to server listening port
+                    udpSocket.Send(buffer);
 
-                //Receive response from server to initiate the connection
-                int udpAcknowledgmentSize = protocolVersion >= 1 ? 8 : 1;
-                byte[] udpBuffer = new byte[udpAcknowledgmentSize];
-                udpSocket.ReceiveTimeout = 5000;
+                    //Receive response from server to initiate the connection
+                    int udpAcknowledgmentSize = protocolVersion >= 1 ? 8 : 1;
+                    byte[] udpBuffer = new byte[udpAcknowledgmentSize];
+                    udpSocket.ReceiveTimeout = 5000;
 
-                int receivedUdp;
-                try
-                {
-                    receivedUdp = udpSocket.Receive(udpBuffer);
-                }
-                catch (SocketException ex)
-                {
-                    throw new DarkRiftConnectionException("UDP acknowledgment reception error", ex);
-                }
-                finally
-                {
-                    udpSocket.ReceiveTimeout = 0;   //Reset to infinite
-                }
-
-                bool failedUdpReceive = receivedUdp != udpAcknowledgmentSize;
-                if (!failedUdpReceive)
-                {
-                    if (protocolVersion != 0)
+                    int receivedUdp;
+                    try
                     {
-                        for (int i = 0; i < udpAcknowledgmentSize; ++i)
+                        receivedUdp = udpSocket.Receive(udpBuffer);
+                    }
+                    catch (SocketException ex)
+                    {
+                        throw new DarkRiftConnectionException("UDP acknowledgment reception error", ex);
+                    }
+                    finally
+                    {
+                        udpSocket.ReceiveTimeout = 0;   //Reset to infinite
+                    }
+
+                    bool failedUdpReceive = receivedUdp != udpAcknowledgmentSize;
+                    if (!failedUdpReceive)
+                    {
+                        if (protocolVersion != 0)
                         {
-                            if (udpBuffer[i] != buffer[i + 1])
+                            for (int i = 0; i < udpAcknowledgmentSize; ++i)
                             {
-                                failedUdpReceive = true;
-                                break;
+                                if (udpBuffer[i] != buffer[i + 1])
+                                {
+                                    failedUdpReceive = true;
+                                    break;
+                                }
                             }
                         }
+                        if (protocolVersion == 0)
+                        {
+                            if (udpBuffer[0] != 0)
+                                failedUdpReceive = true;
+                        }
                     }
-                    if (protocolVersion == 0)
-                    {
-                        if (udpBuffer[0] != 0)
-                            failedUdpReceive = true;
-                    }
-                }
 
-                if (failedUdpReceive)
-                {
-                    tcpSocket.Shutdown(SocketShutdown.Both);
-                    string errorMessage = receivedUdp == 0 ? "Timeout waiting for UDP acknowledgment from server."
-                        : "Malformatted UDP acknowledgement from server.";
-                    throw new DarkRiftConnectionException(errorMessage, SocketError.ConnectionAborted);
+                    if (failedUdpReceive)
+                    {
+                        tcpSocket.Shutdown(SocketShutdown.Both);
+                        string errorMessage = receivedUdp == 0 ? "Timeout waiting for UDP acknowledgment from server."
+                            : "Malformatted UDP acknowledgement from server.";
+                        throw new DarkRiftConnectionException(errorMessage, SocketError.ConnectionAborted);
+                    }
                 }
             }
             catch (DarkRiftConnectionException)
@@ -252,16 +272,19 @@ namespace DarkRift.Client
             if (!headerCompletingAsync)
                 AsyncReceiveHeaderCompleted(this, tcpArgs);
 
-            //Start receiving UDP packets
-            SocketAsyncEventArgs udpArgs = ObjectCache.GetSocketAsyncEventArgs();
-            udpArgs.BufferList = null;
-            udpArgs.SetBuffer(new byte[ushort.MaxValue], 0, ushort.MaxValue);
+            if (EnableUdp)
+            {
+                //Start receiving UDP packets
+                SocketAsyncEventArgs udpArgs = ObjectCache.GetSocketAsyncEventArgs();
+                udpArgs.BufferList = null;
+                udpArgs.SetBuffer(new byte[ushort.MaxValue], 0, ushort.MaxValue);
 
-            udpArgs.Completed += UdpReceiveCompleted;
+                udpArgs.Completed += UdpReceiveCompleted;
 
-            bool udpCompletingAsync = udpSocket.ReceiveAsync(udpArgs);
-            if (!udpCompletingAsync)
-                UdpReceiveCompleted(this, udpArgs);
+                bool udpCompletingAsync = udpSocket.ReceiveAsync(udpArgs);
+                if (!udpCompletingAsync)
+                    UdpReceiveCompleted(this, udpArgs);
+            }
 
             //Mark connected to allow sending
             connectionState = ConnectionState.Connected;
@@ -313,6 +336,11 @@ namespace DarkRift.Client
         /// <inheritdoc/>
         public override bool SendMessageUnreliable(MessageBuffer message)
         {
+            if (TcpOnly)
+            {
+                return SendMessageReliable(message);
+            }
+
             if (connectionState == ConnectionState.Disconnected)
             {
                 message.Dispose();
@@ -794,7 +822,8 @@ namespace DarkRift.Client
                     Disconnect();
 
                     tcpSocket.Close();
-                    udpSocket.Close();
+                    if (EnableUdp)
+                        udpSocket.Close();
                 }
 
                 disposedValue = true;

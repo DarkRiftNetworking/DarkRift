@@ -178,6 +178,11 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         /// <inheritdoc/>
         public override bool SendMessageUnreliable(MessageBuffer message)
         {
+            if (networkListener.TcpOnly)
+            {
+                return SendMessageReliable(message);
+            }
+
             if (!CanSend)
             {
                 message.Dispose();
