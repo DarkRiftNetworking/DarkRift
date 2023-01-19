@@ -36,9 +36,8 @@ First, we start a server that gets its settings from the local file server.confi
 ```csharp
 using DarkRift;
 using DarkRift.Server;
-using System.Collections.Specialized;
 
-ServerSpawnData spawnData = ServerSpawnData.CreateFromXml("Server.config", new NameValueCollection());
+ServerSpawnData spawnData = ServerSpawnData.CreateFromXml("Server.config");
 
 var server = new DarkRiftServer(spawnData);
 
@@ -118,7 +117,7 @@ void Client_MessageReceived(object? sender, MessageReceivedEventArgs e)
 
 client.MessageReceived += Client_MessageReceived;
 
-client.Connect(IPAddress.Loopback, tcpPort:4296, udpPort: 4297, noDelay:true);
+client.Connect(IPAddress.Loopback, tcpPort:4296, udpPort:4297, noDelay:true);
 
 Console.WriteLine("Connected!");
 

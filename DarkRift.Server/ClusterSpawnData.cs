@@ -163,6 +163,16 @@ namespace DarkRift.Server
         /// <summary>
         ///     Creates a cluster spawn data from specified XML configuration file.
         /// </summary>
+        /// <param name="filePath">The path of the XML file.</param>
+        /// <returns>The ClusterSpawnData created.</returns>
+        public static ClusterSpawnData CreateFromXml(string filePath)
+        {
+            return CreateFromXml(filePath, new NameValueCollection());
+        }
+
+        /// <summary>
+        ///     Creates a cluster spawn data from specified XML configuration file.
+        /// </summary>
         /// <param name="document">The XML file.</param>
         /// <param name="variables">The variables to inject into the configuration.</param>
         /// <returns>The ClusterSpawnData created.</returns>
@@ -179,6 +189,16 @@ namespace DarkRift.Server
 
             //Return the new spawn data!
             return spawnData;
+        }
+
+        /// <summary>
+        ///     Creates a cluster spawn data from specified XML configuration file.
+        /// </summary>
+        /// <param name="document">The XML file.</param>
+        /// <returns>The ClusterSpawnData created.</returns>
+        public static ClusterSpawnData CreateFromXml(XDocument document)
+        {
+            return CreateFromXml(document, new NameValueCollection());
         }
 
         /// <summary>
