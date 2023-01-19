@@ -1,0 +1,8 @@
+.github
+.gitattributes
+.gitmodules
+.gitignore
+.editorconfig
+.DS_Store
+UnityDemos
+UnityTests

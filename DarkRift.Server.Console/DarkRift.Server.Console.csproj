@@ -14,6 +14,8 @@
     <!-- Don't generate a Windows exe, it doesn't work with our packing into ./lib -->
     <!-- TODO https://github.com/nulastudio/NetCoreBeauty? -->
     <UseAppHost>false</UseAppHost>
+	<BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

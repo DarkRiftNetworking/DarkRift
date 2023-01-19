@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29911.84
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4FF06EA-45F9-4D56-9ED8-5EC6335F617E}"
 	ProjectSection(SolutionItems) = preProject
@@ -50,8 +50,8 @@ Global
 		{44FBEEB9-2D0D-4025-9E43-BE436983C335}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44FBEEB9-2D0D-4025-9E43-BE436983C335}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44FBEEB9-2D0D-4025-9E43-BE436983C335}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{44FBEEB9-2D0D-4025-9E43-BE436983C335}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44FBEEB9-2D0D-4025-9E43-BE436983C335}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44FBEEB9-2D0D-4025-9E43-BE436983C335}.Release|Any CPU.ActiveCfg = Free|Any CPU
+		{44FBEEB9-2D0D-4025-9E43-BE436983C335}.Release|Any CPU.Build.0 = Free|Any CPU
 		{1324A37A-AC08-44CF-85DE-E9A05876E1EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1324A37A-AC08-44CF-85DE-E9A05876E1EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1324A37A-AC08-44CF-85DE-E9A05876E1EC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -87,5 +87,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D5304029-AEE2-4FC9-AB6C-0DF439687502}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		outputpath = ../unordinal/dr-build
+		intermediateoutputpath = ../unordinal/dr-build
 	EndGlobalSection
 EndGlobal

@@ -5,9 +5,11 @@
   <PropertyGroup>
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net3.5;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(DRBuildMode)' == 'coreonly' ">netstandard2.0</TargetFrameworks>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\DarkRift.Client.xml</DocumentationFile>
+    <DocumentationFile>$(OutDir)\$(Configuration)\$(TargetFramework)\DarkRift.Client.xml</DocumentationFile>
     <Configurations>Debug;Free</Configurations>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	<BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net3.5' ">
