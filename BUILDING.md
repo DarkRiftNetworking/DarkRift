@@ -2,12 +2,15 @@
 
 To build the DarkRift 2 solution *you must have Microsoft Visual Studio 2022* installed. The Community edition is fine for open source projects, and is easily attained from https://visualstudio.microsoft.com/vs/community/
 
+If you get an error when building like "The targeting pack Microsoft.NETCore.App is not installed. Please restore and try again.", consider installing the latest .NET SDK, at time of writing https://dotnet.microsoft.com/en-us/download/dotnet/7.0. Note that Microsoft dropped "Core" and now just calls it .NET (again).
+
 ## Configurations
 
 Currently, DarkRift can be built in the following configurations:
-* Debug: Self evident.
-* Free: The same as the old Free version.
-* Pro: The same as the old Pro version. This is probably want you want for release builds. Going forward, it is also what will be supported in future DR2 versions.
+* Debug.
+* Release.
+
+The old distinction between Free and Pro versions are gone and have been merged into these configurations!
 
 ## Output Assemblies
 
