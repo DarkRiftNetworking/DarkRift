@@ -82,7 +82,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
         ///     The UDP connections to the server.
         /// </summary>
         protected Dictionary<EndPoint, BichannelServerConnection> UdpConnections { get; } = new Dictionary<EndPoint, BichannelServerConnection>();
-       
+
         /// <summary>
         ///     The maximum size the client can ask a TCP body to be without being striked.
         /// </summary>
@@ -194,7 +194,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             try
             {
                 //Send token via TCP
-                byte[] buffer = new byte[9];                    //Version, Token * 8
+                byte[] buffer = new byte[9]; //Version, Token * 8
                 buffer[0] = (byte)BichannelProtocolVersion;
                 BigEndianHelper.WriteBytes(buffer, 1, token);
                 acceptSocket.Send(buffer);
@@ -313,20 +313,26 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
                 // Send message back to client to say hi
                 // This MemoryBuffer is not supposed to be disposed here! It's disposed when the message is sent!
-                int numBytesOfHello = BichannelProtocolVersion >= 1? 8 : 1; // This used to be 1 which caused issues with some ISPs.
+                // HelloBuffer size is must be at least 12 bytes even when the actual token is shorter
+                // otherwise the message is dropped in some environments. namely ACI
+                int numBytesOfHello = BichannelProtocolVersion >= 1 ? 12 : 1; // This used to be 1 which caused issues with some ISPs.
                 MessageBuffer helloBuffer = MessageBuffer.Create(numBytesOfHello);
                 helloBuffer.Count = numBytesOfHello;
 
                 if (BichannelProtocolVersion >= 1)
                 {
-                    for (int i = 0; i < numBytesOfHello; ++i)
+                    // Copy TCP token
+                    for (int i = 0; i < 8; i++)
                         helloBuffer.Buffer[i] = buffer.Buffer[i + 1];
+                    // Zero remaining bytes (as we might want to use them somehow in the future)
+                    for (int i = 8; i < numBytesOfHello; ++i)
+                        helloBuffer.Buffer[i] = 0;
                 }
                 else
                 {
                     helloBuffer.Buffer[0] = 0;
                 }
-                
+
                 connection.SendMessageUnreliable(helloBuffer);
 
                 //Inform everyone
@@ -360,7 +366,7 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
             lock (UdpConnections)
                 UdpConnections.Remove(connection.RemoteUdpEndPoint);
         }
-        
+
         /// <summary>
         ///     Sends a buffer to the given endpoint using the UDP socket.
         /// </summary>

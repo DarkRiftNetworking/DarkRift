@@ -30,7 +30,7 @@ namespace DarkRift.Client
         ///     The IP address of the remote client.
         /// </summary>
         public IPEndPoint RemoteUdpEndPoint { get; }
-        
+
         /// <summary>
         ///     Whether Nagel's algorithm should be disabled or not.
         /// </summary>
@@ -113,7 +113,7 @@ namespace DarkRift.Client
 
             tcpSocket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
             udpSocket = new Socket(tcpSocket.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            
+
             NoDelay = noDelay;
         }
 
@@ -172,6 +172,7 @@ namespace DarkRift.Client
                         : "Malformatted TCP auth token from server.";
                     throw new DarkRiftConnectionException(errorMessage, SocketError.ConnectionAborted);
                 }
+
                 if (protocolVersion > BichannelProtocolVersion)
                 {
                     tcpSocket.Shutdown(SocketShutdown.Both);
@@ -183,7 +184,7 @@ namespace DarkRift.Client
                 udpSocket.Send(buffer);
 
                 //Receive response from server to initiate the connection
-                int udpAcknowledgmentSize = protocolVersion >= 1 ? 8 : 1;
+                int udpAcknowledgmentSize = protocolVersion >= 1 ? 12 : 1;
                 byte[] udpBuffer = new byte[udpAcknowledgmentSize];
                 udpSocket.ReceiveTimeout = 5000;
 
@@ -198,7 +199,7 @@ namespace DarkRift.Client
                 }
                 finally
                 {
-                    udpSocket.ReceiveTimeout = 0;   //Reset to infinite
+                    udpSocket.ReceiveTimeout = 0; //Reset to infinite
                 }
 
                 bool failedUdpReceive = receivedUdp != udpAcknowledgmentSize;
@@ -206,15 +207,16 @@ namespace DarkRift.Client
                 {
                     if (protocolVersion != 0)
                     {
-                        for (int i = 0; i < udpAcknowledgmentSize; ++i)
+                        for (int i = 1; i < buffer.Length; i++)
                         {
-                            if (udpBuffer[i] != buffer[i + 1])
+                            if (udpBuffer[i - 1] != buffer[i])
                             {
                                 failedUdpReceive = true;
                                 break;
                             }
                         }
                     }
+
                     if (protocolVersion == 0)
                     {
                         if (udpBuffer[0] != 0)
@@ -722,7 +724,6 @@ namespace DarkRift.Client
                     // Leave the loop
                     return;
                 }
-
             } while (!completingAsync);
         }
 
