@@ -321,8 +321,12 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
                 if (BichannelProtocolVersion >= 1)
                 {
-                    for (int i = 1; i < buffer.Count; i++)
-                        helloBuffer.Buffer[i - 1] = buffer.Buffer[i];
+                    // Copy TCP token
+                    for (int i = 0; i < 8; i++)
+                        helloBuffer.Buffer[i] = buffer.Buffer[i + 1];
+                    // Zero remaining bytes (as we might want to use them somehow in the future)
+                    for (int i = 8; i < numBytesOfHello; ++i)
+                        helloBuffer.Buffer[i] = 0;
                 }
                 else
                 {

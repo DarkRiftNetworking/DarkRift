@@ -79,12 +79,14 @@ namespace DarkRift.SystemTesting
             udpSocket.Send(tcpBuffer);
 
             // Receive punchthrough
-            byte[] udpBuffer = new byte[8];
+            byte[] udpBuffer = new byte[12];
             int receivedUdp = udpSocket.Receive(udpBuffer);
 
-            Assert.AreEqual(8, receivedUdp);
+            Assert.AreEqual(12, receivedUdp);
             for (int i = 0; i < 8; ++i)
                 Assert.AreEqual(tcpBuffer[i + 1], udpBuffer[i], $"Token byte {i} mismatch");
+            for (int i = 8; i < 12; ++i)
+                Assert.AreEqual(0, udpBuffer[i]);
 
             // Stupid race condition to attach the MessageReceived handler
             System.Threading.Thread.Sleep(100);
