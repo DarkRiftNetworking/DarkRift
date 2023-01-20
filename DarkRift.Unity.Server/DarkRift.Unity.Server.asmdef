@@ -1,0 +1,19 @@
+{
+    "name": "DarkRift.Unity.Server",
+    "rootNamespace": "",
+    "references": [
+        "GUID:29b401de43220e74783c691425e1d1e5",
+        "GUID:c5d03e3d6adbd7f4e913976028530c40"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "!DARKRIFT_NO_SERVER"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -9,6 +9,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- MSTest.TestAdapter package is for .NET Framework 4.6.1 so throws errors on .NET Standard build -->
     <NoWarn>NU1701</NoWarn>
+	<BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

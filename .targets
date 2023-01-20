@@ -1,7 +1,7 @@
 ﻿<Project>
   <!-- Global variables -->
   <PropertyGroup>
-    <BuildArea>$(SolutionDir)Build/</BuildArea>
+    <BuildArea>$(SolutionDir)../unordinal/dr-build/</BuildArea>
     <BuildDir>$(BuildArea)$(Configuration)/$(TargetFramework)/</BuildDir>
   </PropertyGroup>
   

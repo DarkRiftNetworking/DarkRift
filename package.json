@@ -1,0 +1,14 @@
+{
+  "name": "com.unordinal.darkrift",
+  "version": "2.11.0",
+  "displayName": "DarkRift",
+  "description": "DarkRift Networking - A High Performance Networking Library",
+  "keywords": [
+    "editor"
+  ],
+  "author": {
+    "name": "Unordinal",
+    "email": "opensource@unordinal.com",
+    "url": "https://github.com/DarkRiftNetworking/DarkRift"
+  }
+}
