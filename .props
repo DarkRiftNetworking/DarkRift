@@ -1,5 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<Version>2.11.0</Version>
+		<Authors>The DarkRift Community</Authors>
+		<Company>Unordinal</Company>
 	</PropertyGroup>
 </Project>

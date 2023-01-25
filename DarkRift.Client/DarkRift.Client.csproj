@@ -8,8 +8,9 @@
     <DocumentationFile>$(OutDir)\$(Configuration)\$(TargetFramework)\DarkRift.Client.xml</DocumentationFile>
     <Configurations>Debug;Free</Configurations>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-	<BaseOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
+	<BaseOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net3.5' ">
