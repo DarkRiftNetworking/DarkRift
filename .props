@@ -4,6 +4,7 @@
 		<Authors>The DarkRift Community</Authors>
 		<PackageTags>network udp tcp</PackageTags>
 		<PackageProjectUrl>https://www.darkriftnetworking.com/</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
 		<Company>Unordinal AB</Company>
 		<Copyright>Unordinal AB</Copyright>
