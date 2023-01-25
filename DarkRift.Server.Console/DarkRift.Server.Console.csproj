@@ -41,7 +41,5 @@
     <ProjectReference Include="..\DarkRift.Server\DarkRift.Server.csproj" />
     <ProjectReference Include="..\DarkRift\DarkRift.csproj" />
   </ItemGroup>
-
-  <Import Project="$(SolutionDir).targets" Condition="'$(SkipCopyToBuild)' != 'true'" />
   
 </Project>
