@@ -1,5 +1,13 @@
 <Project>
 	<PropertyGroup>
 		<Version>2.11.0</Version>
+		<Authors>The DarkRift Community</Authors>
+		<PackageTags>network udp tcp</PackageTags>
+		<PackageProjectUrl>https://www.darkriftnetworking.com/</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+		<Company>Unordinal AB</Company>
+		<Copyright>Unordinal AB</Copyright>
+		<Description>DarkRift Networking - High Performance Networking Library for .NET and Unity Games</Description>
 	</PropertyGroup>
 </Project>

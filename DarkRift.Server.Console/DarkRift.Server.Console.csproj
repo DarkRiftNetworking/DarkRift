@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <!-- Import global props -->
-  <Import Project="$(SolutionDir).props" />
+  <Import Project="$(ProjectDir)..\.props" />
 
   <PropertyGroup>
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net4.0;netcoreapp2.0;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
@@ -14,8 +14,8 @@
     <!-- Don't generate a Windows exe, it doesn't work with our packing into ./lib -->
     <!-- TODO https://github.com/nulastudio/NetCoreBeauty? -->
     <UseAppHost>false</UseAppHost>
-	<BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
+	<BaseOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,7 +41,5 @@
     <ProjectReference Include="..\DarkRift.Server\DarkRift.Server.csproj" />
     <ProjectReference Include="..\DarkRift\DarkRift.csproj" />
   </ItemGroup>
-
-  <Import Project="$(SolutionDir).targets" Condition="'$(SkipCopyToBuild)' != 'true'" />
   
 </Project>

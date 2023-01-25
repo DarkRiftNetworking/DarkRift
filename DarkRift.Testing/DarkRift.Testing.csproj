@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <!-- Import global props (must be done here for Version to have effect on class libraries) -->
-  <Import Project="$(SolutionDir).props" />
+  <Import Project="$(ProjectDir)..\.props" />
   
   <PropertyGroup>
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net4.5;net6.0</TargetFrameworks>
@@ -10,8 +10,8 @@
     <!-- MSTest.TestAdapter package is for .NET Framework 4.6.1 so throws errors on .NET Standard build -->
     <NoWarn>NU1701</NoWarn>
     <IsPackable>false</IsPackable>
-	<BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
+	<BaseOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

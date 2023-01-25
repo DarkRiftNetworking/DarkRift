@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <!-- Import global props (must be done here for Version to have effect on class libraries) -->
-  <Import Project="$(SolutionDir).props" />
+  <Import Project="$(ProjectDir)..\.props" />
 
   <PropertyGroup>
     <TargetFrameworks Condition=" '$(DRBuildMode)' != 'coreonly' ">net3.5;netstandard2.0</TargetFrameworks>
@@ -9,8 +9,9 @@
     <Configurations>Debug;Release</Configurations>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-	<BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
+	<BaseOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net3.5' ">
@@ -24,4 +25,8 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
 </Project>
