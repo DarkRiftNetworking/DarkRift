@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <!-- Import global props (must be done here for Version to have effect on class libraries) -->
-  <Import Project="$(SolutionDir).props" />
+  <Import Project="$(ProjectDir)..\.props" />
 
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
@@ -8,8 +8,8 @@
     <IsTestProject>true</IsTestProject>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsPackable>false</IsPackable>
-	<BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
+	<BaseOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(ProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ProjectDir)..\..\unordinal\dr-build\$(ProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
