@@ -147,22 +147,25 @@ namespace DarkRift.Server
 
         internal DataManager(ServerSpawnData.DataSettings settings, Logger logger)
         {
-            this.dataDirectory = settings.Directory;
+            this.dataDirectory = settings?.Directory;
             this.logger = logger;
 
-            DirectoryInfo directory = Directory.CreateDirectory(dataDirectory);
-            directory.Attributes |= FileAttributes.Hidden;
-
-            pluginsFileName = Path.Combine(dataDirectory, "Plugins.xml");
-
-            // Try to create a legacy mutex for locking the file, if not don't worry
-            try
+            if(dataDirectory != null)
             {
-                pluginsFileMutex = new Mutex(false, pluginsFileName.GetHashCode() + " lock");
-            }
-            catch (NotSupportedException)
-            {
-                pluginsFileMutex = null;
+                DirectoryInfo directory = Directory.CreateDirectory(dataDirectory);
+                directory.Attributes |= FileAttributes.Hidden;
+
+                pluginsFileName = Path.Combine(dataDirectory, "Plugins.xml");
+
+                // Try to create a legacy mutex for locking the file, if not don't worry
+                try
+                {
+                    pluginsFileMutex = new Mutex(false, pluginsFileName.GetHashCode() + " lock");
+                }
+                catch (NotSupportedException)
+                {
+                    pluginsFileMutex = null;
+                }
             }
 
             CreatePluginsTable();
@@ -175,7 +178,13 @@ namespace DarkRift.Server
         /// </summary>
         /// <param name="pluginName">The name of the plugin.</param>
         /// <returns>The path to the resource directory.</returns>
-        internal string GetResourceDirectory(string pluginName) {
+        internal string GetResourceDirectory(string pluginName)
+        {
+            if(dataDirectory == null)
+            {
+                return null;
+            }
+
             // TODO DR3 store plugin data not in root of the data directory
             return Path.Combine(dataDirectory, pluginName);
         }
@@ -186,6 +195,11 @@ namespace DarkRift.Server
         /// <param name="pluginName">The name of the plugin.</param>
         internal void CreateResourceDirectory(string pluginName)
         {
+            if (dataDirectory == null)
+            {
+                return;
+            }
+
             Directory.CreateDirectory(GetResourceDirectory(pluginName));
         }
 
@@ -195,6 +209,11 @@ namespace DarkRift.Server
         /// <param name="pluginName">The name of the plugin.</param>
         internal void DeleteResourceDirectory(string pluginName)
         {
+            if (dataDirectory == null)
+            {
+                return;
+            }
+
             Directory.Delete(GetResourceDirectory(pluginName), true);
         }
 
@@ -210,6 +229,11 @@ namespace DarkRift.Server
         /// <param name="version">The version to update the record to.</param>
         internal PluginRecord ReadAndSetPluginRecord(string name, Version version)
         {
+            if (pluginsFileName == null || pluginsFileMutex == null)
+            {
+                return null;
+            }
+
             try
             {
                 using (LockedFile file = new LockedFile(pluginsFileName, pluginsFileMutex))
@@ -267,6 +291,11 @@ namespace DarkRift.Server
         /// <returns>The plugin record.</returns>
         internal PluginRecord ReadPluginRecord(string name)
         {
+            if (pluginsFileName == null || pluginsFileMutex == null)
+            {
+                return null;
+            }
+
             try
             {
                 XDocument doc;
@@ -299,13 +328,20 @@ namespace DarkRift.Server
         /// <returns>The records stored.</returns>
         internal IEnumerable<PluginRecord> ReadAllPluginRecords()
         {
+            if (pluginsFileName == null || pluginsFileMutex == null)
+            {
+                yield break;
+            }
+
+            IEnumerable<PluginRecord> records;
+
             try
             {
                 XDocument doc;
                 using (LockedFile file = new LockedFile(pluginsFileName, pluginsFileMutex))
                     doc = file.Load();
 
-                return doc.Root
+                records = doc.Root
                     .Elements()
                     .Select(
                         (e) =>
@@ -321,6 +357,14 @@ namespace DarkRift.Server
                 logger.Error($"The plugins index file ({pluginsFileName}) was corrupt and could not be loaded. It may be possible to fix this manually by inspecting the file; otherwise, it is likely that you will need to delete the file to force DarkRift to regenerate it, however doing so will cause all plugins to reinstall.");
                 throw;
             }
+
+            if(records != null)
+            {
+                foreach(var element in records)
+                {
+                    yield return element;
+                }
+            }
         }
 
         /// <summary>
@@ -329,6 +373,11 @@ namespace DarkRift.Server
         /// <param name="name">The plugin to delete.</param>
         internal void DeletePluginRecord(string name)
         {
+            if (pluginsFileName == null || pluginsFileMutex == null)
+            {
+                return;
+            }
+
             try
             {
                 using (LockedFile file = new LockedFile(pluginsFileName, pluginsFileMutex))
@@ -355,6 +404,11 @@ namespace DarkRift.Server
         /// </summary>
         private void CreatePluginsTable()
         {
+            if(pluginsFileName == null || pluginsFileMutex == null)
+            {
+                return;
+            }
+
             try
             {
                 using (LockedFile file = new LockedFile(pluginsFileName, pluginsFileMutex))
@@ -388,8 +442,7 @@ namespace DarkRift.Server
             {
                 if (disposing)
                 {
-                    if (pluginsFileMutex != null)
-                        pluginsFileMutex.Close();
+                    pluginsFileMutex?.Close();
                 }
 
                 disposedValue = true;
