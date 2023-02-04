@@ -150,16 +150,7 @@ namespace DarkRift.Server
             this.dataDirectory = settings.Directory;
             this.logger = logger;
 
-            DirectoryInfo directory = Directory.CreateDirectory(dataDirectory);
-
-            try
-            {
-                directory.Attributes |= FileAttributes.Hidden;
-            }
-            catch (Exception)
-            {
-                //Some platforms like iOS can cause exceptions here
-            }
+            Directory.CreateDirectory(dataDirectory);
 
             pluginsFileName = Path.Combine(dataDirectory, "Plugins.xml");
 
