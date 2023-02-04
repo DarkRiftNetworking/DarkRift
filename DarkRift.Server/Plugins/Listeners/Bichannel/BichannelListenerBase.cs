@@ -129,11 +129,16 @@ namespace DarkRift.Server.Plugins.Listeners.Bichannel
 
             // By default on Windows ICMP Port Unreachable messages cause the socket to close, we really don't want that
             // https://stackoverflow.com/a/74327430/2755790
+
             try
             {
-              UdpListener.IOControl(SIO_UDP_CONNRESET, new byte[] { 0x00 }, null);
+                UdpListener.IOControl(SIO_UDP_CONNRESET, new byte[] { 0x00 }, null);
             }
             catch (PlatformNotSupportedException)
+            {
+                // Not on Windows, no need to worry about the option
+            }
+            catch(SocketException)
             {
                 // Not on Windows, no need to worry about the option
             }
