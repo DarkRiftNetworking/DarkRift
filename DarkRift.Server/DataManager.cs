@@ -150,8 +150,7 @@ namespace DarkRift.Server
             this.dataDirectory = settings.Directory;
             this.logger = logger;
 
-            DirectoryInfo directory = Directory.CreateDirectory(dataDirectory);
-            directory.Attributes |= FileAttributes.Hidden;
+            Directory.CreateDirectory(dataDirectory);
 
             pluginsFileName = Path.Combine(dataDirectory, "Plugins.xml");
 
@@ -175,7 +174,8 @@ namespace DarkRift.Server
         /// </summary>
         /// <param name="pluginName">The name of the plugin.</param>
         /// <returns>The path to the resource directory.</returns>
-        internal string GetResourceDirectory(string pluginName) {
+        internal string GetResourceDirectory(string pluginName)
+        {
             // TODO DR3 store plugin data not in root of the data directory
             return Path.Combine(dataDirectory, pluginName);
         }
