@@ -7,11 +7,8 @@
     <!-- Output paths -->
     <BaseIntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(SolutionDir)..\unordinal\dr-build\$(MSBuildProjectName)\obj\$(Configuration)</IntermediateOutputPath>
-    <!--<BaseIntermediateOutputPath>$(SolutionDir)bin\obj\$(Configuration)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>-->
-    <!--<IntermediateOutputPath>$(SolutionDir)bin\obj\$(Configuration)\$(MSBuildProjectName)\</IntermediateOutputPath>-->
     <MSBuildProjectExtensionsPath>$(IntermediateOutputPath)\</MSBuildProjectExtensionsPath>
     <BaseOutputPath>$(SolutionDir)..\unordinal\dr-build\$(MSBuildProjectName)\bin\</BaseOutputPath>
-    <!--<OutputPath>$(SolutionDir)..\unordinal\dr-build\$(MSBuildProjectName)\bin\</OutputPath>-->
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
 
