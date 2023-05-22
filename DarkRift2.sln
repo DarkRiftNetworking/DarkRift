@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.props = .props
 		.targets = .targets
 		bitbucket-pipelines.yml = bitbucket-pipelines.yml
+		Directory.Build.props = Directory.Build.props
 		ReadMe.md = ReadMe.md
 		DarkRift.Schemas\Server.config.xsd = DarkRift.Schemas\Server.config.xsd
 	EndProjectSection
