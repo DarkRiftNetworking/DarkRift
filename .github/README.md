@@ -1,7 +1,7 @@
 # Hello!
 Welcome to the DarkRift 2 open source project!
 
-DarkRift 1 and 2 were originally written by Jamie Read. DarkRift 2 has since been open sourced under the care of Unordinal AB and the DarkRift community. Unfortunatly, Unordinal is no longer able to maintain the project, so it is being cared for by the DarkRift 2 community. Support for DarkRift is 100% community driven, and we encourage new users to join our [community discord](https://discord.gg/ufr5m7bX) 
+DarkRift 1 and 2 were originally written by Jamie Read. DarkRift 2 has since been open sourced under the care of Unordinal AB and the DarkRift community. Unfortunately, Unordinal is no longer able to maintain the project, so it is being cared for by the DarkRift 2 community. Support for DarkRift is 100% community driven, and we encourage new users to join our [community discord](https://discord.gg/ufr5m7bX). 
 
 # Features
 
