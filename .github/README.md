@@ -1,7 +1,7 @@
 # Hello!
 Welcome to the DarkRift 2 open source project!
 
-DarkRift 1 and 2 were originally written by Jamie Read. DarkRift 2 has since been open sourced under the care of Unordinal AB and the DarkRift community. Unfortunately, Unordinal is no longer able to maintain the project, so it is being cared for by the DarkRift 2 community. Support for DarkRift is 100% community driven, and we encourage new users to join our [community discord](https://discord.gg/ufr5m7bX). 
+DarkRift 1 and 2 were originally written by Jamie Read. DarkRift 2 has since been open sourced under the care of Unordinal AB and the DarkRift community. Unfortunately, Unordinal is no longer able to maintain the project, so it is being cared for by the DarkRift 2 community. Support for DarkRift is 100% community driven, and we encourage new users to join our [community discord](https://discord.gg/DMdsYabNzB). 
 
 # Features
 
@@ -32,7 +32,7 @@ You can find an example of a [minimal embedded .NET server and client](#minimal-
 
 [Tic Tac Toe Tutorial - Video Tutorial by](https://www.youtube.com/watch?v=wqs39RIXmxc) - @HappySpider
 
-For more resources and other guides related to DarkRift and multiplayer development in general, join the [community discord](https://discord.gg/ufr5m7bX) and see #resources.
+For more resources and other guides related to DarkRift and multiplayer development in general, join the [community discord](https://discord.gg/DMdsYabNzB) and see #resources.
 
 ## Building
 This project requires Microsoft Visual Studio 2022 (the free Community edition is fine) or at least one Visual C# project will fail to build in VS2019 and below. See detailed exposition in [BUILDING.md](BUILDING.md)
