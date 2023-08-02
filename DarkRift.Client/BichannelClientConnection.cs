@@ -301,7 +301,7 @@ namespace DarkRift.Client
             catch (Exception)
             {
                 message.Dispose();
-                args.Completed += TcpSendCompleted;
+                args.Completed -= TcpSendCompleted;
                 ObjectCache.ReturnSocketAsyncEventArgs(args);
                 return false;
             }
