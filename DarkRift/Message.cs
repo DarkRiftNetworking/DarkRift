@@ -194,11 +194,21 @@ namespace DarkRift
         }
 
         /// <summary>
+        ///     Creates a new message with the given tag and data.
+        /// </summary>
+        /// <param name="tag">The tag the message has.</param>
+        /// <param name="data">The initial data in the message.</param>
+        public static Message Create(ushort tag, byte[] data)
+        {
+            return Create(tag, new UnmanagedMemoryBuffer(data, 0, data.Length));
+        }
+
+        /// <summary>
         ///     Creates a new message with the given tag and message buffer.
         /// </summary>
         /// <param name="tag">The tag the message has.</param>
         /// <param name="buffer">The initial data in the message.</param>
-        public static Message Create(ushort tag, IMessageBuffer buffer)
+        private static Message Create(ushort tag, IMessageBuffer buffer)
         {
             Message message = ObjectCache.GetMessage();
 
