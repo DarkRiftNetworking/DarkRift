@@ -10,4 +10,7 @@
 		<Copyright>Unordinal AB</Copyright>
 		<Description>DarkRift Networking - High Performance Networking Library for .NET and Unity Games</Description>
 	</PropertyGroup>
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/*.meta;**/*.asmdef</DefaultItemExcludes>
+  </PropertyGroup>
 </Project>

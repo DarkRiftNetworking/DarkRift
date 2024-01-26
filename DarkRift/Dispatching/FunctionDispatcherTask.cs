@@ -55,7 +55,7 @@ namespace DarkRift.Dispatching
             catch (Exception e)
             {
                 SetTaskFailed(e);
-                throw new DispatcherException("An exception occurred whilst running a dispatcher task. See inner exception for more details.", e); ;
+                throw new DispatcherException("An exception occurred whilst running a dispatcher task. See inner exception for more details.", e);
             }
 
             SetTaskComplete(synchronous);
