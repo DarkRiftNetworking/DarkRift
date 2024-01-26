@@ -190,12 +190,32 @@ namespace DarkRift
         /// <param name="writer">The initial data in the message.</param>
         public static Message Create(ushort tag, DarkRiftWriter writer)
         {
+            return Create(tag, writer.ToBuffer());
+        }
+
+        /// <summary>
+        ///     Creates a new message with the given tag and data.
+        /// </summary>
+        /// <param name="tag">The tag the message has.</param>
+        /// <param name="data">The initial data in the message.</param>
+        public static Message Create(ushort tag, byte[] data)
+        {
+            return Create(tag, new UnmanagedMemoryBuffer(data, 0, data.Length));
+        }
+
+        /// <summary>
+        ///     Creates a new message with the given tag and message buffer.
+        /// </summary>
+        /// <param name="tag">The tag the message has.</param>
+        /// <param name="buffer">The initial data in the message.</param>
+        private static Message Create(ushort tag, IMessageBuffer buffer)
+        {
             Message message = ObjectCache.GetMessage();
 
             message.isCurrentlyLoungingInAPool = false;
 
             message.IsReadOnly = false;
-            message.buffer = writer.ToBuffer();
+            message.buffer = buffer;
             message.tag = tag;
             message.flags = 0;
             message.PingCode = 0;
@@ -268,7 +288,7 @@ namespace DarkRift
 
             // We clone the message buffer so we can modify it's properties safely
             message.buffer = buffer.Clone();
-            
+
             //Get flags first so we can query it
             message.flags = buffer.Buffer[buffer.Offset];
 
@@ -289,7 +309,7 @@ namespace DarkRift
         /// </summary>
         internal Message()
         {
-            
+
         }
 
         /// <summary>
@@ -448,7 +468,7 @@ namespace DarkRift
 
             //We don't want to give a reference to our buffer so we need to clone it
             message.buffer = buffer.Clone();
-            
+
             message.flags = flags;
             message.tag = tag;
             message.PingCode = PingCode;
