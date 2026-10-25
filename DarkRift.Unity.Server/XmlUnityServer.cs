@@ -126,7 +126,11 @@ namespace DarkRift.Server.Unity
         public void Close()
         {
             if (Server != null)
+            {
                 Server.Dispose();
+                // Drop the disposed server so Update() stops calling into it and Create() can run again
+                Server = null;
+            }
         }
     }
 }
